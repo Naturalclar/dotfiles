@@ -4,4 +4,4 @@ This is a repository to keep my dotfile configuration as well as some utility sc
 
 ## Where is the dotfile?
 
-dotfile exist in everyone's heart :heart:
+dotfile exists in everyone's heart :heart:
