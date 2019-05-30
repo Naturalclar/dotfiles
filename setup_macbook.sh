@@ -17,6 +17,8 @@ export NVM_DIR="${XDG_CONFIG_HOME/:-$HOME/.}nvm"
 nvm install node
 # install yarn https://yarnpkg.com
 brew install yarn
+# install docker
+brew cask install docker
 # install watchman for react-native development
 brew install watchman
 # install react-native-cli
