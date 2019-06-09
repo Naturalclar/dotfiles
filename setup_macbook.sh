@@ -29,3 +29,11 @@ yarn global add expo-cli
 yarn global add typescript
 # install gatsby-cli https://www.gatsbyjs.org
 yarn global add gatsby-cli
+
+
+# install ghq
+brew install ghq
+# install hub
+brew install hub
+# install peco
+brew install peco
