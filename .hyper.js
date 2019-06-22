@@ -44,7 +44,7 @@ module.exports = {
 
     // terminal background color
     // opacity is only supported on macOS
-    backgroundColor: "rgba(0,0,10,0.8)",
+    backgroundColor: "rgba(0,0,10,0.7)",
 
     // terminal selection color
     selectionColor: "rgba(248,28,229,0.3)",
@@ -153,7 +153,8 @@ module.exports = {
     "hyper-active-tab",
     "hyper-search",
     "hyper-statusline",
-    "hyper-tab-icons"
+    "hyper-tab-icons",
+    "hyperfull",
   ],
 
   // in development, you can create a directory under
