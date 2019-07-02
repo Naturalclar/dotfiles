@@ -3,9 +3,12 @@ xcode-select --install
 # install homebrew https://brew.sh/
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 # install iterm2
-brew cask install iterm2
+# brew cask install iterm2
+# install hyper.js
+brew cask install hyper
 # install zsh
 brew install zsh
+# TODO: add script to make zsh the default shell
 # install visual studio code
 brew cask install visual-studio-code
 # install nvm (node version manager) https://github.com/nvm-sh/nvm
