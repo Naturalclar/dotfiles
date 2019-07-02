@@ -40,3 +40,6 @@ brew install ghq
 brew install hub
 # install peco
 brew install peco
+
+# install Slack
+brew cask install slack
