@@ -26,6 +26,7 @@ alias gcb="git checkout -b"
 alias gaa="git add --all"
 alias gcm="git commit -m"
 alias gsu="git stash -u"
+alias gpo="git push origin"
 
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
