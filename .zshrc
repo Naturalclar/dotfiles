@@ -5,7 +5,7 @@
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/natural-macbook/.oh-my-zsh"
+export ZSH="/Users/`whoami`/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -23,7 +23,7 @@ HYPHEN_INSENSITIVE="true"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -69,6 +69,26 @@ source $ZSH/oh-my-zsh.sh
 #   export EDITOR='mvim'
 # fi
 
+# PATHS
+
+# Android Studio
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/emulator
+
+# NVM PATH
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
+
+# jEnv
+export JENV_ROOT="/usr/local/opt/jenv"
+if [ -d "${JENV_ROOT}" ]; then
+  export PATH="$JENV_ROOT/bin:$PATH"
+  eval "$(jenv init -)"
+fi
+
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
@@ -91,9 +111,14 @@ alias gcb="git checkout -b"
 alias gaa="git add --all"
 alias gcm="git commit -m"
 alias gsu="git stash -u"
+# display git logs in a single line
+alias gll="git log --pretty=oneline"
 
 # cd to ghq directories
 alias ws='cd $(ghq list --full-path | peco)'
 
 # Delete selected branch on git
 alias gbd='git branch -d $(git branch | peco)'
+
+# alias to run android emulator
+alias rundroid='/Users/`whoami`/Library/Android/sdk/emulator/emulator -avd Nexus_5X_API_28_x86'
