@@ -4,6 +4,11 @@ xcode-select --install
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 # install iterm2
 # brew cask install iterm2
+
+# create a directory to be able to link python (required for watchman)
+sudo mkdir /usr/local/Framework
+sudo chown $(whoami):admin /usr/local/Framework
+
 # install hyper.js
 brew cask install hyper
 # install zsh
