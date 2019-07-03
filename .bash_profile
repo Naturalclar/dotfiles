@@ -1,5 +1,5 @@
 #  if zsh exists, use zsh
-if [ -f "/usr/local/bin/zsh"]
+if [ -f "/usr/local/bin/zsh" ]; then
   exec "/usr/local/bin/zsh"
 fi
 
