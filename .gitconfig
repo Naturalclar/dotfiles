@@ -1,0 +1,17 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+#	name = Jesse Katsumata
+#	email = jesse.katsumata@gmail.com
+[user]
+	name = Naturalclar
+	email = jesse.katsumata@gmail.com
+[alias]
+	co = checkout
+	cb = checkout -b
+	cm = commit -m
+	aa = add --all
+	st = status
+	pop = stash pop
+	po = push origin
+	
