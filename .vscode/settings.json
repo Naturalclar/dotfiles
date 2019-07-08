@@ -1,0 +1,38 @@
+{
+  "editor.tabSize": 2,
+  "workbench.colorTheme": "Monokai",
+  "diffEditor.ignoreTrimWhitespace": true,
+  "javascript.updateImportsOnFileMove.enabled": "never",
+  "window.zoomLevel": 1,
+  "search.useIgnoreFiles": true,
+  "search.exclude": {
+    "**/node_modules": true
+  },
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "editor.formatOnSave": false,
+  "eslint.autoFixOnSave": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    { "language": "typescript", "autoFix": true },
+    { "language": "typescriptreact", "autoFix": true }
+  ],
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "liveshare.featureSet": "insiders",
+  "files.associations": {
+    "*.css": "postcss"
+  },
+  "workbench.activityBar.visible": true
+}
