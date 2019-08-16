@@ -104,6 +104,8 @@ export PATH="$PATH:$HOME/.rvm/bin"
 # zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\']//g" | sort; }
+
 #alias
 alias g="git"
 alias gco="git checkout"
