@@ -10,12 +10,12 @@ list: # Show dotfiles in this repository
 	@$(foreach val, $(TARGET), /bin/ls -dF $(val);)
 	@echo '------------------------'
 
-dotfiles: # Create symlink to home directory
+dotfiles: # Create symlinks of dotfiles to home directory
 	@echo 'dotfiles - Setting simlinks of dotfiles in HOME directory'
 	@echo '------------------------'
 	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@echo '------------------------'
-	
+
 help: # Print Usge
 	@echo 'help - showing usage'
 	@echo '------------------------'
