@@ -1,19 +1,23 @@
-# Set zshrc
-zshrc:
-	@echo 'Setting zshrc to home directory'
-	ln -sfnv $(abspath .zshrc) $(HOME)/.zshrc
+DOTFILES 	:= $(wildcard .??*)
+IGNORE	:= .DS_Store .git .gitmodules .gitignore
+TARGET	:= $(filter-out $(IGNORE), $(DOTFILES))
 
-# Set hyper.js config
-hyper:
-	@echo 'Setting .hyper.js to home directory'
-	ln -sfnv $(abspath .hyper.js) $(HOME)/.hyper.js
+.DEFAULT_GOAL	:= dotfiles
 
-# Set BASH_PROFILE
-bash:
-	@echo 'Setting .bash_profile to home directory'
-	ln -sfnv $(abspath .bash_profile) $(HOME)/.bash_profile
+list: # Show dotfiles in this repository
+	@echo 'list - Showing list of dotfiles in this repository'
+	@echo '------------------------'
+	@$(foreach val, $(TARGET), /bin/ls -dF $(val);)
+	@echo '------------------------'
 
-# Set gitconfig
-git:
-	@echo 'Setting .gitconfig to home directory'
-	ln -sfnv $(abspath .gitconfig) $(HOME)/.gitconfig
+dotfiles: # Create symlink to home directory
+	@echo 'dotfiles - Setting simlinks of dotfiles in HOME directory'
+	@echo '------------------------'
+	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@echo '------------------------'
+	
+help: # Print Usge
+	@echo 'help - showing usage'
+	@echo '------------------------'
+	@grep '^[^#[:space:]].*: #' Makefile
+	@echo '------------------------'
