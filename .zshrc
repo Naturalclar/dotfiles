@@ -115,7 +115,7 @@ alias gcm="git commit -m"
 alias gsu="git stash -u"
 alias gpo="git push origin"
 alias pull="git pull"
-alias gpcb="git push origin $(git_current_branch)"
+alias gpcb='git push origin $(git_current_branch)'
 
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
