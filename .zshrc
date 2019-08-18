@@ -7,6 +7,9 @@ export PATH="/usr/local/opt/ruby/bin:$PATH"
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/`whoami`/.oh-my-zsh"
 
+# Path to dotfiles repository
+export DOTFILES="/Users/`whoami`/.ghq/github.com/Naturalclar/dotfiles"
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -129,3 +132,6 @@ alias gbd='git branch -d $(git branch | peco)'
 
 # alias to run android emulator
 alias rundroid='/Users/`whoami`/Library/Android/sdk/emulator/emulator -avd Nexus_5X_API_28_x86'
+
+# alias to copy file or folder to dotfiles repository
+alias cpdf='cp -r $(ls -a | peco) $DOTFILES'
