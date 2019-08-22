@@ -10,6 +10,9 @@ autoload -Uz vcs_info
 ## displayed at prompt
 precmd () { vcs_info }
 
+# Path to dotfiles repository
+export DOTFILES="/Users/`whoami`/.ghq/github.com/Naturalclar/dotfiles"
+
 ## prompt
 ### vcs_info 表示内容をカスタマイズ
 zstyle ':vcs_info:git:*' check-for-changes true
@@ -95,3 +98,6 @@ alias gbd='git branch -d $(git branch | peco)'
 
 # alias to run android emulator
 alias rundroid='/Users/`whoami`/Library/Android/sdk/emulator/emulator -avd Nexus_5X_API_28_x86'
+
+# alias to copy file or folder to dotfiles repository
+alias cpdf='cp -r $(ls -a | peco) $DOTFILES'
