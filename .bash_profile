@@ -27,3 +27,7 @@ alias ws='cd $(ghq list --full-path | peco)'
 
 # Delete selected branch on git
 alias gbd='git branch -d $(git branch | peco)'
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
