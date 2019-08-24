@@ -86,7 +86,7 @@ alias gsu="git stash -u"
 alias gst="git status"
 alias gpo="git push origin"
 alias pull="git pull"
-alias gpcb='git push origin $(git_current_branch)'
+alias gpcb='git push --set-upstream origin $(git_current_branch)'
 alias gpom="git push origin master"
 
 # display git logs in a single line
