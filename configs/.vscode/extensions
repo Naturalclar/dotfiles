@@ -1,7 +1,7 @@
+abusaidm.html-snippets
 auchenberg.vscode-browser-preview
 bigous.vscode-multi-line-tricks
 christian-kohler.npm-intellisense
-daltonjorge.scala
 dbaeumer.vscode-eslint
 dzannotti.vscode-babel-coloring
 eamodio.gitlens
@@ -17,6 +17,7 @@ Naturalclar.workspace-settings-json
 naumovs.color-highlight
 npxms.hide-gitignored
 oderwat.indent-rainbow
+PKief.material-icon-theme
 pnp.polacode
 redhat.fabric8-analytics
 redhat.java
