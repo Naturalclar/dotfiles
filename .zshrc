@@ -86,10 +86,12 @@ alias gsu="git stash -u"
 alias gst="git status"
 alias gpo="git push origin"
 alias pull="git pull"
+alias git_current_branch='git branch | grep \* | cut -d ' ' -f2'
 alias gpcb='git push --set-upstream origin $(git_current_branch)'
 alias gpom="git push origin master"
 alias gcom="git checkout master"
 alias gcod="git checkout develop"
+
 
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
