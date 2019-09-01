@@ -77,6 +77,9 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 
 # alias
 alias zshconfig="code ~/.zshrc"
+alias sz="source ~/.zshrc"
+
+# git alias
 alias g="git"
 alias gco="git checkout"
 alias gcb="git checkout -b"
@@ -86,15 +89,21 @@ alias gsu="git stash -u"
 alias gst="git status"
 alias gpo="git push origin"
 alias pull="git pull"
-alias git_current_branch='git branch | grep \* | cut -d ' ' -f2'
+alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 alias gpcb='git push origin $(git_current_branch)'
 alias gpom="git push origin master"
 alias gcom="git checkout master"
 alias gcod="git checkout develop"
 
-
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
+
+# yarn
+alias y="yarn"
+alias yb="yarn build"
+alias ys="yarn start"
+alias build="yarn build"
+alias start="yarn start"
 
 # cd to ghq directories
 alias ws='cd $(ghq list --full-path | peco)'
