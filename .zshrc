@@ -90,6 +90,7 @@ alias gst="git status"
 alias gpo="git push origin"
 alias pull="git pull"
 alias gpull="git pull"
+alias gpsub="git submodule update --init --recursive" #clones submodules
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 alias gpcb='git push origin $(git_current_branch)'
 alias gpom="git push origin master"
