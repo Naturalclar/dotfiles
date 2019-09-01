@@ -81,21 +81,23 @@ alias sz="source ~/.zshrc"
 
 # git alias
 alias g="git"
-alias gco="git checkout"
-alias gcb="git checkout -b"
 alias gaa="git add --all"
+alias gcb="git checkout -b"
 alias gcm="git commit -m"
-alias gsu="git stash -u"
-alias gst="git status"
+alias gco="git checkout"
+alias gcod="git checkout develop"
+alias gcom="git checkout master"
+alias gd="git diff"
+alias gdiff="git diff"
 alias gpo="git push origin"
+alias gpcb='git push origin $(git_current_branch)'
+alias gpom="git push origin -u master"
+alias gpsub="git submodule update --init --recursive" #clones submodules
+alias gst="git status"
+alias gsu="git stash -u"
 alias pull="git pull"
 alias gpull="git pull"
-alias gpsub="git submodule update --init --recursive" #clones submodules
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
-alias gpcb='git push origin $(git_current_branch)'
-alias gpom="git push origin master"
-alias gcom="git checkout master"
-alias gcod="git checkout develop"
 
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
@@ -104,8 +106,16 @@ alias gll="git log --pretty=oneline"
 alias y="yarn"
 alias yb="yarn build"
 alias ys="yarn start"
+alias yl="yarn lint"
+alias ytc="yarn type-check"
 alias build="yarn build"
 alias start="yarn start"
+alias lint="yarn lint"
+alias type-check="yarn type-check"
+alias tc="yarn type-check"
+alias ybuild="yarn build"
+alias ystart="yarn start"
+alias ylint="yarn lint"
 
 # cd to ghq directories
 alias ws='cd $(ghq list --full-path | peco)'
