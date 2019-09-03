@@ -4,6 +4,9 @@
 # Path to ruby
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 
+# Path to python
+export PATH="$HOME/Library/Python/2.7/bin:$PATH"
+
 # imports
 autoload -Uz vcs_info
 
