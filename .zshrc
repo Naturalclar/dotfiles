@@ -92,6 +92,9 @@ alias gcod="git checkout develop"
 alias gcom="git checkout master"
 alias gd="git diff"
 alias gdiff="git diff"
+alias gdm="git branch --merged|egrep -v '\*|develop|master|release'|xargs git branch -d" # delete merged branches
+alias gl="git log"
+alias glog="git log"
 alias gpo="git push origin"
 alias gpcb='git push origin $(git_current_branch)'
 alias gpom="git push origin -u master"
@@ -101,7 +104,6 @@ alias gsu="git stash -u"
 alias pull="git pull"
 alias gpull="git pull"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
-
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
 
