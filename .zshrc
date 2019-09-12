@@ -136,6 +136,8 @@ alias cpdf='cp -r $(ls -a | peco) $DOTFILES'
 
 # alias for frequently used folder
 HERB_MOBILE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-mobile-rx-ja
-HERB_CONSOLE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-mobile-rx-ja
+HERB_CONSOLE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-console
+HERB_COMPONENTS=$HOME/.ghq/github.com/CureApp/herb/modules/herb-components
 alias herbmo='cd $HERB_MOBILE'
 alias herbco='cd $HERB_CONSOLE'
+alias herbcom='cd $HERB_COMPONENTS'
