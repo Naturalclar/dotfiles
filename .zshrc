@@ -131,3 +131,9 @@ alias rundroid='/Users/`whoami`/Library/Android/sdk/emulator/emulator -avd Nexus
 
 # alias to copy file or folder to dotfiles repository
 alias cpdf='cp -r $(ls -a | peco) $DOTFILES'
+
+# alias for frequently used folder
+HERB_MOBILE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-mobile-rx-ja
+HERB_CONSOLE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-mobile-rx-ja
+alias herbmo='cd $HERB_MOBILE'
+alias herbco='cd $HERB_CONSOLE'
