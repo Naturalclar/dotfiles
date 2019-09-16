@@ -107,6 +107,7 @@ alias gpull="git pull"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
+galias() { alias | grep 'git'; }
 
 # yarn
 alias y="yarn"
@@ -122,6 +123,7 @@ alias tc="yarn type-check"
 alias ybuild="yarn build"
 alias ystart="yarn start"
 alias ylint="yarn lint"
+yalias() { alias | grep 'yarn'; }
 
 # hub
 alias hb="hub browse"
