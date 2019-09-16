@@ -99,6 +99,7 @@ alias gpo="git push origin"
 alias gpcb='git push origin $(git_current_branch)'
 alias gpom="git push origin -u master"
 alias gpsub="git submodule update --init --recursive" #clones submodules
+alias gptag="git push origin --tags"
 alias gst="git status"
 alias gsu="git stash -u"
 alias pull="git pull"
@@ -122,6 +123,12 @@ alias ybuild="yarn build"
 alias ystart="yarn start"
 alias ylint="yarn lint"
 
+# hub
+alias hb="hub browse"
+
+# rimraf
+alias rimraf="rm -rf"
+
 # cd to ghq directories
 alias ws='cd $(ghq list --full-path | peco)'
 
@@ -129,7 +136,7 @@ alias ws='cd $(ghq list --full-path | peco)'
 alias gbd='git branch -d $(git branch | peco)'
 
 # alias to run android emulator
-alias rundroid='/Users/`whoami`/Library/Android/sdk/emulator/emulator -avd Nexus_5X_API_28_x86'
+alias rundroid='$HOME/Library/Android/sdk/emulator/emulator -avd Nexus_5X_API_28_x86'
 
 # alias to copy file or folder to dotfiles repository
 alias cpdf='cp -r $(ls -a | peco) $DOTFILES'
