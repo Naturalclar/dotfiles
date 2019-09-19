@@ -123,6 +123,9 @@ alias tc="yarn type-check"
 alias ybuild="yarn build"
 alias ystart="yarn start"
 alias ylint="yarn lint"
+alias bootstrap="yarn bootstrap"
+alias ybt="yarn bootstrap"
+alias yarnstrap="yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
 
 # hub
