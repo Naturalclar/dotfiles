@@ -104,6 +104,8 @@ alias gst="git status"
 alias gsu="git stash -u"
 alias pull="git pull"
 alias gpull="git pull"
+alias gpum="git pull upstream master"
+alias up="git pull upstream master"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 # display git logs in a single line
 alias gll="git log --pretty=oneline"
@@ -127,6 +129,11 @@ alias bootstrap="yarn bootstrap"
 alias ybt="yarn bootstrap"
 alias yarnstrap="yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
+
+# npx
+alias monow="npx monow"
+alias mwb="npx monow -b build"
+alias upset="npx git-upstream --set"
 
 # hub
 alias hb="hub browse"
