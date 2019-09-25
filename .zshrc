@@ -128,6 +128,10 @@ alias ylint="yarn lint"
 alias bootstrap="yarn bootstrap"
 alias ybt="yarn bootstrap"
 alias yarnstrap="yarn bootstrap"
+alias yad="yarn add -D"
+alias ya="yarn add"
+alias add="yarn add"
+alias addd="yarn add -D"
 yalias() { alias | grep 'yarn'; }
 
 # npx
