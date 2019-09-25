@@ -82,6 +82,9 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 alias zshconfig="code ~/.zshrc"
 alias sz="source ~/.zshrc"
 
+# ls
+alias lsa="ls -a"
+
 # git alias
 alias g="git"
 alias gaa="git add --all"
@@ -128,6 +131,12 @@ alias ylint="yarn lint"
 alias bootstrap="yarn bootstrap"
 alias ybt="yarn bootstrap"
 alias yarnstrap="yarn bootstrap"
+alias yad="yarn add -D"
+alias ya="yarn add"
+alias add="yarn add"
+alias addd="yarn add -D"
+alias yag="yarn global add"
+alias addg="yarn global add"
 yalias() { alias | grep 'yarn'; }
 
 # npx

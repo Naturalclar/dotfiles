@@ -1,11 +1,12 @@
 # This is Git's per-user configuration file.
-[user]
-# Please adapt and uncomment the following lines:
-#	name = Jesse Katsumata
-#	email = jesse.katsumata@gmail.com
+
 [user]
 	name = Jesse Katsumata
 	email = jesse.katsumata@gmail.com
+
+[includeIf "gitdir:~/.ghq/github.com/CureApp"]
+	path = .gitconfig_work
+
 [alias]
 	co = checkout
 	cb = checkout -b
