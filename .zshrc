@@ -82,6 +82,9 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 alias zshconfig="code ~/.zshrc"
 alias sz="source ~/.zshrc"
 
+# ls
+alias lsa="ls -a"
+
 # git alias
 alias g="git"
 alias gaa="git add --all"
