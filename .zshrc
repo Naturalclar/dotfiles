@@ -148,8 +148,9 @@ alias ws='cd $(ghq list --full-path | peco)'
 alias gbd='git branch -d $(git branch | peco)'
 
 # alias to run android emulator
-alias rundroid='$HOME/Library/Android/sdk/emulator/emulator -avd Nexus_5X_API_28_x86'
-
+export EMULATOR="$HOME/Library/Android/sdk/emulator/emulator"
+alias listdroid='$EMULATOR -list-avds'
+alias rundroid='$EMULATOR -avd "$(listdroid | peco)"'
 # alias to copy file or folder to dotfiles repository
 alias cpdf='cp -r $(ls -a | peco) $DOTFILES'
 
