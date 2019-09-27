@@ -170,3 +170,8 @@ HERB_COMPONENTS=$HOME/.ghq/github.com/CureApp/herb/modules/herb-components
 alias herbmo='cd $HERB_MOBILE'
 alias herbco='cd $HERB_CONSOLE'
 alias herbcom='cd $HERB_COMPONENTS'
+
+# alias for npm scripts
+# list npm scripts and output chosen script
+list() { cat package.json | jq .scripts |  sed '1d' | sed '$d' | peco | sed 's/: ".*".//g' | sed 's/"//g'; }
+alias n='yarn $(list)'
