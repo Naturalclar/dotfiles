@@ -15,7 +15,7 @@ module.exports = {
     "type-check": "tsc -noEmit"
   },
   devDependencies: {
-    typescript: "^3.5.3"
+    typescript: "^3.6.3"
   },
   types: "dist/index.d.ts",
   license: "MIT"
