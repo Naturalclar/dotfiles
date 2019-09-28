@@ -82,6 +82,9 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 alias zshconfig="code ~/.zshrc"
 alias sz="source ~/.zshrc"
 
+#alias for peco
+alias pf = "peco --initial-filter=Fuzzy"
+
 # ls
 alias lsa="ls -a"
 
@@ -151,17 +154,17 @@ alias hb="hub browse"
 alias rimraf="rm -rf"
 
 # cd to ghq directories
-alias ws='cd $(ghq list --full-path | peco)'
+alias ws='cd $(ghq list --full-path | pf)'
 
 # Delete selected branch on git
-alias gbd='git branch -d $(git branch | peco)'
+alias gbd='git branch -d $(git branch | pf)'
 
 # alias to run android emulator
 export EMULATOR="$HOME/Library/Android/sdk/emulator/emulator"
 alias listdroid='$EMULATOR -list-avds'
 alias rundroid='$EMULATOR -avd "$(listdroid | peco)"'
 # alias to copy file or folder to dotfiles repository
-alias cpdf='cp -r $(ls -a | peco) $DOTFILES'
+alias cpdf='cp -r $(ls -a | pf) $DOTFILES'
 
 # alias for frequently used folder
 HERB_MOBILE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-mobile-rx-ja
@@ -173,5 +176,6 @@ alias herbcom='cd $HERB_COMPONENTS'
 
 # alias for npm scripts
 # list npm scripts and output chosen script
-list() { cat package.json | jq .scripts |  sed '1d' | sed '$d' | peco | sed 's/: ".*".//g' | sed 's/"//g'; }
+list() { cat package.json | jq .scripts |  sed '1d' | sed '$d' | pf | sed 's/: ".*".//g' | sed 's/"//g'; }
 alias n='yarn $(list)'
+
