@@ -83,7 +83,7 @@ alias zshconfig="code ~/.zshrc"
 alias sz="source ~/.zshrc"
 
 #alias for peco
-alias pf = "peco --initial-filter=Fuzzy"
+alias pf="peco --initial-filter=Fuzzy"
 
 # ls
 alias lsa="ls -a"
