@@ -140,6 +140,7 @@ alias add="yarn add"
 alias addd="yarn add -D"
 alias yag="yarn global add"
 alias addg="yarn global add"
+alias yw="yarn watch"
 yalias() { alias | grep 'yarn'; }
 
 # npx
