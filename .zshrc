@@ -180,3 +180,6 @@ alias herbcom='cd $HERB_COMPONENTS'
 list() { cat package.json | jq .scripts |  sed '1d' | sed '$d' | pf | sed 's/: ".*".//g' | sed 's/"//g'; }
 alias n='yarn $(list)'
 
+alias ..='cd ../'
+alias ~='cd $HOME/'
+alias mcd='cd packages/$(ls packages | peco)'
