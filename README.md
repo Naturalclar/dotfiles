@@ -1,6 +1,6 @@
 # dotfile for Naturalclar
 
-[![Main workflow](mainworkflowbadge)](githubactions)
+[![Main workflow][mainworkflowbadge]][githubactions]
 
 Easily set dotfiles using `Makefile`
 
