@@ -3,6 +3,8 @@
 
 # Path to ruby
 export PATH="/usr/local/opt/ruby/bin:$PATH"
+export GEM_HOME="$HOME/Software/ruby"
+export PATH="$PATH:$HOME/Software/ruby/bin"
 
 # Path to python
 export PATH="$HOME/Library/Python/2.7/bin:$PATH"
