@@ -7,6 +7,8 @@ export PATH="/usr/local/opt/ruby/bin:$PATH"
 # Path to python
 export PATH="$HOME/Library/Python/2.7/bin:$PATH"
 
+export JAVA_HOME=`/usr/libexec/java_home -v "12"`
+
 # imports
 autoload -Uz vcs_info
 
