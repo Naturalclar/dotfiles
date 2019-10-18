@@ -3,6 +3,8 @@
 
 # Path to ruby
 export PATH="/usr/local/opt/ruby/bin:$PATH"
+export GEM_HOME="$HOME/Software/ruby"
+export PATH="$PATH:$HOME/Software/ruby/bin"
 
 # Path to python
 export PATH="$HOME/Library/Python/2.7/bin:$PATH"
@@ -147,6 +149,7 @@ alias addd="yarn add -D"
 alias yag="yarn global add"
 alias addg="yarn global add"
 alias yw="yarn watch"
+alias ytest="yarn test"
 yalias() { alias | grep 'yarn'; }
 
 # npx
@@ -186,3 +189,6 @@ alias herbcom='cd $HERB_COMPONENTS'
 list() { cat package.json | jq .scripts |  sed '1d' | sed '$d' | pf | sed 's/: ".*".//g' | sed 's/"//g'; }
 alias n='yarn $(list)'
 
+alias ..='cd ../'
+alias ~='cd $HOME/'
+alias mcd='cd packages/$(ls packages | peco)'
