@@ -197,6 +197,11 @@ alias ..='cd ../'
 alias ~='cd $HOME/'
 alias mcd='cd packages/$(ls packages | peco)'
 
+# alias for docker
+alias drun="docker run"
+alias dps="docker ps"
+alias dkill="docker kill"
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/path.zsh.inc"; fi
 
