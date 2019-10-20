@@ -12,6 +12,9 @@ export PATH="$HOME/.deno/bin:$PATH"
 # Path to python
 export PATH="$HOME/Library/Python/2.7/bin:$PATH"
 
+# Path to rust 
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # imports
 autoload -Uz vcs_info
 
