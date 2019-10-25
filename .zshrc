@@ -164,6 +164,9 @@ alias rimraf="rm -rf"
 # cd to ghq directories
 alias ws='cd $(ghq list --full-path | pf)'
 
+#open code and github
+alias ch="hub browse && code ."
+
 # Delete selected branch on git
 alias gbd='git branch -d $(git branch | pf)'
 
