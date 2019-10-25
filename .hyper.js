@@ -154,7 +154,7 @@ module.exports = {
     "hyper-search",
     "hyper-statusline",
     "hyper-tab-icons",
-    "hyperfull",
+    "hyperfull"
   ],
 
   // in development, you can create a directory under
@@ -164,6 +164,6 @@ module.exports = {
 
   keymaps: {
     // Example
-    // 'window:devtools': 'cmd+alt+o',
+    // "window:devtools": "cmd+alt+o"
   }
 };

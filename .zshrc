@@ -6,10 +6,17 @@ export PATH="/usr/local/opt/ruby/bin:$PATH"
 export GEM_HOME="$HOME/Software/ruby"
 export PATH="$PATH:$HOME/Software/ruby/bin"
 
+# Path to deno
+export PATH="$HOME/.deno/bin:$PATH"
+
 # Path to python
 export PATH="$HOME/Library/Python/2.7/bin:$PATH"
 
+# Use Java 12
 export JAVA_HOME=`/usr/libexec/java_home -v "12"`
+
+# Path to rust 
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # imports
 autoload -Uz vcs_info
@@ -166,6 +173,9 @@ alias rimraf="rm -rf"
 # cd to ghq directories
 alias ws='cd $(ghq list --full-path | pf)'
 
+#open code and github
+alias ch="hub browse && code ."
+
 # Delete selected branch on git
 alias gbd='git branch -d $(git branch | pf)'
 
@@ -192,3 +202,14 @@ alias n='yarn $(list)'
 alias ..='cd ../'
 alias ~='cd $HOME/'
 alias mcd='cd packages/$(ls packages | peco)'
+
+# alias for docker
+alias drun="docker run"
+alias dps="docker ps"
+alias dkill="docker kill"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/path.zsh.inc"; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
