@@ -154,6 +154,7 @@ alias yag="yarn global add"
 alias addg="yarn global add"
 alias yw="yarn watch"
 alias ytest="yarn test"
+alias yyb="yarn && yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
 
 # npx
@@ -210,3 +211,7 @@ if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sd
 
 # The next line enables shell command completion for gcloud.
 if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
+
+# opam configuration
+test -r "$HOME/.opam/opam-init/init.zsh" && . "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null || true
+
