@@ -154,6 +154,7 @@ alias yag="yarn global add"
 alias addg="yarn global add"
 alias yw="yarn watch"
 alias ytest="yarn test"
+alias yyb="yarn && yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
 
 # npx
@@ -205,11 +206,18 @@ alias drun="docker run"
 alias dps="docker ps"
 alias dkill="docker kill"
 
+# alias for ripgrep
+alias rgi="rg --no-ignore"
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
 
+
 # fnm
 eval "$(fnm env --multi)"
+
+# opam configuration
+test -r "$HOME/.opam/opam-init/init.zsh" && . "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null || true
