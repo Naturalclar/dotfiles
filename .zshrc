@@ -168,6 +168,9 @@ alias upset="npx git-upstream --set"
 # hub
 alias hb="hub browse"
 
+# ghq
+alias get="ghq get"
+
 # rimraf
 alias rimraf="rm -rf"
 
