@@ -99,6 +99,8 @@ alias lsa="ls -a"
 # git alias
 alias g="git"
 alias gaa="git add --all"
+alias gbr="git branch"
+alias gbranch="git branch"
 alias gcm="git commit -m"
 alias gcb="git switch -c"
 alias gco="git checkout"
@@ -124,6 +126,8 @@ alias gsm="git switch master"
 alias gst="git status"
 alias gsu="git stash -u"
 
+alias bl="git branch"
+alias branch="git branch"
 alias pull="git pull"
 alias up="git pull upstream master"
 alias get_default_branch='git remote show origin | grep "HEAD branch" | cut -d ":" -f 2'
