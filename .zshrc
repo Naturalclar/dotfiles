@@ -15,6 +15,12 @@ export PATH="$HOME/Library/Python/2.7/bin:$PATH"
 # Path to rust 
 export PATH="$HOME/.cargo/bin:$PATH"
 
+
+# Path to asdf
+export ASDF_DIR="/usr/local/opt/asdf" 
+[ -s "$ASDF_DIR/asdf.sh" ] && \. "$ASDF_DIR/asdf.sh"
+[ -s "$ASDF_DIR/etc/bash_completion.d/asdf.bash" ] && \. "$ASDF_DIR/etc/bash_completion.d/asdf.bash"
+
 # imports
 autoload -Uz vcs_info
 
@@ -238,4 +244,5 @@ alias cl="clasp"
 
 # opam configuration
 test -r "$HOME/.opam/opam-init/init.zsh" && . "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null || true
+
 
