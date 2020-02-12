@@ -107,7 +107,6 @@ alias g="git"
 alias gaa="git add --all"
 alias gbr="git branch"
 alias gbranch="git branch"
-alias gbda=" git branch --merged|egrep -v '\*|develop|master'|xargs git branch -d" # Deletes all local branch that has been deleted on remote
 alias gcm="git commit -m"
 alias gcb="git switch -c"
 alias gco="git checkout"
@@ -239,7 +238,6 @@ if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cl
 eval "$(fnm env --multi)"
 
 # clasp
-alias clasp="npx clasp"
 alias cl="clasp"
 
 # opam configuration
