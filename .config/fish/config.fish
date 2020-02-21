@@ -18,6 +18,7 @@ set -gx PATH $HOME/.deno/bin $PATH
 set -gx PATH $HOME/.cargo/bin $PATH
 
 # Android
+export ANDROID_HOME=$HOME/Library/Android/sdk
 set -gx PATH $HOME/Library/Android/sdk $PATH
 set -gx PATH $ANDROID_HOME/tools $PATH
 set -gx PATH $ANDROID_HOME/tools/bin $PATH
