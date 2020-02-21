@@ -17,3 +17,5 @@
 	po = push origin
 	pom = push origin master
 	
+[ghq]
+	root = "~/.ghq"
