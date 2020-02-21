@@ -101,7 +101,12 @@ alias rimraf="rm -rf"
 # cd to ghq directories
 function ws
   set repo (ghq list --full-path | pf)
-  cd $repo
+  cd $repo  
+end
+
+function fish_user_key_bindings
+  bind \cr 'peco_select_history (commandline -b)'
+  bind \c] ws
 end
 
 #open code and github
