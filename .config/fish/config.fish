@@ -19,6 +19,7 @@ set -gx PATH $HOME/.cargo/bin $PATH
 
 # Android
 export ANDROID_HOME=$HOME/Library/Android/sdk
+#export ANDROID_NDK_HOME=/usr/local/share/android-ndk
 set -gx PATH $HOME/Library/Android/sdk $PATH
 set -gx PATH $ANDROID_HOME/tools $PATH
 set -gx PATH $ANDROID_HOME/tools/bin $PATH
