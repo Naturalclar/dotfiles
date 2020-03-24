@@ -31,3 +31,6 @@ source $HOME/.opam/opam-init/init.fish > /dev/null 2> /dev/null || true
 
 # asdf version manager
 source /usr/local/opt/asdf/asdf.fish
+
+# set ls color
+export LSCOLORS=gxfxcxdxbxegedabagacad
