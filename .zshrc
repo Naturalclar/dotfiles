@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# Path to arm64 homebrew
+export PATH="/opt/homebrew/bin:$PATH"
+
 # Path to ruby
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 export GEM_HOME="$HOME/Software/ruby"
@@ -101,6 +104,9 @@ alias pf="peco --initial-filter=Fuzzy"
 
 # ls
 alias lsa="ls -a"
+
+# homebrew
+alias brew_old="/usr/local/bin/brew"
 
 # git alias
 alias g="git"
