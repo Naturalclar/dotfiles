@@ -181,8 +181,10 @@ alias monow="npx monow"
 alias mwb="npx monow -b build"
 alias upset="npx git-upstream --set"
 
-# hub
-alias hb="hub browse"
+# gh
+alias rv="gh repo view -w"
+alias pr="gh pr create"
+alias fork="gh repo fork"
 
 # ghq
 alias get="ghq get"
