@@ -176,6 +176,10 @@ alias ytest="yarn test"
 alias yyb="yarn && yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
 
+# github cli
+alias pr="gh pr checkout"
+alias repo="gh repo create --public"
+
 # npx
 alias monow="npx monow"
 alias mwb="npx monow -b build"
