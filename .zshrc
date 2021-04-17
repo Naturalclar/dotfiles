@@ -142,7 +142,7 @@ alias bl="git branch"
 alias branch="git branch"
 alias pull="git pull"
 alias up="git pull upstream master"
-alias get_default_branch='git remote show origin | grep "HEAD branch" | cut -d ":" -f 2'
+alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 
 
