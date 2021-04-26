@@ -137,6 +137,8 @@ alias gsd="git switch develop"
 alias gsm="git switch master"
 alias gst="git status"
 alias gsu="git stash -u"
+# origin head (default branch) を最新の状態にする
+alias gitsync="git remote set-head origin --auto"
 
 alias bl="git branch"
 alias branch="git branch"
