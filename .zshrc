@@ -137,12 +137,14 @@ alias gsd="git switch develop"
 alias gsm="git switch master"
 alias gst="git status"
 alias gsu="git stash -u"
+# origin head (default branch) を最新の状態にする
+alias gitsync="git remote set-head origin --auto"
 
 alias bl="git branch"
 alias branch="git branch"
 alias pull="git pull"
 alias up="git pull upstream master"
-alias get_default_branch='git remote show origin | grep "HEAD branch" | cut -d ":" -f 2'
+alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 
 
@@ -175,6 +177,10 @@ alias yw="yarn watch"
 alias ytest="yarn test"
 alias yyb="yarn && yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
+
+# github cli
+alias pr="gh pr checkout"
+alias repo="gh repo create --public"
 
 # npx
 alias monow="npx monow"
