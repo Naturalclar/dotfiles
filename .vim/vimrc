@@ -2,5 +2,8 @@ set tabstop=2
 set autoindent
 " Shows line number
 set number
-" Shows syntax highlightt
+" Shows syntax highlight
 syntax on
+" Show last entered command on the screen
+set showcmd
+
