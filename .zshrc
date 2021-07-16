@@ -266,3 +266,10 @@ function peco-history-selection() {
 
 zle -N peco-history-selection
 bindkey '^R' peco-history-selection
+
+# asdf config
+fpath=(
+  $(brew --prefix asdf)/etc/bash_completion.d
+  $fpath
+)
+autoload -Uz compinit && compinit
