@@ -1,3 +1,6 @@
 set tabstop=2
 set autoindent
+" Shows line number
+set number
+" Shows syntax highlightt
 syntax on
