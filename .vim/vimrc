@@ -7,3 +7,20 @@ syntax on
 " Show last entered command on the screen
 set showcmd
 
+call plug#begin('~/.vim/plugged')
+Plug 'dense-analysis/ale'
+Plug 'prabirshrestha/vim-lsp'
+call plug#end()
+
+" Set ale linter
+let g:ale_linters = {'rust': ['analyzer']}
+
+" Set rust analyzer
+if executable('rust-analyzer')
+	au User lsp_setup call lsp#register_server({
+		\ 'name': 'Rust Language Server',
+		\ 'cmd': {server_info->['rust-analyzer']},
+		\ 'whitelist': ['rust'],
+		\ })
+endif
+
