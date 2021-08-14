@@ -10,6 +10,7 @@ set showcmd
 call plug#begin('~/.vim/plugged')
 Plug 'dense-analysis/ale'
 Plug 'prabirshrestha/vim-lsp'
+Plug 'elixir-editors/vim-elixir'
 call plug#end()
 
 " Set ale linter
