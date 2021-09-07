@@ -1,5 +1,5 @@
 DOTFILES 	:= $(wildcard .??*)
-IGNORE	:= .DS_Store .git .gitmodules .gitignore .config .github
+IGNORE	:= .DS_Store .git .gitmodules .gitignore .github .config
 TARGET	:= $(filter-out $(IGNORE), $(DOTFILES))
 VSCODE_SCRIPT_PATH := $(abspath configs/.vscode)
 CONFIG_PATH := $(wildcard .config/??*)

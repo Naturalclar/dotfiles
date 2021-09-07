@@ -99,6 +99,11 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 alias zshconfig="code ~/.zshrc"
 alias sz="source ~/.zshrc"
 
+# vim
+alias vim="nvim"
+alias vi="nvim"
+alias v="nvim"
+
 #alias for peco
 alias pf="peco --initial-filter=Fuzzy"
 
