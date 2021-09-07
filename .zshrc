@@ -235,6 +235,7 @@ alias mcd='cd packages/$(ls packages | peco)'
 alias drun="docker run"
 alias dps="docker ps"
 alias dkill="docker kill"
+alias dce="docker compose exec"
 
 # alias for ripgrep
 alias rgi="rg --no-ignore"
