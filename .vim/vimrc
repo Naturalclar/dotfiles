@@ -1,16 +1,35 @@
 set tabstop=2
 set autoindent
 " Shows line number
-set number
+set number nu
 " Shows syntax highlight
 syntax on
 " Show last entered command on the screen
 set showcmd
+" Search as characters are entered
+set incsearch
+" Highlight matched
+set hlsearch
+
+" File grep settings
+if executable('rg')
+				let &grepprg = 'rg --vimgrep --hidden'
+				set grepformat=%f:%l:%c:%m
+endif
+
+" PHP settings
+augroup PHP
+	autocmd!
+	" Check for PHP syntax errors after saving a file
+	autocmd BufWritePost {*.php} echom system("php -l ".expand('%'))
+
+augroup END
 
 call plug#begin('~/.vim/plugged')
 Plug 'dense-analysis/ale'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'elixir-editors/vim-elixir'
+Plug 'tpope/vim-fugitive'
 call plug#end()
 
 " Set ale linter
