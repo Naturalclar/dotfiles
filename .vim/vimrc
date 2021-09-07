@@ -10,6 +10,9 @@ set showcmd
 set incsearch
 " Highlight matched
 set hlsearch
+" Hide current mode (replaced by lightline)
+set noshowmode
+set laststatus=2
 
 " File grep settings
 if executable('rg')
@@ -30,6 +33,8 @@ Plug 'dense-analysis/ale'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'elixir-editors/vim-elixir'
 Plug 'tpope/vim-fugitive'
+Plug 'itchyny/lightline.vim'
+Plug 'vim-vdebug/vdebug'
 call plug#end()
 
 " Set ale linter
