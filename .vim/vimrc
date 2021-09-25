@@ -1,8 +1,11 @@
 " Use deoplete.
 let g:deoplete#enable_at_startup=1
 
+" Use space instead of tab
+set expandtab
+" Size of tab
 set tabstop=2
-set shiftwidth=4
+set shiftwidth=2
 set autoindent
 " Shows line number
 set number nu
@@ -41,10 +44,16 @@ Plug 'itchyny/lightline.vim'
 Plug 'vim-vdebug/vdebug'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 call plug#end()
 
+" Set ale fixer
+let b:ale_fixers = ['prettier', 'eslint']
 " Set ale linter
-let g:ale_linters = {'rust': ['analyzer']}
+let g:ale_linters = {
+      \ 'rust': ['analyzer'],
+      \}
+let g:ale_fix_on_save = 1
 
 " Set rust analyzer
 if executable('rust-analyzer')
