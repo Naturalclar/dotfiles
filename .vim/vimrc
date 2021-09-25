@@ -1,6 +1,3 @@
-" Use deoplete.
-let g:deoplete#enable_at_startup=1
-
 " Use space instead of tab
 set expandtab
 " Size of tab
@@ -35,7 +32,7 @@ augroup PHP
 augroup END
 
 call plug#begin('~/.vim/plugged')
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'dense-analysis/ale'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'elixir-editors/vim-elixir'
