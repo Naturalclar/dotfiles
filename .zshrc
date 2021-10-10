@@ -254,9 +254,6 @@ if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sd
 # The next line enables shell command completion for gcloud.
 if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
 
-# fnm
-eval "$(fnm env)"
-
 # clasp
 alias cl="clasp"
 
@@ -287,3 +284,5 @@ export FZF_CTRL_T_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_CTRL_T_OPTS='--preview "bat  --color=always --style=header,grid --line-range :100 {}"'
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"

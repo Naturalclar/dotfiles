@@ -34,3 +34,5 @@ export NVM_DIR="$HOME/.nvm"
 
 complete -C /opt/homebrew/bin/terraform terraform
 . "$HOME/.cargo/env"
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
