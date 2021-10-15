@@ -184,18 +184,17 @@ alias yyb="yarn && yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
 
 # github cli
-alias pr="gh pr checkout"
+alias getpr="gh pr checkout"
 alias repo="gh repo create --public"
+alias ghview="gh repo view -w"
+alias makepr="gh pr create"
+alias fork="gh repo fork"
 
 # npx
 alias monow="npx monow"
 alias mwb="npx monow -b build"
 alias upset="npx git-upstream --set"
 
-# gh
-alias rv="gh repo view -w"
-alias pr="gh pr create"
-alias fork="gh repo fork"
 
 # ghq
 alias get="ghq get"
