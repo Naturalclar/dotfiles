@@ -155,7 +155,15 @@ alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 
 galias() { alias | grep 'git'; }
 
-# yarn
+# Ruby
+
+## bundler
+
+alias be="bundle exec"
+
+# JavaScript
+
+## yarn
 alias y="yarn"
 alias yb="yarn build"
 alias ys="yarn start"
