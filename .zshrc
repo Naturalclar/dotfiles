@@ -1,13 +1,19 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# zmodload zsh/zprof
+zmodload zsh/datetime
+start_time=$(strftime '%s%.')
+
+
 # Path to arm64 homebrew
 export PATH="/opt/homebrew/bin:$PATH"
 
+# Init direnv
+eval "$(direnv hook zsh)"
+
 # Path to ruby
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-export GEM_HOME="$HOME/Software/ruby"
-export PATH="$PATH:$HOME/Software/ruby/bin"
+eval "$(rbenv init - zsh)"
 
 # Path to deno
 export PATH="$HOME/.deno/bin:$PATH"
@@ -20,7 +26,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 
 # Path to asdf
-export ASDF_DIR="/usr/local/opt/asdf" 
+export ASDF_DIR="$(which asdf)"
 [ -s "$ASDF_DIR/asdf.sh" ] && \. "$ASDF_DIR/asdf.sh"
 [ -s "$ASDF_DIR/etc/bash_completion.d/asdf.bash" ] && \. "$ASDF_DIR/etc/bash_completion.d/asdf.bash"
 
@@ -180,16 +186,16 @@ alias ylint="yarn lint"
 alias bootstrap="yarn bootstrap"
 alias ybt="yarn bootstrap"
 alias yarnstrap="yarn bootstrap"
-alias yad="yarn add -D"
-alias ya="yarn add"
-alias add="yarn add"
-alias addd="yarn add -D"
-alias yag="yarn global add"
-alias addg="yarn global add"
 alias yw="yarn watch"
 alias ytest="yarn test"
 alias yyb="yarn && yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
+
+## pnpm
+alias add="pnpm add"
+alias addd="pnpm add -D"
+alias addg="pnpm global add"
+
 
 # github cli
 alias getpr="gh pr checkout"
@@ -202,7 +208,6 @@ alias fork="gh repo fork"
 alias monow="npx monow"
 alias mwb="npx monow -b build"
 alias upset="npx git-upstream --set"
-
 
 # ghq
 alias get="ghq get"
@@ -218,6 +223,9 @@ alias ch="hub browse && code ."
 
 # Delete selected branch on git
 alias gbd='git branch -d $(git branch | pf)'
+
+# terraform
+alias tf="terraform"
 
 # alias to run android emulator
 export EMULATOR="$HOME/Library/Android/sdk/emulator/emulator"
@@ -296,3 +304,18 @@ export FZF_CTRL_T_OPTS='--preview "bat  --color=always --style=header,grid --lin
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
+export PATH="$HOME/.phpenv/bin:$PATH"
+eval "$(phpenv init -)"
+export PATH="/usr/local/opt/bison@2.7/bin:$PATH"
+
+# if type zprof >/dev/null 2>&1; then
+#     zprof | less
+# fi
+
+end_time=$(strftime '%s%.')
+echo $((end_time - start_time))
+
+# pnpm
+export PNPM_HOME="$HOME/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
