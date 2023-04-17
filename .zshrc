@@ -24,9 +24,11 @@ export PATH="$HOME/Library/Python/2.7/bin:$PATH"
 # Path to rust 
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# Path to Poetry
+export PATH="$HOME/.local/bin:$PATH"
 
 # Path to asdf
-export ASDF_DIR="$(which asdf)"
+export ASDF_DIR="/opt/homebrew/Cellar/asdf/0.11.2/libexec"
 [ -s "$ASDF_DIR/asdf.sh" ] && \. "$ASDF_DIR/asdf.sh"
 [ -s "$ASDF_DIR/etc/bash_completion.d/asdf.bash" ] && \. "$ASDF_DIR/etc/bash_completion.d/asdf.bash"
 
@@ -192,6 +194,9 @@ alias yyb="yarn && yarn bootstrap"
 yalias() { alias | grep 'yarn'; }
 
 ## pnpm
+alias p="pnpm"
+alias pb="pnpm build"
+alias ph="pnpm start"
 alias add="pnpm add"
 alias addd="pnpm add -D"
 alias addg="pnpm global add"
@@ -319,3 +324,5 @@ echo $((end_time - start_time))
 export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 11.0)
