@@ -226,6 +226,11 @@ alias ws='cd $(ghq list --full-path | pf)'
 #open code and github
 alias ch="hub browse && code ."
 
+# check if code-insider is available, and open code-insider instead of code if it exists
+if command -v code-insiders >/dev/null 2>&1; then
+    alias code="code-insiders"
+fi
+
 # Delete selected branch on git
 alias gbd='git branch -d $(git branch | pf)'
 
@@ -326,3 +331,18 @@ export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
 export JAVA_HOME=$(/usr/libexec/java_home -v 11.0)
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
