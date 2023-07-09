@@ -5,15 +5,41 @@
 zmodload zsh/datetime
 start_time=$(strftime '%s%.')
 
+OS=`uname`
 
-# Path to arm64 homebrew
-export PATH="/opt/homebrew/bin:$PATH"
+# Set option depending on OS
+case "${OS}" in
+    Darwin*)
+        # Path to arm64 homebrew
+        export PATH="/opt/homebrew/bin:$PATH"
+        # Path to asdf
+        export ASDF_DIR="/opt/homebrew/Cellar/asdf/0.11.2/libexec"
+        [ -s "$ASDF_DIR/asdf.sh" ] && \. "$ASDF_DIR/asdf.sh"
+        [ -s "$ASDF_DIR/etc/bash_completion.d/asdf.bash" ] && \. "$ASDF_DIR/etc/bash_completion.d/asdf.bash"
+        # asdf config
+        fpath=(
+          $(brew --prefix asdf)/etc/bash_completion.d
+          $fpath
+        )
+    ;;
+    Linux*)
+    ;;
+esac
 
-# Init direnv
-eval "$(direnv hook zsh)"
+# Init direnv if it exists
+if command -v direnv &> /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
 
-# Path to ruby
-eval "$(rbenv init - zsh)"
+# Init rbenv if it exists
+if command -v rbenv &> /dev/null; then
+  eval "$(rbenv init - zsh)"
+fi
+
+# Init phpenv if it exists
+if command -v phpenv &> /dev/null; then
+  eval "$(phpenv init -)"
+fi
 
 # Path to deno
 export PATH="$HOME/.deno/bin:$PATH"
@@ -26,11 +52,6 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 # Path to Poetry
 export PATH="$HOME/.local/bin:$PATH"
-
-# Path to asdf
-export ASDF_DIR="/opt/homebrew/Cellar/asdf/0.11.2/libexec"
-[ -s "$ASDF_DIR/asdf.sh" ] && \. "$ASDF_DIR/asdf.sh"
-[ -s "$ASDF_DIR/etc/bash_completion.d/asdf.bash" ] && \. "$ASDF_DIR/etc/bash_completion.d/asdf.bash"
 
 # imports
 autoload -Uz vcs_info
@@ -91,10 +112,17 @@ fi
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
+
+
 # zsh-autosuggestions
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+if [ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
 # zsh-syntax-highlighting
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if [ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 
 galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\']//g" | sort; }
 
@@ -179,9 +207,6 @@ alias yl="yarn lint"
 alias ytc="yarn type-check"
 alias build="yarn build"
 alias start="yarn start"
-alias lint="yarn lint"
-alias type-check="yarn type-check"
-alias tc="yarn type-check"
 alias ybuild="yarn build"
 alias ystart="yarn start"
 alias ylint="yarn lint"
@@ -200,7 +225,10 @@ alias ph="pnpm start"
 alias add="pnpm add"
 alias addd="pnpm add -D"
 alias addg="pnpm global add"
-
+alias lint="pnpm lint"
+alias format="pnpm format"
+alias tc="pnpm type-check"
+alias type-check="yarn type-check"
 
 # github cli
 alias getpr="gh pr checkout"
@@ -243,14 +271,6 @@ alias listdroid='$EMULATOR -list-avds'
 alias rundroid='$EMULATOR -avd "$(listdroid | peco)"'
 # alias to copy file or folder to dotfiles repository
 alias cpdf='cp -r $(ls -a | pf) $DOTFILES'
-
-# alias for frequently used folder
-HERB_MOBILE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-mobile-rx-ja
-HERB_CONSOLE=$HOME/.ghq/github.com/CureApp/herb/modules/herb-console
-HERB_COMPONENTS=$HOME/.ghq/github.com/CureApp/herb/modules/herb-components
-alias herbmo='cd $HERB_MOBILE'
-alias herbco='cd $HERB_CONSOLE'
-alias herbcom='cd $HERB_COMPONENTS'
 
 # alias for npm scripts
 # list npm scripts and output chosen script
@@ -298,11 +318,6 @@ function peco-history-selection() {
 zle -N peco-history-selection
 bindkey '^R' peco-history-selection
 
-# asdf config
-fpath=(
-  $(brew --prefix asdf)/etc/bash_completion.d
-  $fpath
-)
 autoload -Uz compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
@@ -315,12 +330,7 @@ export FZF_CTRL_T_OPTS='--preview "bat  --color=always --style=header,grid --lin
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
 export PATH="$HOME/.phpenv/bin:$PATH"
-eval "$(phpenv init -)"
 export PATH="/usr/local/opt/bison@2.7/bin:$PATH"
-
-# if type zprof >/dev/null 2>&1; then
-#     zprof | less
-# fi
 
 end_time=$(strftime '%s%.')
 echo $((end_time - start_time))
@@ -330,7 +340,10 @@ export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
-export JAVA_HOME=$(/usr/libexec/java_home -v 11.0)
+# set Java home if javahome exists
+[ -x "$(command -v /usr/libexec/java_home)" ] &&
+    export JAVA_HOME=$(/usr/libexec/java_home -v 11.0)
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/opt/homebrew/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
