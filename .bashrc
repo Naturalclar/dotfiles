@@ -1,3 +1,9 @@
+# Change prompt
+# \e[0;32m changes color. 0 represents weight, 32 represents color
+# \u indicates username
+# \s indicates shell name
+export PS1="\e[0;32m╭─ \u> \s\n╰─\e[1;32m\$ \e[0m"
+
 # git alias
 alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
