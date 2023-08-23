@@ -23,6 +23,7 @@ case "${OS}" in
         )
     ;;
     Linux*)
+        . "$HOME/.asdf/asdf.sh"
     ;;
 esac
 
