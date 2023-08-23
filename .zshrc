@@ -137,9 +137,11 @@ alias zshconfig="code ~/.zshrc"
 alias sz="source ~/.zshrc"
 
 # vim
-alias vim="nvim"
-alias vi="nvim"
-alias v="nvim"
+if command -v nvim &> /dev/null; then
+  alias vim="nvim"
+  alias vi="nvim"
+  alias v="nvim"
+fi
 
 #alias for peco
 alias pf="peco --initial-filter=Fuzzy"
