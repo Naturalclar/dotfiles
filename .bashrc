@@ -39,3 +39,10 @@ alias gst="git status"
 alias gsu="git stash -u"
 # origin head (default branch) を最新の状態にする
 alias gitsync="git remote set-head origin --auto"
+
+case "${OS}" in
+    Linux*)
+        # asdf config
+        . "$HOME/.asdf/asdf.sh"
+    ;;
+esac
