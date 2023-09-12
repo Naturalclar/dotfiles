@@ -24,6 +24,8 @@ case "${OS}" in
     ;;
     Linux*)
         . "$HOME/.asdf/asdf.sh"
+        # Allow using ssh-add command
+        eval "$(ssh-agent)"
     ;;
 esac
 
