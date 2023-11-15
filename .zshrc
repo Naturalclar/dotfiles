@@ -10,19 +10,14 @@ OS=`uname`
 # Set option depending on OS
 case "${OS}" in
     Darwin*)
-        # Path to arm64 homebrew
-        export PATH="/opt/homebrew/bin:$PATH"
-        # Path to asdf
-        export ASDF_DIR="/opt/homebrew/Cellar/asdf/0.11.2/libexec"
-        [ -s "$ASDF_DIR/asdf.sh" ] && \. "$ASDF_DIR/asdf.sh"
-        [ -s "$ASDF_DIR/etc/bash_completion.d/asdf.bash" ] && \. "$ASDF_DIR/etc/bash_completion.d/asdf.bash"
-        # asdf config
-        fpath=(
-          $(brew --prefix asdf)/etc/bash_completion.d
-          $fpath
-        )
+        # ASDF config - expected to be cloned from git
+        export ASDF_DIR="$HOME/.asdf"
+        # initialize asdf
+        . "$HOME/.asdf/asdf.sh"
     ;;
     Linux*)
+        # ASDF config - expected to be cloned from git
+        export ASDF_DIR="$HOME/.asdf"
         . "$HOME/.asdf/asdf.sh"
         # Allow using ssh-add command
         eval "$(ssh-agent)"
@@ -349,7 +344,3 @@ export PATH="$PNPM_HOME:$PATH"
 [ -x "$(command -v /usr/libexec/java_home)" ] &&
     export JAVA_HOME=$(/usr/libexec/java_home -v 11.0)
 
-# ASDF config - expected to be cloned from git
-export ASDF_DIR="$HOME/.asdf"
-# initialize asdf
-. "$HOME/.asdf/asdf.sh"
