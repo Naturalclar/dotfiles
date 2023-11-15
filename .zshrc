@@ -349,6 +349,7 @@ export PATH="$PNPM_HOME:$PATH"
 [ -x "$(command -v /usr/libexec/java_home)" ] &&
     export JAVA_HOME=$(/usr/libexec/java_home -v 11.0)
 
+# ASDF config - expected to be cloned from git
 export ASDF_DIR="$HOME/.asdf"
 # initialize asdf
 . "$HOME/.asdf/asdf.sh"
