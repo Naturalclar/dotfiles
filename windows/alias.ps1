@@ -33,3 +33,9 @@ Function gcb {
 Function gco {
     git switch $args
 }
+
+# Add Alias for gh cli commands
+Function ghview {
+    # Open the current repository in browser
+    gh repo view -w
+}
