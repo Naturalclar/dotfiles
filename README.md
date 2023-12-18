@@ -8,3 +8,19 @@ Easily set dotfiles using `Makefile`
 
 [mainworkflowbadge]: https://github.com/Naturalclar/dotfiles/workflows/Main%20workflow/badge.svg
 [githubactions]: https://github.com/Naturalclar/dotfiles/actions
+
+## Mac or Linux
+
+Run `make` to automatically set all dotfiles to `$HOME`
+
+```
+make
+```
+
+## Windows
+
+Run `bootstrap.ps1` to setup configuration for PowerShell
+
+```
+./bootstrap.ps1
+```
