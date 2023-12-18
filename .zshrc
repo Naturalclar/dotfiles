@@ -21,8 +21,26 @@ case "${OS}" in
         . "$HOME/.asdf/asdf.sh"
         # Allow using ssh-add command
         eval "$(ssh-agent)"
+        # Check if required commands are installed
+      if ! command -v asdf &> /dev/null; then
+        echo "asdf is not installed"
+        echo "git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1"
+        echo "For additional guides, check: https://asdf-vm.com/guide/getting-started.html"
+      fi
+      if ! command -v ghq &> /dev/null; then
+        echo "ghq is not installed"
+        echo "asdf plugin add ghq"
+        echo "asdf install ghq latest"
+        echo "For additional guides, check: https://github.com/x-motemen/ghq"
+      fi
+      if ! command -v peco &> /dev/null; then
+        echo "peco is not installed"
+        echo "sudo apt install peco"
+        echo "For additional guides, check: https://github.com/peco/peco"
+      fi
     ;;
 esac
+
 
 # Init direnv if it exists
 if command -v direnv &> /dev/null; then
