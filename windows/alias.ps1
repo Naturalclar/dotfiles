@@ -33,6 +33,17 @@ Function gcb {
 Function gco {
     git switch $args
 }
+Function get_default_branch {
+    git remote show origin | Select-String "HEAD branch" | ForEach-Object { $_.ToString().Split(":")[1].Trim() }
+}
+Function gcod {
+    # git switch to default branch
+    git switch $(get_default_branch)
+}
+Function gsu {
+    # git stash
+    git stash -u
+}
 
 # Add Alias for gh cli commands
 Function ghview {
