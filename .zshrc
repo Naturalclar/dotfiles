@@ -27,6 +27,12 @@ case "${OS}" in
         echo "git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.13.1"
         echo "For additional guides, check: https://asdf-vm.com/guide/getting-started.html"
       fi
+      if ! command -v node &> /dev/null; then
+        echo "node is not installed"
+        echo "asdf plugin add nodejs"
+        echo "asdf install nodejs latest"
+        echo "For additional guides, check: https://github.com/asdf-vm/asdf-nodejs"
+      fi
       if ! command -v ghq &> /dev/null; then
         echo "ghq is not installed"
         echo "asdf plugin add ghq"

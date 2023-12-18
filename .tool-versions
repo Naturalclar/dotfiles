@@ -3,3 +3,4 @@ python 3.10.8
 ghq 1.4.2
 yarn 1.22.19
 java adoptopenjdk-11.0.20+101
+nodejs 20.10.0
