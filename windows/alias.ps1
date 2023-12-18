@@ -25,7 +25,7 @@ Function get_current_branch {
     git branch --show-current
 }
 Function gpcb {
-    git push origin $(get_current_branch)
+    git push origin $(get_current_branch) $args
 }
 Function gcb {
     git switch -c $args
