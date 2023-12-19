@@ -5,7 +5,7 @@ Set-Alias -Name which -Value Get-Command
 Set-Alias -Name touch -Value New-Item
 
 # Add Alias to run PowerShell
-Set-Alias -Name psh -Value powershell.exe
+Set-Alias -Name psh -Value pwsh
 
 # Add Alias for git commands
 Set-Alias -Name g -Value git
