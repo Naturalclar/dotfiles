@@ -4,6 +4,9 @@ Set-Alias -Name which -Value Get-Command
 # Add Alias for touch
 Set-Alias -Name touch -Value New-Item
 
+# Add Alias for open
+Set-Alias -Name open -Value Invoke-Item
+
 # Add Alias to run PowerShell
 Set-Alias -Name psh -Value pwsh
 
