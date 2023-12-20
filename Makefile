@@ -14,7 +14,18 @@ list: # Show dotfiles in this repository
 dotfiles: # Create symlinks of dotfiles to home directory
 	@echo 'dotfiles - Setting simlinks of dotfiles in HOME directory'
 	@echo '------------------------'
+# if using macos
+ifeq ($(shell uname),Darwin)
 	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+endif
+# if using linux
+ifeq ($(shell uname),Linux)
+	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+endif
+# if using windows
+ifeq ($(shell uname -o),Msys)
+	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) ~/$(val);)
+endif
 	@echo '------------------------'
 
 config: # Create symlinks of .config at home directory
