@@ -47,9 +47,26 @@ Function gsu {
     # git stash
     git stash -u
 }
+Function gdiff {
+    # git diff
+    git diff $args
+}
 
 # Add Alias for gh cli commands
 Function ghview {
-    # Open the current repository in browser
-    gh repo view -w
+    # Open the current repository or specified repository in browser
+    gh repo view -w $args
 }
+
+# Add alias for ghq + peco
+Function ws {
+    Set-Location $(ghq list --full-path | peco)
+}
+
+# Add alias for ghq clone
+Function get {
+    ghq get $args
+}
+
+# Add alias for terraform
+Set-Alias -Name tf -Value terraform

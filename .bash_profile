@@ -48,7 +48,7 @@ export PS1="\e[0;32m╭─ \u> \s \w\n╰─\e[1;32m\$ \e[0m"
 alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 
-
+# git aliases
 alias g="git"
 alias gaa="git add --all"
 alias gbr="git branch"
@@ -83,6 +83,10 @@ alias gitsync="git remote set-head origin --auto"
 # alias for gh cli
 alias ghview="gh repo view --web"
 
+# alias for ghq
+alias ws='cd $(ghq list --full-path | peco)'
+
+# setup for each os
 case "${OS}" in
     Linux*)
         # asdf config
@@ -93,3 +97,4 @@ case "${OS}" in
         eval "$(direnv hook bash)"
     ;;
 esac
+

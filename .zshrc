@@ -262,8 +262,6 @@ alias makepr="gh pr create"
 alias fork="gh repo fork"
 
 # npx
-alias monow="npx monow"
-alias mwb="npx monow -b build"
 alias upset="npx git-upstream --set"
 
 # ghq
@@ -274,9 +272,6 @@ alias rimraf="rm -rf"
 
 # cd to ghq directories
 alias ws='cd $(ghq list --full-path | pf)'
-
-#open code and github
-alias ch="hub browse && code ."
 
 # check if code-insider is available, and open code-insider instead of code if it exists
 if command -v code-insiders >/dev/null 2>&1; then
