@@ -9,6 +9,9 @@ function prompt {
     if ($has_diff -eq "True") {
         $ForegroundColor = "Red"
     }
+    else {
+        $ForegroundColor = "Green"
+    }
     Write-Host "$directoryName [$branch] " -NoNewline -ForegroundColor $ForegroundColor
     return "PS> "
 }
