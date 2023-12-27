@@ -5,7 +5,7 @@ function prompt {
     $branch = $(get_current_branch)
 
     # Check if there are any changes in the current directory without showing them
-    $has_diff = $(git status --porcelain | Select-String -Pattern '\S' > $null; Write-Output $?)
+    $has_diff = $null -ne $(git status --porcelain)
     if ($has_diff -eq "True") {
         $ForegroundColor = "Red"
     }
