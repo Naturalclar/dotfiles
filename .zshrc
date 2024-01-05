@@ -78,8 +78,7 @@ export PATH="$HOME/.local/bin:$PATH"
 # imports
 autoload -Uz vcs_info
 
-## displayed at prompt
-precmd () { vcs_info }
+
 
 # Path to dotfiles repository
 export DOTFILES="/Users/`whoami`/.ghq/github.com/Naturalclar/dotfiles"
@@ -372,5 +371,8 @@ function asdf_update_java_home {
   fi
 }
 
-precmd() { asdf_update_java_home; }
+precmd() { 
+  asdf_update_java_home; 
+  vcs_info;
+}
 # end set JAVA_HOME
