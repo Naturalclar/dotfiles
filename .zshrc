@@ -353,6 +353,10 @@ export PATH="/usr/local/opt/bison@2.7/bin:$PATH"
 end_time=$(strftime '%s%.')
 echo $((end_time - start_time))
 
+# keep awake
+alias awakeon="sudo pmset -a disablesleep 1"
+alias awakeoff="sudo pmset -a disablesleep 0"
+
 # pnpm
 export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
