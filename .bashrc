@@ -40,6 +40,9 @@ alias gsu="git stash -u"
 # origin head (default branch) を最新の状態にする
 alias gitsync="git remote set-head origin --auto"
 
+# alias for ghq
+alias ws='cd $(ghq list --full-path | peco)'
+
 case "${OS}" in
     Linux*)
         # asdf config
