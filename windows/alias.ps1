@@ -68,5 +68,8 @@ Function get {
     ghq get $args
 }
 
+# Add alias for nvim
+Set-Alias -Name vim -Value nvim
+
 # Add alias for terraform
 Set-Alias -Name tf -Value terraform
