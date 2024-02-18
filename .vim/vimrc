@@ -1,3 +1,5 @@
+" Load python3 is available to enable plugins that needs python3
+call has('python3')
 " Use space instead of tab
 set expandtab
 " Size of tab
