@@ -44,6 +44,7 @@ case "${OS}" in
         echo "sudo apt install peco"
         echo "For additional guides, check: https://github.com/peco/peco"
       fi
+      export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
     ;;
 esac
 
@@ -380,3 +381,4 @@ precmd() {
   vcs_info;
 }
 # end set JAVA_HOME
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
