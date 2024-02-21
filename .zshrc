@@ -14,6 +14,8 @@ case "${OS}" in
         export ASDF_DIR="$HOME/.asdf"
         # initialize asdf
         . "$HOME/.asdf/asdf.sh"
+        # Add Brew Path
+        export PATH="/opt/homebrew/bin:$PATH"
     ;;
     Linux*)
         # ASDF config - expected to be cloned from git
