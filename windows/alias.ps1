@@ -69,6 +69,7 @@ Function get {
 }
 
 # Add alias for nvim
+# TODO: check if nvim exists before setting this alias
 Set-Alias -Name vim -Value nvim
 
 # Add alias for terraform
