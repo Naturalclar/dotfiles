@@ -45,6 +45,7 @@ Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'github/copilot.vim'
+Plug 'udalov/kotlin-vim'
 call plug#end()
 
 " Set ale fixer
