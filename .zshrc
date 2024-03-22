@@ -165,7 +165,6 @@ alias sz="source ~/.zshrc"
 if command -v nvim &> /dev/null; then
   alias vim="nvim"
   alias vi="nvim"
-  alias v="nvim"
 fi
 
 #alias for peco
@@ -330,6 +329,14 @@ alias cl="clasp"
 
 # opam configuration
 test -r "$HOME/.opam/opam-init/init.zsh" && . "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null || true
+
+# peco commands
+
+# chose files to add with git add
+alias gap="git ls-files -m | peco | xargs git add"
+
+# chose files to open with vim
+alias v="git ls-files | peco | xargs -o vim"
 
 # peco history selection
 function peco-history-selection() {
