@@ -192,6 +192,7 @@ alias gdm="git branch --merged|egrep -v '\*|develop|master|release'|xargs git br
 alias gl="git log"
 alias gll="git log --pretty=oneline" # display git logs in a single line
 alias glog="git log"
+alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 alias gpcb='git push origin $(git_current_branch)'
 alias gpo="git push origin"
 alias gpom="git push origin -u master"
@@ -209,13 +210,11 @@ alias gst="git status"
 alias gsu="git stash -u"
 # origin head (default branch) を最新の状態にする
 alias gitsync="git remote set-head origin --auto"
-
 alias bl="git branch"
 alias branch="git branch"
 alias pull="git pull"
 alias up="git pull upstream master"
 alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
-alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 
 
 galias() { alias | grep 'git'; }
