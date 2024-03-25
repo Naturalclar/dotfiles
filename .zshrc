@@ -339,6 +339,11 @@ alias gap="git ls-files -m | peco | xargs git add"
 # chose files to open with vim
 alias v="git ls-files | peco | xargs -o vim"
 
+# search files with given keyword and open with vim
+vg() {
+    rg -l "$1" | peco | xargs -o vim
+}
+
 # peco history selection
 function peco-history-selection() {
     BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
