@@ -194,6 +194,7 @@ alias gll="git log --pretty=oneline" # display git logs in a single line
 alias glog="git log"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 alias gpcb='git push origin $(git_current_branch)'
+alias gpcbf='git push origin $(git_current_branch) --force-with-lease'
 alias gpo="git push origin"
 alias gpom="git push origin -u master"
 alias gpull="git pull"
