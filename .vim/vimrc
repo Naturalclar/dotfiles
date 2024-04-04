@@ -19,13 +19,23 @@ set hlsearch
 " Hide current mode (replaced by lightline)
 set noshowmode
 set laststatus=2
-
+" Set leader to space key
+let mapleader = " "
 " File grep settings
 if executable('rg')
 	let &grepprg = 'rg --vimgrep --hidden'
 	set grepformat=%f:%l:%c:%m
 endif
+" Setup fonts
+set guifont=Droid\ Sans\ Mono\ for\ Powerline\ Nerd\ Font\ Complete\ 12
+set encoding=utf-8
 
+let g:WebDevIconsNerdTreeBeforeGlyphPadding = ""
+let g:WebDevIconsUnicodeDecorateFolderNodes = v:true
+" after a re-source, fix syntax matching issues (concealing brackets):
+if exists('g:loaded_webdevicons')
+  call webdevicons#refresh()
+endif
 " PHP settings
 augroup PHP
 	autocmd!
@@ -46,6 +56,17 @@ Plug 'junegunn/fzf.vim'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'github/copilot.vim'
 Plug 'udalov/kotlin-vim'
+" Dependencies for telescope
+Plug 'nvim-lua/plenary.nvim'
+" For fuzzy search
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
+" For treesitter
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+" Dependency for nvim-tree
+Plug 'nvim-tree/nvim-web-devicons'
+" File explorer
+Plug 'nvim-neo-tree/neo-tree.nvim'
+Plug 'MunifTanjim/nui.nvim'
 call plug#end()
 
 " Set ale fixer
@@ -55,7 +76,6 @@ let g:ale_linters = {
       \ 'rust': ['analyzer'],
       \}
 let g:ale_fix_on_save = 1
-
 " Set rust analyzer
 if executable('rust-analyzer')
 	au User lsp_setup call lsp#register_server({
