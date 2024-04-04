@@ -10,3 +10,5 @@ Install plugins by running `:PlugInstall`
 
 Setup copilot by running `:Copilot setup`
 
+## Install Fonts
+https://github.com/ryanoasis/nerd-fonts
