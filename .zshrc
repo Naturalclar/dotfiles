@@ -16,6 +16,7 @@ case "${OS}" in
         . "$HOME/.asdf/asdf.sh"
         # Add Brew Path
         export PATH="/opt/homebrew/bin:$PATH"
+        export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
     ;;
     Linux*)
         # ASDF config - expected to be cloned from git
