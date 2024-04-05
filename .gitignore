@@ -1,5 +1,7 @@
 zsh-auto-suggestions
 zsh-syntax-highlighting
 *.swp
-.vim/.netrwhist
+.netrwhist
+lazyvim.json
+lazy-lock.json
 

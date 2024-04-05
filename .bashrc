@@ -49,3 +49,4 @@ case "${OS}" in
         . "$HOME/.asdf/asdf.sh"
     ;;
 esac
+. "$HOME/.cargo/env"

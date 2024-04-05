@@ -54,19 +54,7 @@ Plug 'vim-vdebug/vdebug'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
-Plug 'github/copilot.vim'
 Plug 'udalov/kotlin-vim'
-" Dependencies for telescope
-Plug 'nvim-lua/plenary.nvim'
-" For fuzzy search
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
-" For treesitter
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-" Dependency for nvim-tree
-Plug 'nvim-tree/nvim-web-devicons'
-" File explorer
-Plug 'nvim-neo-tree/neo-tree.nvim'
-Plug 'MunifTanjim/nui.nvim'
 call plug#end()
 
 " Set ale fixer
