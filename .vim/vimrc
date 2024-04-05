@@ -43,20 +43,6 @@ augroup PHP
 	autocmd BufWritePost {*.php} echom system("php -l ".expand('%'))
 augroup END
 
-call plug#begin('~/.vim/plugged')
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'dense-analysis/ale'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'elixir-editors/vim-elixir'
-Plug 'tpope/vim-fugitive'
-Plug 'itchyny/lightline.vim'
-Plug 'vim-vdebug/vdebug'
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
-Plug 'udalov/kotlin-vim'
-call plug#end()
-
 " Set ale fixer
 let b:ale_fixers = ['prettier', 'eslint']
 " Set ale linter
