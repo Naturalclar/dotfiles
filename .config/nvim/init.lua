@@ -2,6 +2,8 @@ vim.opt.runtimepath:prepend("~/.vim")
 vim.opt.runtimepath:append("~/.vim/after")
 vim.cmd('source ~/.vim/vimrc')
 
+require("config.lazy")
+
 -- Setting up telescope
 require('telescope').setup{
   defaults = {
@@ -23,6 +25,7 @@ require('telescope').setup{
   },
 }
 local builtin = require('telescope.builtin')
+vim.keymap = vim.keymap or {}
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
@@ -52,4 +55,6 @@ local config = {
     },
   }
 } 
-require("neo-tree").setup(config)
+
+
+
