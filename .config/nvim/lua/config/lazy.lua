@@ -17,13 +17,23 @@ require("lazy").setup({
     {
       "LazyVim/LazyVim",
       import = "lazyvim.plugins",
-      opts = {
-        news = {
-          lazyvim = true,
-          neovim = true,
-        },
-      },
     },
+    { import = "lazyvim.plugins.extras.linting.eslint" },
+    { import = "lazyvim.plugins.extras.formatting.prettier" },
+    { import = "lazyvim.plugins.extras.lang.typescript" },
+    { import = "lazyvim.plugins.extras.lang.rust" },
+    { import = "lazyvim.plugins.extras.lang.tailwind" },
+    { import = "lazyvim.plugins.extras.coding.copilot" },
     { import = "plugins" },
+  },
+  defaults = {
+    lazy = false,
+    version = false,
+  },
+  dev = {
+    path = "~/.ghq/github.com",
+  },
+  checker = {
+    enabled = true,
   },
 })
