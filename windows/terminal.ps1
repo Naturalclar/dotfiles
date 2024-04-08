@@ -7,11 +7,13 @@ function prompt {
     # Check if there are any changes in the current directory without showing them
     $has_diff = $null -ne $(git status --porcelain)
     if ($has_diff -eq "True") {
-        $ForegroundColor = "Red"
+        $branchColor = "Red"
     }
     else {
-        $ForegroundColor = "Green"
+        $branchColor = "Green"
     }
-    Write-Host "$directoryName [$branch] " -NoNewline -ForegroundColor $ForegroundColor
+    Write-Host "$directoryName " -NoNewline -ForegroundColor "Magenta" 
+    Write-Host "[$branch] " -NoNewline -ForegroundColor $branchColor
     return "PS> "
 }
+
