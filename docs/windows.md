@@ -14,4 +14,17 @@ scoop install mingw
 ```bash
 scoop install fzf
 ```
+
+## Setting up Widnows Terminal to be tmux like with tabs
+
+Open `Settings` -> `Actions`
+Add new actions with the following settings:
+`Move focus left` : `Ctrl + H`
+`Move focus down` : `Ctrl + J`
+`Move focus up` : `Ctrl + K`
+`Move focus right` : `Ctrl + L`
+`Duplicate pane` : `Ctrl + 5`
+`Duplicate pane` : `Ctrl + t`
+`Duplicate pane` : `Ctrl + '`
+
 ````
