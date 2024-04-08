@@ -12,8 +12,11 @@ function prompt {
     else {
         $branchColor = "Green"
     }
+    Write-Host "╭─ " -NoNewline -ForegroundColor "DarkGreen"
     Write-Host "$directoryName " -NoNewline -ForegroundColor "Magenta" 
-    Write-Host "[$branch] " -NoNewline -ForegroundColor $branchColor
+    Write-Host "[$branch] " -ForegroundColor $branchColor
+    Write-Host "╰─$ " -NoNewline -ForegroundColor "DarkGreen"
+
     return "PS> "
 }
 
