@@ -16,6 +16,9 @@ return {
     end,
   },
 
+  {
+    "williamboman/mason-lspconfig.nvim",
+  },
   -- lsp servers
   {
     "neovim/nvim-lspconfig",
