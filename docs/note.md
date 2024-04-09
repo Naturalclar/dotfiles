@@ -2,6 +2,9 @@
 
 `dd` - delete line
 `yy` - yank line
+`gg` - move cursor to start of file
+`G` - move cursor to end of file
+`/` - search
 `u` - undo
 `i` - enter instert mode
 `o` - insert line
@@ -10,7 +13,10 @@
 `0` - move cursor to start of line
 `:s/foo/bar/` - replace the first `foo` in current line to `bar`
 `:s/foo/bar/g` - replace all instances of `foo` in current line to `bar`
+`:%s/foo/bar/g` - replace all instances of `foo` in current file to `bar`
 `:m-2` - move current line to 2 lines above
+`:vs` - create vertical split
+`:sp` - create horitontal split
 
 ### Code actions on nvim
 
@@ -31,6 +37,7 @@ You can enter `:&` to repeat previous sed command
 ### LazyVim Commands
 
 `]d` - move to next diagnostic
+`<leader>bb` - switch tabs
 
 ### Open terminal on vim
 
