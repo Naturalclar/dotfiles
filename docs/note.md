@@ -1,5 +1,6 @@
 ### Basic Commands
 
+`dw` - copy word
 `dd` - delete line
 `yy` - yank line
 `gg` - move cursor to start of file
