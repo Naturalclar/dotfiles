@@ -12,12 +12,15 @@
 `p` - paste line
 `$` - move cursor to end of line
 `0` - move cursor to start of line
+`yyp` - copy current line to below line
 `:s/foo/bar/` - replace the first `foo` in current line to `bar`
 `:s/foo/bar/g` - replace all instances of `foo` in current line to `bar`
 `:%s/foo/bar/g` - replace all instances of `foo` in current file to `bar`
 `:m-2` - move current line to 2 lines above
 `:vs` - create vertical split
 `:sp` - create horitontal split
+`yi"` - yank inside `""`
+`yi(` - yank inside `()`
 
 ### Code actions on nvim
 
