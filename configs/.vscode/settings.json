@@ -29,10 +29,10 @@
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-    "*.css": "postcss"
   },
   "liveshare.featureSet": "insiders",
   "files.associations": {
+    "*.css": "postcss"
   },
   "vim.leader": "<space>",
   "vim.smartRelativeLine": true,
