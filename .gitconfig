@@ -8,11 +8,13 @@
 	co = checkout
 	cb = checkout -b
 	cm = commit -m
+  cp = cherry-pick
 	aa = add --all
 	st = status
 	pop = stash pop
 	po = push origin
 	pom = push origin master
+  rb = rebase
 	
 [ghq]
 	root = "~/.ghq"

@@ -160,8 +160,8 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 # For a full list of active aliases, run `alias`.
 
 # alias
-alias zshconfig="code ~/.zshrc"
-alias sz="source ~/.zshrc"
+alias zshedit="vim ~/.zshrc"
+alias zshr="source ~/.zshrc"
 
 # vim
 if command -v nvim &> /dev/null; then
@@ -188,6 +188,7 @@ alias gcb="git switch -c"
 alias gco="git checkout"
 alias gcod='git switch $(get_default_branch)'
 alias gcom="git switch master"
+alias gcp="git cherry-pick"
 alias gd="git diff"
 alias gdiff="git diff"
 alias gdm="git branch --merged|egrep -v '\*|develop|master|release'|xargs git branch -d" # delete merged branches
@@ -206,6 +207,7 @@ alias gpsub="git submodule update --init --recursive" #clones submodules
 alias gptag="git push origin --tags"
 alias gpum="git pull upstream master"
 alias grh="git restore --worktree"
+alias grb="git rebase"
 alias gsc="git switch -c"
 alias gsd="git switch develop"
 alias gsm="git switch master"
@@ -253,6 +255,7 @@ yalias() { alias | grep 'yarn'; }
 alias p="pnpm"
 alias pb="pnpm build"
 alias ph="pnpm start"
+alias pi="pnpm install"
 alias add="pnpm add"
 alias addd="pnpm add -D"
 alias addg="pnpm global add"
@@ -302,7 +305,7 @@ alias cpdf='cp -r $(ls -a | pf) $DOTFILES'
 # list npm scripts and output chosen script
 list() { cat package.json | jq .scripts |  sed '1d' | sed '$d' | pf | sed 's/: ".*".//g' | sed 's/"//g'; }
 alias n='yarn $(list)'
-
+alias psls="cat package.json | jq .scripts | sed '1d' | sed '$d'"
 # alias for npm
 alias nr="npm run"
 
