@@ -29,10 +29,34 @@
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "*.css": "postcss"
   },
   "liveshare.featureSet": "insiders",
   "files.associations": {
-    "*.css": "postcss"
   },
+  "vim.leader": "<space>",
+  "vim.smartRelativeLine": true,
+  "vim.normalmodekeybindings": [
+    {
+      "before": ["<leader>", "w"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      "before": ["<C-h>"],
+      "commands": ["workbench.action.focusLeftGroup"]
+    },
+    {
+      "before": ["<C-j>"],
+      "commands": ["workbench.action.focusDownGroup"]
+    },
+    {
+      "before": ["<C-k>"],
+      "commands": ["workbench.action.focusUpGroup"]
+    },
+    {
+      "before": ["<C-l>"],
+      "commands": ["workbench.action.focusRightGroup"]
+    }
+  ],
   "workbench.activityBar.visible": true
 }
