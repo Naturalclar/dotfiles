@@ -13,6 +13,7 @@ return {
         "typescript-language-server",
         "css-lsp",
         "biome",
+        "kotlin-language-server",
       })
     end,
   },

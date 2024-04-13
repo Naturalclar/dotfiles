@@ -15,6 +15,7 @@
 `:s/foo/bar/` - replace the first `foo` in current line to `bar`
 `:s/foo/bar/g` - replace all instances of `foo` in current line to `bar`
 `:%s/foo/bar/g` - replace all instances of `foo` in current file to `bar`
+`:.,+2s/foo/bar/g` - replace all instances of `foo` in current and following 2 lines to `bar`
 `:m-2` - move current line to 2 lines above
 `:vs` - create vertical split
 `:sp` - create horitontal split
