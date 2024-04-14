@@ -4,4 +4,6 @@ zsh-syntax-highlighting
 .netrwhist
 lazyvim.json
 lazy-lock.json
+.DS_Store
+
 
