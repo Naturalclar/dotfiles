@@ -52,3 +52,13 @@ You can enter `:&` to repeat previous sed command
 ### Open terminal on vim
 
 `<C-/>` - opens terminal inside vim session
+
+### Oil.nvim
+
+`-` - open oil.nvim
+
+#### Inside Oil.nvim
+
+`<CR>` - open selected file or directory
+`-` - go up to previous directory
+`g.` - show hidden files
