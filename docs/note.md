@@ -22,6 +22,11 @@
 `:sp` - create horitontal split
 `yi"` - yank inside `""`
 `yi(` - yank inside `()`
+`K` - show signature help. similar to hovering code in vscode
+
+### Vim Visible Multi
+
+`<C-n>` - select multiple cursors
 
 ### Code actions on nvim
 
