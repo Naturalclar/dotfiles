@@ -169,6 +169,9 @@ if command -v nvim &> /dev/null; then
   alias vi="nvim"
 fi
 
+# lazygit
+alias lg="lazygit"
+
 #alias for peco
 alias pf="peco --initial-filter=Fuzzy"
 
