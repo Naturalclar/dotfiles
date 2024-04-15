@@ -1,5 +1,5 @@
-" Load python3 is available to enable plugins that needs python3
-call has('python3')
+let g:loaded_python3_provider = 0
+let g:loaded_python_provider = 0
 " Use space instead of tab
 set expandtab
 " Size of tab
