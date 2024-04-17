@@ -5,7 +5,7 @@
 `yy` - yank line
 `gg` - move cursor to start of file
 `G` - move cursor to end of file
-`/` - search
+`/` - search for text. `n` to go to the next search result
 `u` - undo
 `i` - enter instert mode
 `o` - insert line
@@ -22,7 +22,10 @@
 `:sp` - create horitontal split
 `yi"` - yank inside `""`
 `yi(` - yank inside `()`
+`2yi(` - yank inside `()` including `()`
 `K` - show signature help. similar to hovering code in vscode
+`dt:` - delete up till the next `:` excluding `:`
+`df:` - delete up till the next `:` including `:`
 
 ### Vim Visible Multi
 
