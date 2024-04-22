@@ -267,6 +267,7 @@ alias lint="pnpm lint"
 alias format="pnpm format"
 alias tc="pnpm type-check"
 alias type-check="yarn type-check"
+alias ptc="pnpm type:check"
 
 # github cli
 alias getpr="gh pr checkout"
