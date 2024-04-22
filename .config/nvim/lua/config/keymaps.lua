@@ -10,3 +10,6 @@ local function map(mode, lhs, rhs, opts)
 end
 map("n", "<leader>%", "<C-W>v", { desc = "Split Window Right" })
 map("n", '<leader>"', "<C-W>s", { desc = "Split Window Down" })
+
+-- notifications
+map("n", "<leader>nn", "<cmd>Telescope notify<CR>", { desc = "Show notifications" })
