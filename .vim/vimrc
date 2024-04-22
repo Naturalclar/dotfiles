@@ -60,4 +60,4 @@ if executable('rust-analyzer')
 endif
 
 " set ! command to run zsh
-let &shell = '/bin/zsh -i'
+set shell=/bin/zsh
