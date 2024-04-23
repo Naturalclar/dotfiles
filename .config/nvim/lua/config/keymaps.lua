@@ -13,3 +13,9 @@ map("n", '<leader>"', "<C-W>s", { desc = "Split Window Down" })
 
 -- notifications
 map("n", "<leader>nn", "<cmd>Telescope notify<CR>", { desc = "Show notifications" })
+
+-- motions
+map("n", "<C-d>", "<C-d>zz", { desc = "Scroll down" })
+map("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
+map("n", "n", "nzzzv", { desc = "Next search result" })
+map("n", "N", "Nzzzv", { desc = "Prev search result" })
