@@ -12,6 +12,7 @@
 `p` - paste line
 `$` - move cursor to end of line
 `0` - move cursor to start of line
+`_` - move curtor to beggining of line
 `yyp` - copy current line to below line
 `:s/foo/bar/` - replace the first `foo` in current line to `bar`
 `:s/foo/bar/g` - replace all instances of `foo` in current line to `bar`
@@ -26,6 +27,15 @@
 `K` - show signature help. similar to hovering code in vscode
 `dt:` - delete up till the next `:` excluding `:`
 `df:` - delete up till the next `:` including `:`
+`%` - move to matching bracket/parenthesis
+
+### Select multiple lines
+
+`Ctrl + V` to enter visual block mode
+Select lines you want to edit
+`Shidt + I` to enter insert mode
+Enter text you want to insert in the first line
+Press `esc` to apply changes to all lines
 
 ### Vim Visible Multi
 
