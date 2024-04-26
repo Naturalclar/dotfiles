@@ -33,7 +33,7 @@
 
 `Ctrl + V` to enter visual block mode
 Select lines you want to edit
-`Shidt + I` to enter insert mode
+`Shift + I` to enter insert mode
 Enter text you want to insert in the first line
 Press `esc` to apply changes to all lines
 
