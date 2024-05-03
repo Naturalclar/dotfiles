@@ -172,8 +172,8 @@ alias lynx="lynx -vikeys"
 
 # scripts
 alias scripts="cd ~/.scripts"
-alias ?="duck"
-alias ??="google"
+alias '?'="duck"
+alias '??'="google"
 
 
 # vim
