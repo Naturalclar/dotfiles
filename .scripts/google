@@ -1,0 +1,4 @@
+#!/bin/sh
+# ref: https://github.com/rwxrob/dot
+url="https://google.com/search?q=$(urlencode "$*")"
+exec lynx -vikeys $url
