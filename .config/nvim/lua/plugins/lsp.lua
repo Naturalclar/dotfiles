@@ -14,6 +14,7 @@ return {
         "css-lsp",
         "biome",
         "kotlin-language-server",
+        "gopls",
       })
     end,
   },
@@ -81,6 +82,19 @@ return {
           settings = {
             yaml = {
               keyOrdering = false,
+            },
+          },
+        },
+        gopls = {
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+                shadow = true,
+                unreachable = false,
+              },
+              staticcheck = true,
+              gofumpt = true,
             },
           },
         },
