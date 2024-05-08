@@ -24,10 +24,13 @@
 `yi"` - yank inside `""`
 `yi(` - yank inside `()`
 `2yi(` - yank inside `()` including `()`
+`cit` - remote contents inside tag and start insert mode
 `K` - show signature help. similar to hovering code in vscode
 `dt:` - delete up till the next `:` excluding `:`
 `df:` - delete up till the next `:` including `:`
 `%` - move to matching bracket/parenthesis
+
+`Shift + V` + `G` + `y` - Select All contents of a file
 
 ### Select multiple lines
 
