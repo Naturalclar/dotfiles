@@ -82,6 +82,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # Path to Poetry
 export PATH="$HOME/.local/bin:$PATH"
 
+# Path to scripts
+export PATH="$HOME/.scripts:$PATH"
+
 # imports
 autoload -Uz vcs_info
 
@@ -163,6 +166,15 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 # alias
 alias zshedit="vim ~/.zshrc"
 alias zshr="source ~/.zshrc"
+
+# lynx
+alias lynx="lynx -vikeys"
+
+# scripts
+alias scripts="cd ~/.scripts"
+alias '?'="duck"
+alias '??'="google"
+
 
 # vim
 if command -v nvim &> /dev/null; then

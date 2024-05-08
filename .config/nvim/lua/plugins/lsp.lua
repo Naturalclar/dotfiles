@@ -14,6 +14,9 @@ return {
         "css-lsp",
         "clangd", -- C/C++
         "biome", -- JS/TS linter/formatter
+        "biome",
+        "kotlin-language-server",
+        "gopls",
       })
     end,
   },
@@ -81,6 +84,19 @@ return {
           settings = {
             yaml = {
               keyOrdering = false,
+            },
+          },
+        },
+        gopls = {
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+                shadow = true,
+                unreachable = false,
+              },
+              staticcheck = true,
+              gofumpt = true,
             },
           },
         },

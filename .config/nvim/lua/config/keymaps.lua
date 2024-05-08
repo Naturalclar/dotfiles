@@ -19,3 +19,9 @@ map("n", "<C-d>", "<C-d>zz", { desc = "Scroll down" })
 map("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
 map("n", "n", "nzzzv", { desc = "Next search result" })
 map("n", "N", "Nzzzv", { desc = "Prev search result" })
+
+-- register
+map("n", "<leader>p", '"0p', { desc = "Paste from register 0" })
+map("x", "<leader>p", '"0p', { desc = "Paste from register 0" })
+map("n", "P", '"*p', { desc = "Paste from clipboard" })
+map("x", "P", '"*p', { desc = "Paste from clipboard" })
