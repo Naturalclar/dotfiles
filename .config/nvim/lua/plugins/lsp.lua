@@ -14,8 +14,6 @@ return {
         "css-lsp",
         "clangd", -- C/C++
         "biome", -- JS/TS linter/formatter
-        "biome",
-        "kotlin-language-server",
         "gopls",
       })
     end,
