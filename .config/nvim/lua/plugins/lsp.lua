@@ -12,8 +12,8 @@ return {
         "tailwindcss-language-server",
         "typescript-language-server",
         "css-lsp",
-        "biome",
-        "kotlin-language-server",
+        "clangd", -- C/C++
+        "biome", -- JS/TS linter/formatter
       })
     end,
   },
