@@ -74,3 +74,6 @@ Set-Alias -Name vim -Value nvim
 
 # Add alias for terraform
 Set-Alias -Name tf -Value terraform
+
+# Add alias to startup komorebi
+Set-Alias -Name komorebi -Value komorebic start -c $Env:USERPROFILE\.komorebi.json --whkd
