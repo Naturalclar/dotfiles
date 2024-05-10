@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# set vim motion
+set -o vi
+
 # zmodload zsh/zprof
 zmodload zsh/datetime
 start_time=$(strftime '%s%.')
