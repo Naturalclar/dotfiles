@@ -27,6 +27,7 @@ case "${OS}" in
         . "$HOME/.asdf/asdf.sh"
         # Allow using ssh-add command
         eval "$(ssh-agent)"
+        export PATH="/snap/bin:$PATH"
         # Check if required commands are installed
       if ! command -v asdf &> /dev/null; then
         echo "asdf is not installed"
