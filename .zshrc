@@ -52,6 +52,7 @@ case "${OS}" in
       fi
       export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
       export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
+      export PATH=/snap/bin:$PATH
       # end set JAVA_HOME
       eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     ;;
