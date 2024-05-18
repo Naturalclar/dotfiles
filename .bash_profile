@@ -2,6 +2,9 @@
 if [ -f "/usr/local/bin/zsh" ]; then
   exec "/usr/local/bin/zsh"
 fi
+if [ -f "/usr/bin/zsh" ]; then
+  exec "/usr/bin/zsh"
+fi
 
 # Path to ruby
 export PATH="/usr/local/opt/ruby/bin:$PATH"
@@ -29,8 +32,8 @@ alias ws='cd $(ghq list --full-path | peco)'
 alias gbd='git branch -d $(git branch | peco)'
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 complete -C /opt/homebrew/bin/terraform terraform
 . "$HOME/.cargo/env"
@@ -42,7 +45,7 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 # \u indicates username
 # \s indicates shell name
 # \w indicates current directory
-export PS1="\e[0;32m╭─ \u> \s \w\n╰─\e[1;32m\$ \e[0m"
+export PS1="\e[0;32m╭─[\s] \w\n╰─\e[1;32m\$ \e[0m"
 
 # git alias
 alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
@@ -52,7 +55,6 @@ alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 alias g="git"
 alias gaa="git add --all"
 alias gbr="git branch"
-alias gbranch="git branch"
 alias gcm="git commit -m"
 alias gcb="git switch -c"
 alias gco="git checkout"
@@ -88,13 +90,15 @@ alias ws='cd $(ghq list --full-path | peco)'
 
 # setup for each os
 case "${OS}" in
-    Linux*)
-        # asdf config
-        . "$HOME/.asdf/asdf.sh"
-    ;;
-    Windows*)
-        # direnv config
-        eval "$(direnv hook bash)"
-    ;;
+Linux*)
+  # asdf config
+  . "$HOME/.asdf/asdf.sh"
+  export ASDF_DIR="$HOME/.asdf"
+  export PATH=/snap/bin:$PATH
+  export PATH="$HOME/.asdf/shims:$PATH"
+  ;;
+Windows*)
+  # direnv config
+  eval "$(direnv hook bash)"
+  ;;
 esac
-

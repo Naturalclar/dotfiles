@@ -2,12 +2,14 @@
 # \e[0;32m changes color. 0 represents weight, 32 represents color
 # \u indicates username
 # \s indicates shell name
-export PS1="\e[0;32m╭─ \u> \s\n╰─\e[1;32m\$ \e[0m"
+export PS1="\e[0;32m╭─[\s]\w\n╰─\e[1;32m\$ \e[0m"
 
+# nvim as vim
+alias v=nvim
+alias vim=nvim
 # git alias
 alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
-
 
 alias g="git"
 alias gaa="git add --all"
@@ -44,9 +46,9 @@ alias gitsync="git remote set-head origin --auto"
 alias ws='cd $(ghq list --full-path | peco)'
 
 case "${OS}" in
-    Linux*)
-        # asdf config
-        . "$HOME/.asdf/asdf.sh"
-    ;;
+Linux*)
+  # asdf config
+  . "$HOME/.asdf/asdf.sh"
+  ;;
 esac
 . "$HOME/.cargo/env"
