@@ -317,7 +317,7 @@ zle -N peco-workspace
 alias ws='cd $(ghq list --full-path | pf)'
 bindkey '^W' peco-workspace
 
-bindkey '^F' pmux
+bindkey -s '^F' "pmux\n"
 
 # check if code-insider is available, and open code-insider instead of code if it exists
 if command -v code-insiders >/dev/null 2>&1; then
