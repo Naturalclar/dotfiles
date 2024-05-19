@@ -297,6 +297,7 @@ alias repo="gh repo create --public"
 alias ghview="gh repo view -w"
 alias makepr="gh pr create"
 alias fork="gh repo fork"
+alias gpc="gh pr create"
 
 # npx
 alias upset="npx git-upstream --set"
