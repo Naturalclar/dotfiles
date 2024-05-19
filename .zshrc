@@ -167,9 +167,15 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
+function refresh() {
+  source ~/.zshrc
+  zle reset-prompt
+}
+zle -N refresh
 # alias
 alias zshedit="vim ~/.zshrc"
-alias zshr="source ~/.zshrc"
+bindkey '^R' refresh
+alias zshr=refresh
 
 # lynx
 alias lynx="lynx -vikeys"
@@ -302,7 +308,15 @@ alias get="ghq get"
 alias rimraf="rm -rf"
 
 # cd to ghq directories
+function peco-workspace() {
+  cd $(ghq list --full-path | peco)
+  zle reset-prompt
+}
+zle -N peco-workspace
 alias ws='cd $(ghq list --full-path | pf)'
+bindkey '^W' peco-workspace
+
+bindkey '^F' pmux
 
 # check if code-insider is available, and open code-insider instead of code if it exists
 if command -v code-insiders >/dev/null 2>&1; then
@@ -379,7 +393,7 @@ function peco-history-selection() {
 }
 
 zle -N peco-history-selection
-bindkey '^R' peco-history-selection
+bindkey '^Z' peco-history-selection
 
 autoload -Uz compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
