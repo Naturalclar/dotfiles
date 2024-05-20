@@ -72,6 +72,25 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
     { key = "w", mods = "LEADER", action = act.SpawnCommandInNewTab(ubuntu) },
     { key = "e", mods = "LEADER", action = act.SpawnCommandInNewTab(powershell) },
   })
+  -- set Background Image if image of path exists
+  config.background = {
+    -- This is the deepest/back-most layer. It will be rendered first
+    {
+      source = {
+        -- TODO: use PATH instead of hardcode
+        File = "C:\\Users\\jesse\\.background\\image.png",
+      },
+      -- The texture tiles vertically but not horizontally.
+      -- When we repeat it, mirror it so that it appears "more seamless".
+      -- An alternative to this is to set `width = "100%"` and have
+      -- it stretch across the display
+      width = "100%",
+      height = "Contain",
+      repeat_y = "NoRepeat",
+      repeat_x = "NoRepeat",
+      hsb = { brightness = 0.01 },
+    },
+  }
 end
 
 config.color_scheme = "GitHub Dark"
