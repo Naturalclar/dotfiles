@@ -3,9 +3,9 @@
   "app_specific_configuration_path": "$Env:USERPROFILE/applications.yaml",
   "window_hiding_behaviour": "Cloak",
   "cross_monitor_move_behaviour": "Insert",
-  "default_workspace_padding": 20,
-  "default_container_padding": 20,
-  "border_width": 8,
+  "default_workspace_padding": 10,
+  "default_container_padding": 10,
+  "border_width": 5,
   "border_offset": -1,
   "active_window_border": true,
   "active_window_border_colours": {
