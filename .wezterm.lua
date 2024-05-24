@@ -85,7 +85,7 @@ if wezterm.target_triple == "x86_64-pc-windows-msvc" then
       -- An alternative to this is to set `width = "100%"` and have
       -- it stretch across the display
       width = "100%",
-      height = "Contain",
+      height = "Cover",
       repeat_y = "NoRepeat",
       repeat_x = "NoRepeat",
       hsb = { brightness = 0.01 },
