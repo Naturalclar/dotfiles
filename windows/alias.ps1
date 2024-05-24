@@ -57,6 +57,9 @@ Function ghview {
     # Open the current repository or specified repository in browser
     gh repo view -w $args
 }
+Function gpc {
+    gh pr create
+}
 
 # Add alias for ghq + peco
 Function ws {
@@ -64,6 +67,7 @@ Function ws {
 }
 
 # Add alias for ghq clone
+# TODO: get bare clone of repository
 Function get {
     ghq get $args
 }
@@ -74,6 +78,9 @@ Set-Alias -Name vim -Value nvim
 
 # Add alias for terraform
 Set-Alias -Name tf -Value terraform
+
+# Add alias for lazygit
+Set-Alias -Name lg -Value lazygit
 
 # Add alias to startup komorebi
 Function komorebi {
