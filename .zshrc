@@ -239,6 +239,7 @@ alias gsd="git switch develop"
 alias gsm="git switch master"
 alias gst="git status"
 alias gsu="git stash -u"
+alias gw="git worktree"
 # origin head (default branch) を最新の状態にする
 alias gitsync="git remote set-head origin --auto"
 alias bl="git branch"
@@ -303,7 +304,7 @@ alias gpc="gh pr create"
 alias upset="npx git-upstream --set"
 
 # ghq
-alias get="ghq get"
+alias get="ghq get --bare"
 
 # rimraf
 alias rimraf="rm -rf"
