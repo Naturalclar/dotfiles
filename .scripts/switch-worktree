@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+worktree_path=$(mktemp)
+
+git worktree list | sed '1d' | awk '{print $1}' >$worktree_path
+
+selected=$(cat $worktree_path | peco)
+
+rm $worktree_path
+
+cd $selected

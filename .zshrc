@@ -4,6 +4,7 @@
 # set vim motion
 set -o vi
 
+# Uncommend the following line to profile zsh
 # zmodload zsh/zprof
 zmodload zsh/datetime
 start_time=$(strftime '%s%.')
@@ -160,6 +161,7 @@ if [ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
   source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
+autoload -Uz galias
 galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\']//g" | sort; }
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
@@ -167,7 +169,8 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
-function refresh() {
+autoload -Uz refresh
+refresh() {
   source ~/.zshrc
   zle reset-prompt
 }
@@ -249,7 +252,15 @@ alias up="git pull upstream master"
 alias get_default_branch="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 
 
-galias() { alias | grep 'git'; }
+# move to top level of repository
+autoload -Uz rr
+rr() { cd $(git rev-parse --show-toplevel); }
+# Git Worktree
+
+autoload -Uz worktree_list
+worktree_list() { git worktree list | sed '1d' | awk '{print $1}' | xargs -n 1 basename; } 
+
+bindkey -s '^B' ". switch-worktree\n"
 
 # Ruby
 
@@ -310,12 +321,12 @@ alias get="ghq get --bare"
 alias rimraf="rm -rf"
 
 # cd to ghq directories
-function peco-workspace() {
+peco-workspace() {
   cd $(ghq list --full-path | peco)
   zle reset-prompt
 }
 zle -N peco-workspace
-alias ws='cd $(ghq list --full-path | pf)'
+alias ws=peco-workspace
 bindkey '^W' peco-workspace
 
 bindkey -s '^F' "pmux\n"
@@ -388,7 +399,7 @@ vg() {
 }
 
 # peco history selection
-function peco-history-selection() {
+peco-history-selection() {
     BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
     CURSOR=$#BUFFER
     zle reset-prompt
@@ -447,3 +458,6 @@ precmd() {
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Uncomment the following line to profile zsh
+# zprof
