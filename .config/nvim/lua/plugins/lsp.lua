@@ -15,6 +15,7 @@ return {
         "clangd", -- C/C++
         "biome", -- JS/TS linter/formatter
         "gopls",
+        "terraform-ls",
       })
     end,
   },
