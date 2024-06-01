@@ -188,12 +188,13 @@ alias scripts="cd ~/.scripts"
 alias '?'="duck"
 alias '??'="google"
 
-
 # vim
 if command -v nvim &> /dev/null; then
   alias vim="nvim"
   alias vi="nvim"
 fi
+alias ivm="vim"
+alias vmi="vim"
 
 # lazygit
 alias lg="lazygit"
