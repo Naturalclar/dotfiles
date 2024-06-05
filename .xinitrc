@@ -1,4 +1,4 @@
-usermodmap = [$HOME/.Xmodmap]
+usermodmap=$HOME/.Xmodmap
 
 if [ -f $usermodmap ]; then
     xmodmap $usermodmap
