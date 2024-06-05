@@ -49,6 +49,21 @@ keys = {
   { key = "r", mods = "LEADER", action = act.ReloadConfiguration },
 }
 
+-- If on Arch Linux
+if wezterm.target_triple == "x86_64-unknown-linux-gnu" then
+  config.background = {
+    {
+      source = {
+        File = "/usr/share/backgrounds/default.png",
+      },
+      width = "100%",
+      height = "Cover",
+      repeat_y = "NoRepeat",
+      repeat_x = "NoRepeat",
+      hsb = { brightness = 0.05 },
+    },
+  }
+end
 -- If on Windows
 if wezterm.target_triple == "x86_64-pc-windows-msvc" then
   local powershell = {
