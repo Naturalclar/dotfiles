@@ -3,6 +3,7 @@ usermodmap=$HOME/.Xmodmap
 if [ -f $usermodmap ]; then
     xmodmap $usermodmap
 fi
+[ -f ~/.xprofile ] && . ~/.xprofile
 
 # set default screen resolution
 xrandr -s 1920x1080
