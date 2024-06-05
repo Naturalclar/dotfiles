@@ -4,7 +4,7 @@
 # set vim motion
 set -o vi
 
-# Uncommend the following line to profile zsh
+# Uncomment the following line to profile zsh
 # zmodload zsh/zprof
 zmodload zsh/datetime
 start_time=$(strftime '%s%.')
@@ -55,7 +55,8 @@ case "${OS}" in
       export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
       export PATH=/snap/bin:$PATH
       # end set JAVA_HOME
-      eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      # TODO: only do this if linuxbrew exists
+      # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     ;;
 esac
 
@@ -232,7 +233,7 @@ alias gpo="git push origin"
 alias gpom="git push origin -u master"
 alias gpull="git pull"
 alias gpl="git pull"
-alias gplcb="git pull origin $(git_current_branch)"
+alias gplcb='git pull origin $(git_current_branch)'
 alias gpsub="git submodule update --init --recursive" #clones submodules
 alias gptag="git push origin --tags"
 alias gpum="git pull upstream master"
@@ -435,12 +436,8 @@ export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
-# set Java home if javahome exists
-[ -x "$(command -v /usr/libexec/java_home)" ] &&
-    export JAVA_HOME=$(/usr/libexec/java_home -v 11.0)
-
 # set JAVA_HOME on every change directory
-function asdf_update_java_home {
+asdf_update_java_home() {
   asdf current java 2>&1 > /dev/null
   if [[ "$?" -eq 0 ]]
   then
