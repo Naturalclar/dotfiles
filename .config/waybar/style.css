@@ -1,0 +1,69 @@
+* {
+  font-family: "Symbols Nerd Font", "Cascadia Code";
+  font-size: 13px;
+}
+
+window#waybar {
+  background-color: rgba(13, 27, 42, 0.5);
+  border: 2px solid rgba(224, 86, 116, 0.8);
+  border-radius: 10px;
+  color: #f4cac3;
+  transition-property: background-color;
+  transition-duration: 0.3s;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+#window {
+  margin: 0 10px;
+}
+
+#workspaces button {
+  margin: 3px 0px;
+  padding: 0 5px;
+  border-radius: 0px;
+  background-color: transparent;
+  color: #f4cac3;
+}
+
+#workspaces button:hover {
+  /* margin: 3 0px; */
+  background: transparent;
+  border-color: rgba(224, 86, 116, 0.8);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+#workspaces button.active {
+  color: #e27b8b;
+}
+
+#workspaces button.urgent {
+  background-color: #eb4d4b;
+}
+
+@keyframes blink {
+  to {
+    background-color: #ffffff;
+    color: #000000;
+  }
+}
+
+label:focus {
+  background-color: #000000;
+}
+
+.modules-right:last-child {
+  margin-right: 10px;
+}
+
+#wireplumber,
+#network,
+#cpu,
+#memory,
+#custom-pacman,
+#clock {
+  padding: 0 6px;
+}
