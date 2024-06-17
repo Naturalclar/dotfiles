@@ -317,7 +317,9 @@ alias gpc="gh pr create"
 alias upset="npx git-upstream --set"
 
 # ghq
-alias get="ghq get --bare"
+alias get="ghq get"
+## TODO: get used to working with github workspace to fully migrate to bare repo clones
+alias getb="ghq get --bare"
 
 # rimraf
 alias rimraf="rm -rf"
