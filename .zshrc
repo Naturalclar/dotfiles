@@ -196,6 +196,7 @@ if command -v nvim &> /dev/null; then
 fi
 alias ivm="vim"
 alias vmi="vim"
+alias v="vim"
 
 # lazygit
 alias lg="lazygit"
@@ -396,9 +397,6 @@ test -r "$HOME/.opam/opam-init/init.zsh" && . "$HOME/.opam/opam-init/init.zsh" >
 # chose files to add with git add
 alias gap="git ls-files -m | peco | xargs git add"
 
-# chose files to open with vim
-alias v="git ls-files | peco | xargs -o vim"
-
 # search files with given keyword and open with vim
 vg() {
     rg -l "$1" | peco | xargs -o vim
@@ -463,3 +461,5 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Uncomment the following line to profile zsh
 # zprof
+alias altest="FIRESTORE_EMULATOR_HOST=127.0.0.1:8457 GCLOUD_PROJECT=pseudo-foobar PGHOST=127.0.0.1 PGUSER=postgres PGPASSWORD=postgres pnpm test"
+alias alwatch="FIRESTORE_EMULATOR_HOST=127.0.0.1:8457 GCLOUD_PROJECT=pseudo-foobar PGHOST=127.0.0.1 PGUSER=postgres PGPASSWORD=postgres pnpm test:watch"
