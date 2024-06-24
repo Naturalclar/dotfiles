@@ -86,16 +86,16 @@ bars:
       windows_app_bar: true
     dimensions:
       width: "100%"
-      height: 32
+      height: 40
     padding:
       top: 0
-      left: 0
+      left: 16
       bottom: 0
-      right: 0
+      right: 16
     widgets:
-      left: ["komorebi_workspaces", "komorebi_active_layout", "active_window"]
-      center: ["clock"]
-      right: ["explorer_button", "wifi", "cpu", "memory", "battery"]
+      left: ["active_window"]
+      center: ["komorebi_workspaces"]
+      right: ["clock"]
 
 # widgets:
 # my-clock-widget:
@@ -369,20 +369,14 @@ widgets:
       max_length_ellipsis: "..."
       monitor_exclusive: true
 
-  battery:
-    type: "yasb.battery.BatteryWidget"
-    options:
-      time_remaining_natural: true
-
   clock:
     type: "yasb.clock.ClockWidget"
     options:
-      label: "{%H:%M:%S %Z}"
-      label_alt: "{%d-%m-%y %H:%M:%S %Z}"
-      timezones: ["Europe/London", "America/New_York"]
+      label: "{%m/%d %H:%M:%S}"
+      label_alt: "{%y-%m-%d %H:%M:%S %Z}"
+      timezones: ["Asia/Tokyo"]
       callbacks:
         on_middle: "exec explorer.exe shell:Appsfolder\\Microsoft.WindowsAlarms_8wekyb3d8bbwe!App"
-        on_right: "next_timezone"
 
   cpu:
     type: "yasb.cpu.CpuWidget"
@@ -417,8 +411,8 @@ widgets:
       label_offline: "Komorebi Offline"
       label_workspace_btn: "{index}"
       label_default_name: "{index}"
-      label_zero_index: false
-      hide_empty_workspaces: false
+      label_zero_index: true
+      hide_empty_workspaces: true
 
   komorebi_active_layout:
     type: "komorebi.active_layout.ActiveLayoutWidget"
@@ -440,22 +434,6 @@ widgets:
         on_left: "next_layout"
         on_middle: "toggle_monocle"
         on_right: "prev_layout"
-
-  wifi:
-    type: "yasb.wifi.WifiWidget"
-    options:
-      label: "{wifi_icon}"
-      label_alt: "{wifi_icon} {wifi_name}"
-      update_interval: 5000
-      wifi_icons:
-        - "\udb82\udd2e" # 0% strength (no wifi)
-        - "\udb82\udd1f" # 1-25% strength
-        - "\udb82\udd22" # 26-50% strength
-        - "\udb82\udd25" # 51-75% strength
-        - "\udb82\udd28" # 76-100% strength. Alternate theming: \uf1eb
-      callbacks:
-        on_middle: "do_nothing"
-        on_right: "exec cmd.exe /c start ms-settings:network"
 
   traffic:
     type: "yasb.traffic.TrafficWidget"

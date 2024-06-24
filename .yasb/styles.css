@@ -1,15 +1,16 @@
 * {
   /* Bar measurement icons: https://github.com/and3rson/graph-bars-font */
-  /* Icon set: https://fontawesome.com/v5.15/how-to-use/on-the-desktop/setup/getting-started */
-  font-family: "Courier New", "Bars", "Font Awesome 5 Free";
+  font-family: "Courier New", "Bars";
   font-size: 14px;
   color: #f2e5bc;
 }
 
 .bar {
-  background: rgba(29, 32, 33, 0.3);
-  border: 1px solid #504945;
-  padding: 0 5px;
+  background: rgba(29, 32, 143, 0.3);
+  margin-top: 5px;
+  border: 1px solid #504995;
+  padding: 0 8px;
+  border-radius: 5px;
 }
 
 .container-right .widget {
@@ -25,11 +26,9 @@
 }
 .ws-btn {
   padding: 5px;
-  background: rgba(60, 56, 54, 0.4);
-  border: 1px solid rgba(168, 153, 132, 0.4);
-  margin: 2px 1px;
-  font-size: 12px;
-  border-radius: 3px;
+  margin: 4px;
+  font-size: 14px;
+  border-radius: 5px;
 }
 
 .ws-btn:hover {
@@ -43,14 +42,14 @@
 }
 
 .ws-btn.active {
-  background: rgba(251, 241, 199, 0.85);
-  color: #121212;
+  background: rgba(4, 165, 229, 0.25);
+  color: #fff;
 }
 
 .custom-widget {
   padding: 2px 6px;
   font-size: 14px;
-  background: #bdae93;
+  background: #04a5e5;
 }
 .custom-widget .icon {
   font-size: 13px;
@@ -115,6 +114,10 @@
 .battery-widget,
 .memory-widget {
   margin: 0;
+}
+
+.clock-widget .label {
+  color: #fff;
 }
 
 .memory-widget .label.status-low {
