@@ -1,4 +1,4 @@
-# create symbolic link for nvim config directory
+# create symbolic link for wezterm config file
 
 $configDir = "$env:USERPROFILE\.wezterm.lua"
 
