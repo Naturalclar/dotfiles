@@ -6,4 +6,7 @@ lazyvim.json
 lazy-lock.json
 .DS_Store
 
+# yasb log files
+yasb.log
+
 
