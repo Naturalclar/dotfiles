@@ -5,8 +5,9 @@
   "margin": "10 10 0 10",
 
   "modules-left": ["hyprland/window"],
-  "modules-center": ["hyprland/workspaces"],
+  "modules-center": ["custom/spotify"],
   "modules-right": [
+    "hyprland/workspaces",
     "custom/pacman",
     "wireplumber",
     "cpu",
@@ -81,5 +82,13 @@
     "exec-if": "exit 0",
     "on-click": "kitty /bin/sh -c 'sudo pacman -Syu'; pkill -SIGRTMIN+8 waybar",
     "signal": 8,
+  },
+  "custom/spotify": {
+    "exec": "/usr/bin/python3 /home/naturalclar/.config/waybar/custom/media.py --player spotify",
+    "format": "{}  ",
+    "return-type": "json",
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous",
   },
 }
