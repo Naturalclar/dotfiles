@@ -4,10 +4,9 @@
   "height": 30,
   "margin": "10 10 0 10",
 
-  "modules-left": ["hyprland/window"],
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
   "modules-center": ["custom/spotify"],
   "modules-right": [
-    "hyprland/workspaces",
     "custom/pacman",
     "wireplumber",
     "cpu",

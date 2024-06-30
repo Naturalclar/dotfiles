@@ -20,6 +20,10 @@ window#waybar.hidden {
   margin: 0 10px;
 }
 
+#workspaces {
+  margin-left: 15px;
+}
+
 #workspaces button {
   margin: 3px 0px;
   padding: 0 5px;
