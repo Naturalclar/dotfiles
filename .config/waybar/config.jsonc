@@ -83,8 +83,8 @@
     "signal": 8,
   },
   "custom/spotify": {
-    "exec": "/usr/bin/python3 /home/naturalclar/.config/waybar/custom/media.py --player spotify",
-    "format": "{}  ",
+    "exec": "/usr/bin/python3 /home/naturalclar/.config/waybar/custom/media.py",
+    "format": "{}",
     "return-type": "json",
     "on-click": "playerctl play-pause",
     "on-scroll-up": "playerctl next",
