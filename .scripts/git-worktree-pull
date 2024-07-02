@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+# Explicitly sets the remote origin fetch so we can fetch remote branches
+git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+
+# Gets all branches from origin
+git fetch origin
