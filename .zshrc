@@ -188,6 +188,7 @@ alias lynx="lynx -vikeys"
 alias scripts="cd ~/.scripts"
 alias '?'="duck"
 alias '??'="google"
+alias gwp="git-worktree-pull"
 
 # vim
 if command -v nvim &> /dev/null; then
