@@ -15,6 +15,12 @@ scoop install mingw
 scoop install fzf
 ```
 
+### Setting up WSL
+
+```bash
+wsl --install
+```
+
 ## Setting up Widnows Terminal to be tmux like with tabs
 
 Open `Settings` -> `Actions`
@@ -28,3 +34,14 @@ Add new actions with the following settings:
 `Duplicate pane` : `Ctrl + '`
 
 ````
+
+## Application List
+
+- Arc Browser
+- Steam
+- Slack
+- Discord
+- OBS
+- Google Japanese Input
+
+## Setting up Komorebi for Windows
