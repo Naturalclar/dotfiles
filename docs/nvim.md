@@ -9,9 +9,14 @@ Requires `rust` to install.
 
 #### Install rustup
 
+For Linux and MacOS:
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+
+For Windows:
+Install rustup from [here](https://rustup.rs/)
 
 #### Install Bob
 
