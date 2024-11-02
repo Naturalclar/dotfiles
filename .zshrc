@@ -239,6 +239,7 @@ alias gplcb='git pull origin $(git_current_branch)'
 alias gpsub="git submodule update --init --recursive" #clones submodules
 alias gptag="git push origin --tags"
 alias gpum="git pull upstream master"
+alias gr="gcod && gpull"
 alias grh="git restore --worktree"
 alias grb="git rebase"
 alias gsc="git switch -c"
