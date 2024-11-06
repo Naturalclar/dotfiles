@@ -275,6 +275,11 @@ bindkey -s '^B' ". switch-worktree\n"
 
 alias be="bundle exec"
 
+## DevContainer
+
+alias dcup = "devcontainer up --workspace-folder=."
+alias dcexec = "devcontainer exec --workspace-folder=."
+
 # JavaScript
 
 ## yarn
