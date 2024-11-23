@@ -11,9 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Install zsh
+        run: sudo apt-get update; sudo apt-get install zsh
       - name: Check Zshrc Syntax
         run: zsh -n ./.zshrc
-        shell: zsh {0}
       - name: Check Zshrc Commands
         run: zsh -c "source ./.zshrc"
-        shell: zsh {0}
