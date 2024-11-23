@@ -51,6 +51,10 @@ case "${OS}" in
         echo "sudo apt install peco"
         echo "For additional guides, check: https://github.com/peco/peco"
       fi
+      if ! command -v lazygit &> /dev/null; then
+        echo "lazygit is not installed"
+        echo "Install using guides in https://github.com/jesseduffield/lazygit"
+      fi
       export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
       export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
       export PATH=/snap/bin:$PATH
@@ -277,8 +281,8 @@ alias be="bundle exec"
 
 ## DevContainer
 
-alias dcup = "devcontainer up --workspace-folder=."
-alias dcexec = "devcontainer exec --workspace-folder=."
+alias dcup="devcontainer up --workspace-folder=."
+alias dcexec="devcontainer exec --workspace-folder=."
 
 # JavaScript
 
