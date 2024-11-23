@@ -16,3 +16,6 @@ jobs:
 
         - name: Check Zshrc Syntax
           run: zsh -n ./.zshrc
+
+        - name: Check Zshrc Commands
+          run: zsh -c "source ./.zshrc"
