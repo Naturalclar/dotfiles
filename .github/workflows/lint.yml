@@ -1,0 +1,18 @@
+name: Check Zshrc syntax
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+      runs-on: ${{ matrix.os }}
+       
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+
+        - name: Check Zshrc Syntax
+          run: zsh -n ./.zshrc
