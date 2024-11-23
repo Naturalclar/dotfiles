@@ -1,0 +1,19 @@
+name: Check Zshrc syntax
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install zsh
+        run: sudo apt-get update; sudo apt-get install zsh
+      - name: Check Zshrc Syntax
+        run: zsh -n ./.zshrc
+      - name: Check Zshrc Commands
+        run: zsh -c "source ./.zshrc"
