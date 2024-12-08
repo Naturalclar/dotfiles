@@ -24,6 +24,16 @@
       "background": "#141414"
     }
   },
+  "animation": {
+    "enabled": false
+  },
+  "ignore_rules": [
+    {
+      "kind": "Exe",
+      "id": "Ueli.exe",
+      "matching_strategy": "Equals"
+    }
+  ],
   "monitors": [
     {
       "workspaces": [

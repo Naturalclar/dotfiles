@@ -1,4 +1,6 @@
-^Space::
-    Send, {Alt Down}{` Down}{` Up}{Alt Up}
-Return
+; Ctrl + Space
+^Space:: {
+    ; Send the 半角/全角 key directly
+    Send("{vkF3sc029}")
+}
 
