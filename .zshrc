@@ -28,6 +28,8 @@ case "${OS}" in
         . "$HOME/.asdf/asdf.sh"
         # Allow using ssh-add command
         eval "$(ssh-agent)"
+        # set pbcopy to be similar to Darwin
+        alias pbcopy='xsel --clipboard --input'
         # Check if required commands are installed
       if ! command -v asdf &> /dev/null; then
         echo "asdf is not installed"
