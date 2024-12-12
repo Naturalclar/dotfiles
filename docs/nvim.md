@@ -38,3 +38,9 @@ Fonts needs to be installed and set in the terminal for icons to be displayed co
 
 [Nerd Fonts](https://www.nerdfonts.com/)
 Using `CaskaydiaMono Nerd Font`
+
+## Troubleshoot
+
+### Telescope live_grep is not working
+
+You need to have `ripgrep` installed in order to use telescope live_grep
