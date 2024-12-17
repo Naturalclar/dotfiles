@@ -4,7 +4,7 @@
 $dir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # Remove the existing profile
-Remove-Item -Path $profile -Force
+Remove-Item -Path $PROFILE -Force
 
 # Get all .ps1 files in windows directory
 $files = Get-ChildItem -Path $dir\windows\*.ps1
@@ -12,5 +12,5 @@ $files = Get-ChildItem -Path $dir\windows\*.ps1
 # For each file, add the contents to the profile
 foreach ($file in $files) {
     $content = Get-Content $file
-    Add-Content -Path $profile -Value $content
+    Add-Content -Path $PROFILE -Value $content
 }
