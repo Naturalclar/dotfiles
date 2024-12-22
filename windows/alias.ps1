@@ -82,28 +82,13 @@ Set-Alias -Name tf -Value terraform
 # Add alias for lazygit
 Set-Alias -Name lg -Value lazygit
 
+# Set envs for komorebi
+
+$Env:KOMOREBI_CONFIG_HOME = "$Env:USERPROFILE\.komorebi.json"
 # Add alias to startup komorebi
 Function komorebi {
     komorebic start -c $Env:USERPROFILE\.komorebi.json --whkd
   }
-
-# Add aliases for yarn commands
-Set-Alias -Name y -Value yarn
-Set-Alias -Name yb -Value "yarn build"
-Set-Alias -Name ys -Value "yarn start"
-Set-Alias -Name yl -Value "yarn lint"
-Set-Alias -Name ytc -Value "yarn type-check"
-Set-Alias -Name build -Value "yarn build"
-Set-Alias -Name start -Value "yarn start"
-Set-Alias -Name ybuild -Value "yarn build"
-Set-Alias -Name ystart -Value "yarn start"
-Set-Alias -Name ylint -Value "yarn lint"
-Set-Alias -Name bootstrap -Value "yarn bootstrap"
-Set-Alias -Name ybt -Value "yarn bootstrap"
-Set-Alias -Name yarnstrap -Value "yarn bootstrap"
-Set-Alias -Name yw -Value "yarn watch"
-Set-Alias -Name ytest -Value "yarn test"
-Set-Alias -Name yyb -Value "yarn && yarn bootstrap"
 
 # Add aliases for pnpm commands
 Set-Alias -Name p -Value pnpm
@@ -132,7 +117,6 @@ Set-Alias -Name gbranch -Value "git branch"
 Set-Alias -Name gcom -Value "git switch master"
 Set-Alias -Name gcp -Value "git cherry-pick"
 Set-Alias -Name gdm -Value "git branch --merged|egrep -v '\*|develop|master|release'|xargs git branch -d"
-Set-Alias -Name gl -Value "git log"
 Set-Alias -Name glog -Value "git log"
 Set-Alias -Name gpcbf -Value "git push origin $(get_current_branch) --force-with-lease"
 Set-Alias -Name gpom -Value "git push origin -u master"
