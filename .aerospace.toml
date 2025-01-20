@@ -4,7 +4,7 @@ enable-normalization-flatten-containers = false
 enable-normalization-opposite-orientation-for-nested-containers = false
 
 [mode.main.binding]
-alt-enter = 'exec-and-forget open -n ~/Applications/iterm.app'
+alt-enter = 'exec-and-forget open -n ~/Applications/.app'
 
 alt-h = 'focus left'
 alt-j = 'focus down'
@@ -21,9 +21,9 @@ alt-v = 'split vertical'
 
 alt-f = 'fullscreen'
 
-alt-s = 'layout v_accordion'               # 'layout stacking' in i3
-alt-w = 'layout h_accordion'               # 'layout tabbed' in i3
-alt-e = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
+alt-a = 'layout v_accordion'               # 'layout stacking' in i3
+alt-s = 'layout h_accordion'               # 'layout tabbed' in i3
+alt-d = 'layout tiles horizontal vertical' # 'layout toggle split' in i3
 
 alt-shift-space = 'layout floating tiling' # 'floating toggle' in i3
 
@@ -46,6 +46,17 @@ alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 alt-0 = 'workspace 10'
 
+alt-q = 'workspace 1'
+alt-w = 'workspace 2'
+alt-e = 'workspace 3'
+alt-r = 'workspace 4'
+alt-t = 'workspace 5'
+alt-y = 'workspace 6'
+alt-u = 'workspace 7'
+alt-i = 'workspace 8'
+alt-o = 'workspace 9'
+alt-p = 'workspace 10'
+
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
@@ -56,6 +67,7 @@ alt-shift-7 = 'move-node-to-workspace 7'
 alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
 alt-shift-0 = 'move-node-to-workspace 10'
+
 alt-shift-q = 'move-node-to-workspace 1'
 alt-shift-w = 'move-node-to-workspace 2'
 alt-shift-e = 'move-node-to-workspace 3'
@@ -69,7 +81,7 @@ alt-shift-p = 'move-node-to-workspace 10'
 
 alt-shift-c = 'reload-config'
 
-alt-r = 'mode resize'
+# alt-r = 'mode resize'
 
 [mode.resize.binding]
 h = 'resize width -50'
