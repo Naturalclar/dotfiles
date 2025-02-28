@@ -38,12 +38,18 @@ return {
     },
     -- See Commands section for default commands if you want to lazy load on them
     keys = {
-      { "<leader>co", ":CopilotChatOpen<CR>", { noremap = true, silent = true } },
+      { "<leader>cco", ":CopilotChatOpen<CR>", { noremap = true, silent = true }, desc = "CopilotChat - Open" },
+      {
+        "<leader>ccm",
+        ":CopilotChatModel<CR>",
+        { noremap = true, silent = true },
+        desc = "CopilotChat - Select Models",
+      },
       {
         "<leader>ccp",
         function()
           local actions = require("CopilotChat.actions")
-          require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
+          require("CopilotChat.select_prompt").pick(actions.prompt_actions())
         end,
         desc = "CopilotChat - Prompt actions",
       },
