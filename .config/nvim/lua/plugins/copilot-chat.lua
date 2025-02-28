@@ -47,10 +47,8 @@ return {
       },
       {
         "<leader>ccp",
-        function()
-          local actions = require("CopilotChat.actions")
-          require("CopilotChat.select_prompt").pick(actions.prompt_actions())
-        end,
+        ":CopilotChatPrompts<CR>",
+        { noremap = true, silent = true },
         desc = "CopilotChat - Prompt actions",
       },
     },
