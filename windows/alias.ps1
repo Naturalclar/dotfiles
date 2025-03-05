@@ -84,11 +84,7 @@ Set-Alias -Name lg -Value lazygit
 
 # Set envs for komorebi
 
-$Env:KOMOREBI_CONFIG_HOME = "$Env:USERPROFILE\.komorebi.json"
-# Add alias to startup komorebi
-Function komorebi {
-    komorebic start -c $Env:USERPROFILE\.komorebi.json --whkd
-  }
+$Env:KOMOREBI_CONFIG_HOME = "$Env:USERPROFILE\.config"
 
 # Add aliases for pnpm commands
 Set-Alias -Name p -Value pnpm

@@ -19,6 +19,7 @@ alt + l                 : komorebic focus right
 alt + shift + oem_4     : komorebic cycle-focus previous # oem_4 is [
 alt + shift + oem_6     : komorebic cycle-focus next # oem_6 is ]
 
+#
 # Move windows
 alt + shift + h         : komorebic move left
 alt + shift + j         : komorebic move down
@@ -55,45 +56,45 @@ alt + x                 : komorebic close
 # alt + y                 : komorebic flip-layout vertical
 
 # Workspaces
-alt + 1                 : komorebic focus-workspace 1
-alt + 2                 : komorebic focus-workspace 2
-alt + 3                 : komorebic focus-workspace 3
-alt + 4                 : komorebic focus-workspace 4
-alt + 5                 : komorebic focus-workspace 5
-alt + 6                 : komorebic focus-workspace 6
-alt + 7                 : komorebic focus-workspace 7
-alt + 8                 : komorebic focus-workspace 8
-alt + 9                 : komorebic focus-workspace 9
-alt + 0                 : komorebic focus-workspace 0
-alt + q                 : komorebic focus-workspace 1
-alt + w                 : komorebic focus-workspace 2
-alt + e                 : komorebic focus-workspace 3
-alt + r                 : komorebic focus-workspace 4
-alt + t                 : komorebic focus-workspace 5
-alt + y                 : komorebic focus-workspace 6
-alt + u                 : komorebic focus-workspace 7
-alt + i                 : komorebic focus-workspace 8
-# alt + o                 : komorebic focus-workspace 9
-alt + p                 : komorebic focus-workspace 0
+alt + 1                 : komorebic focus-workspace 0
+alt + 2                 : komorebic focus-workspace 1
+alt + 3                 : komorebic focus-workspace 2
+alt + 4                 : komorebic focus-workspace 3
+alt + 5                 : komorebic focus-workspace 4
+alt + 6                 : komorebic focus-workspace 5
+alt + 7                 : komorebic focus-workspace 6
+alt + 8                 : komorebic focus-workspace 7
+alt + 9                 : komorebic focus-workspace 8
+alt + 0                 : komorebic focus-workspace 9
+alt + q                 : komorebic focus-workspace 0
+alt + w                 : komorebic focus-workspace 1
+alt + e                 : komorebic focus-workspace 2
+alt + r                 : komorebic focus-workspace 3
+alt + t                 : komorebic focus-workspace 4
+alt + y                 : komorebic focus-workspace 5
+alt + u                 : komorebic focus-workspace 6
+alt + i                 : komorebic focus-workspace 7  
+# alt + o                 : komorebic focus-workspace 8
+alt + p                 : komorebic focus-workspace 9
 
 # Move windows across workspaces
-alt + shift + 1         : komorebic move-to-workspace 1
-alt + shift + 2         : komorebic move-to-workspace 2
-alt + shift + 3         : komorebic move-to-workspace 3
-alt + shift + 4         : komorebic move-to-workspace 4
-alt + shift + 5         : komorebic move-to-workspace 5
-alt + shift + 6         : komorebic move-to-workspace 6
-alt + shift + 7         : komorebic move-to-workspace 7
-alt + shift + 8         : komorebic move-to-workspace 8
-alt + shift + 9         : komorebic move-to-workspace 9
-alt + shift + 0         : komorebic move-to-workspace 0
-alt + shift + q         : komorebic move-to-workspace 1
-alt + shift + w         : komorebic move-to-workspace 2
-alt + shift + e         : komorebic move-to-workspace 3
-alt + shift + r         : komorebic move-to-workspace 4
-alt + shift + t         : komorebic move-to-workspace 5
-alt + shift + y         : komorebic move-to-workspace 6
-alt + shift + u         : komorebic move-to-workspace 7
-alt + shift + i         : komorebic move-to-workspace 8
-# alt + shift + o         : komorebic move-to-workspace 9
-alt + shift + p         : komorebic move-to-workspace 0
+alt + shift + 1         : komorebic move-to-workspace 0
+alt + shift + 2         : komorebic move-to-workspace 1
+alt + shift + 3         : komorebic move-to-workspace 2
+alt + shift + 4         : komorebic move-to-workspace 3
+alt + shift + 5         : komorebic move-to-workspace 4
+alt + shift + 6         : komorebic move-to-workspace 5
+alt + shift + 7         : komorebic move-to-workspace 6
+alt + shift + 8         : komorebic move-to-workspace 7
+alt + shift + 9         : komorebic move-to-workspace 8
+alt + shift + 0         : komorebic move-to-workspace 9
+alt + shift + q         : komorebic move-to-workspace 0
+alt + shift + w         : komorebic move-to-workspace 1
+alt + shift + e         : komorebic move-to-workspace 2
+alt + shift + r         : komorebic move-to-workspace 3
+alt + shift + t         : komorebic move-to-workspace 4
+alt + shift + y         : komorebic move-to-workspace 5
+alt + shift + u         : komorebic move-to-workspace 6
+alt + shift + i         : komorebic move-to-workspace 7
+# alt + shift + o         : komorebic move-to-workspace 8
+alt + shift + p         : komorebic move-to-workspace 9
