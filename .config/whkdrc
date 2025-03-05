@@ -44,13 +44,14 @@ alt + shift + oem_minus : komorebic resize-axis vertical decrease
 # Manipulate windows
 # alt + t                 : komorebic toggle-float
 alt + shift + f         : komorebic toggle-monocle
+alt + x                 : komorebic close
 
 # Window manager options
 # alt + shift + r         : komorebic retile
 # alt + p                 : komorebic toggle-pause
 
+
 # Layouts
-# alt + x                 : komorebic flip-layout horizontal
 # alt + y                 : komorebic flip-layout vertical
 
 # Workspaces
