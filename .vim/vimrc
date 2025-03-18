@@ -61,3 +61,6 @@ endif
 
 " set ! command to run zsh
 set shell=/bin/zsh
+
+
+cnoreabbrev S s
