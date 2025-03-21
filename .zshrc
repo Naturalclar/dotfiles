@@ -393,12 +393,6 @@ alias rgi="rg --no-ignore"
 # alias for clear
 alias cl="clear"
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/path.zsh.inc"; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
-
 # clasp
 alias cl="clasp"
 
@@ -451,6 +445,10 @@ export PNPM_HOME="$HOME/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
+# jq
+## list scripts in package.json
+alias ns="jq '.scripts' package.json"
+
 # set JAVA_HOME on every change directory
 asdf_update_java_home() {
   asdf current java 2>&1 > /dev/null
@@ -476,3 +474,10 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # zprof
 alias altest="FIRESTORE_EMULATOR_HOST=127.0.0.1:8457 GCLOUD_PROJECT=pseudo-foobar PGHOST=127.0.0.1 PGUSER=postgres PGPASSWORD=postgres pnpm test"
 alias alwatch="FIRESTORE_EMULATOR_HOST=127.0.0.1:8457 GCLOUD_PROJECT=pseudo-foobar PGHOST=127.0.0.1 PGUSER=postgres PGPASSWORD=postgres pnpm test:watch"
+
+# About Google Cloud SDK - place google-cloud-sdk in $HOME/.google-cloud-sdk
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/path.zsh.inc"; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
