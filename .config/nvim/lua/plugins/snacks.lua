@@ -3,6 +3,7 @@ return {
   ---@type snacks.Config
   opts = {
     picker = {
+      ui_select = true,
       sources = {
         files = { hidden = true },
       },
