@@ -8,9 +8,9 @@ return {
     opts = {
       -- See Configuration section for options
       window = {
-        layout = "float",
-        width = 0.8, -- fractional width of parent, or absolute width in columns when > 1
-        height = 0.8, -- fractional height of parent, or absolute height in rows when > 1
+        layout = "vertical",
+        width = 0.3, -- fractional width of parent, or absolute width in columns when > 1
+        height = 1, -- fractional height of parent, or absolute height in rows when > 1
       },
       prompts = {
         Explain = {
@@ -36,8 +36,18 @@ return {
         },
       },
     },
-    -- See Commands section for default commands if you want to lazy load on them
+    agents = { -- agent-specific configurations
+      perplexityai = {
+        model = "llama-3.1-sonar-huge-128k-online", -- agent-specific model
+      },
+    }, -- See Commands section for default commands if you want to lazy load on them
     keys = {
+      {
+        "<leader>cca",
+        ":CopilotChatAgents<CR>",
+        { noremap = true, silent = true },
+        desc = "CopilotChat - list agents",
+      },
       { "<leader>cco", ":CopilotChatOpen<CR>", { noremap = true, silent = true }, desc = "CopilotChat - Open" },
       {
         "<leader>ccm",
