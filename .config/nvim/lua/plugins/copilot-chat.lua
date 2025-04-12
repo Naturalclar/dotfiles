@@ -6,6 +6,7 @@ return {
       { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
     },
     opts = {
+      model = "claude-3.7-sonnet-thought",
       -- See Configuration section for options
       window = {
         layout = "vertical",
