@@ -176,17 +176,18 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
+autoload -Uz zle-refresh
 refresh() {
   source ~/.zshrc
 }
 zle-refresh() {
   refresh
-  zle restore-prompt
+  zle reset-prompt
 }
 zle -N zle-refresh
 # alias
 alias zshedit="vim ~/.zshrc"
-bindkey '^R' refresh
+bindkey '^R' zle-refresh
 alias zshr=refresh
 
 # lynx
@@ -352,7 +353,7 @@ zle-peco-workspace(){
 }
 zle -N zle-peco-workspace
 alias ws=peco-workspace
-bindkey '^W' peco-workspace
+bindkey '^W' zle-peco-workspace
 
 # cd to ghq directories via fzf
 fzf-workspace() {
@@ -362,9 +363,9 @@ zle-fzf-workspace(){
   fzf-workspace
   zle reset-prompt
 }
-zle -N fzf-workspace
+zle -N zle-fzf-workspace
 alias wf=fzf-workspace
-bindkey '^A' fzf-workspace
+bindkey '^A' zle-fzf-workspace
 
 bindkey -s '^F' "pmux\n"
 
