@@ -176,12 +176,14 @@ galias() { alias | grep 'git' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/['|\
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
-autoload -Uz refresh
 refresh() {
   source ~/.zshrc
-  zle reset-prompt
 }
-zle -N refresh
+zle-refresh() {
+  refresh
+  zle restore-prompt
+}
+zle -N zle-refresh
 # alias
 alias zshedit="vim ~/.zshrc"
 bindkey '^R' refresh
@@ -343,11 +345,26 @@ alias rimraf="rm -rf"
 # cd to ghq directories
 peco-workspace() {
   cd $(ghq list --full-path | peco)
+}
+zle-peco-workspace(){
+  peco-workspace
   zle reset-prompt
 }
-zle -N peco-workspace
+zle -N zle-peco-workspace
 alias ws=peco-workspace
 bindkey '^W' peco-workspace
+
+# cd to ghq directories via fzf
+fzf-workspace() {
+  cd $(ghq list --full-path | fzf --layout=reverse --preview "REPO={}; README=\$(find \"\$REPO\" -maxdepth 1 -name 'README*' -type f | head -n 1); if [ -z \"\$README\" ]; then README=\$(find \"\$REPO/main\" \"\$REPO/master\" \"\$REPO/develop\" \"\$REPO/dev\" -maxdepth 1 -name 'README*' -type f 2>/dev/null | head -n 1); fi; if [ -n \"\$README\" ]; then bat --color=always --style=header,grid --line-range :80 \"\$README\"; else echo 'No README found'; fi")
+}
+zle-fzf-workspace(){
+  fzf-workspace
+  zle reset-prompt
+}
+zle -N fzf-workspace
+alias wf=fzf-workspace
+bindkey '^A' fzf-workspace
 
 bindkey -s '^F' "pmux\n"
 
