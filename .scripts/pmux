@@ -5,7 +5,7 @@
 if [[ $# -eq 1 ]]; then
   selected=$1
 else
-  selected=$(ghq list --full-path | peco)
+  selected=$(ghq list --full-path | fzf --layout=reverse --preview "REPO={}; README=\$(find \"\$REPO\" -maxdepth 1 -name 'README*' -type f | head -n 1); if [ -z \"\$README\" ]; then README=\$(find \"\$REPO/main\" \"\$REPO/master\" \"\$REPO/develop\" \"\$REPO/dev\" -maxdepth 1 -name 'README*' -type f 2>/dev/null | head -n 1); fi; if [ -n \"\$README\" ]; then bat --color=always --style=header,grid --line-range :80 \"\$README\"; else echo 'No README found'; fi")
 fi
 
 if [[ -z $selected ]]; then
