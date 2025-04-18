@@ -276,6 +276,24 @@ rr() { cd $(git rev-parse --show-toplevel); }
 autoload -Uz worktree_list
 worktree_list() { git worktree list | sed '1d' | awk '{print $1}' | xargs -n 1 basename; } 
 
+# Function to switch to the branch that matches the current worktree name
+worktree_switch_branch() {
+  # Get the repository root
+  local worktree_path=$(git rev-parse --show-toplevel 2>/dev/null)
+  
+  if [[ -z "$worktree_path" ]]; then
+    echo "Not in a git repository"
+    return 1
+  fi
+  
+  # Get the worktree name (which should match the branch name in your setup)
+  local worktree_name=$(basename "$worktree_path")
+  
+  # Switch to the branch matching the worktree name
+  git switch "$worktree_name" 2>/dev/null || echo "No branch named $worktree_name exists"
+}
+alias wsb=worktree_switch_branch
+
 bindkey -s '^B' ". switch-worktree\n"
 
 # Ruby
