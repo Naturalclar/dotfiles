@@ -69,7 +69,7 @@ if wezterm.target_triple == "aarch64-apple-darwin" then
   config.background = {
     {
       source = {
-        File = "/Users/naturalclar-mac-mini/Pictures/Wallpapers/laplus_darkness_wp.jpeg",
+        File = os.getenv("HOME") .. "/Pictures/Wallpapers/laplus_darkness_wp.jpeg",
       },
       width = "100%",
       height = "Cover",
