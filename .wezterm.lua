@@ -75,7 +75,7 @@ if wezterm.target_triple == "aarch64-apple-darwin" then
       height = "Cover",
       repeat_y = "NoRepeat",
       repeat_x = "NoRepeat",
-      hsb = { brightness = 0.05 },
+      hsb = { brightness = 0.015 },
     },
   }
 end
