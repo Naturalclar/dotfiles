@@ -5,6 +5,7 @@ zsh-syntax-highlighting
 lazyvim.json
 lazy-lock.json
 .DS_Store
+.envrc
 
 # yasb log files
 yasb.log
