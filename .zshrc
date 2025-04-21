@@ -518,7 +518,7 @@ if [ -f "$HOME/.google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/.google-cloud-sd
 # The next line enables shell command completion for gcloud.
 if [ -f "$HOME/.google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/.google-cloud-sdk/completion.zsh.inc"; fi
  
-# Load OpenAI API key from credentials file if present
-if [ -f "$HOME/.config/openai/credentials.sh" ]; then
-  source "$HOME/.config/openai/credentials.sh"
+# Load Secret API key from credentials file if present
+if [ -f "$HOME/.config/secrets/credentials.sh" ]; then
+  source "$HOME/.config/secrets/credentials.sh"
 fi

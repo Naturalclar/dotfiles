@@ -51,9 +51,9 @@ Linux*)
   . "$HOME/.asdf/asdf.sh"
   ;;
 esac
- . "$HOME/.cargo/env"
- 
-# Load OpenAI API key from credentials file if present
-if [ -f "$HOME/.config/openai/credentials.sh" ]; then
-  source "$HOME/.config/openai/credentials.sh"
+. "$HOME/.cargo/env"
+
+# Load Secrets API key from credentials file if present
+if [ -f "$HOME/.config/secrets/credentials.sh" ]; then
+  source "$HOME/.config/secrets/credentials.sh"
 fi
