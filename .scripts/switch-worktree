@@ -1,11 +1,42 @@
 #!/usr/bin/env bash
 
+# Create temporary files
 worktree_path=$(mktemp)
+paths_file=$(mktemp)
 
-git worktree list | sed '1d' | awk '{print $1}' >$worktree_path
+# Process git worktree list
+git worktree list | sed '1d' | awk '{
+    # Store the full path
+    print $1 > "'$paths_file'";
+    
+    # Extract branch name
+    branch = $3;
+    # Remove brackets if present
+    gsub(/[\[\]]/, "", branch);
+    
+    # Extract repository and worktree names from path
+    cmd = "basename \"$(dirname \"" $1 "\")\"";
+    cmd | getline repo_name;
+    close(cmd);
+    
+    cmd = "basename \"" $1 "\"";
+    cmd | getline worktree_name;
+    close(cmd);
+    
+    # Format the output with repo/worktree names
+    printf "%-30s %s\n", repo_name "/" worktree_name, branch;
+}' > $worktree_path
 
-selected=$(cat $worktree_path | peco)
+# Use fzf for selection and get the selected line number
+selected_line=$(cat $worktree_path | nl -w1 -s: | fzf --layout=reverse --prompt="Select worktree: " \
+  --preview 'echo -e "Currently working on: \n\n$(echo {} | cut -d" " -f2-)"' | cut -d: -f1)
 
+# Get the path from the corresponding line in the paths file
+selected_path=$(sed "${selected_line}q;d" "$paths_file")
+
+# Clean up temporary files
 rm $worktree_path
+rm $paths_file
 
-cd $selected
+# Change to the selected directory
+cd "$selected_path"
