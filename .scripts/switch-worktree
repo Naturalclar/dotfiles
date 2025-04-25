@@ -23,8 +23,15 @@ git worktree list | sed '1d' | awk '{
     cmd | getline worktree_name;
     close(cmd);
     
+    # If branch name is same as worktree name, display "Nothing"
+    if (branch == worktree_name) {
+        branch_display = "Nothing";
+    } else {
+        branch_display = branch;
+    }
+    
     # Format the output with repo/worktree names
-    printf "%-30s %s\n", repo_name "/" worktree_name, branch;
+    printf "%-30s %s\n", repo_name "/" worktree_name, branch_display;
 }' > $worktree_path
 
 # Use fzf for selection and get the selected line number
