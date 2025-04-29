@@ -534,12 +534,13 @@ run-script() {
   # Create temporary file for script data
   local tmp_file=$(mktemp)
 
-  # Extract scripts to temporary file with format "script_name:actual_command"
-  jq -r '.scripts | to_entries | .[] | .key + ":" + .value' package.json > $tmp_file
+  # Extract scripts to temporary file with format "script_name:::actual_command"
+  # Using ::: as delimiter to avoid conflicts with script names containing colons
+  jq -r '.scripts | to_entries | .[] | .key + ":::" + .value' package.json > $tmp_file
 
   # Select script using fzf with preview of the command
   local selected=$(cat $tmp_file | fzf --layout=reverse --prompt="Run script: " \
-    --preview 'echo -e "Command:\n\n$(echo {} | cut -d: -f2-)"')
+    --preview 'echo -e "Command:\n\n$(echo {} | cut -d: -f3-)"')
 
   # Clean up temporary file
   rm $tmp_file
@@ -549,8 +550,8 @@ run-script() {
     return 0
   fi
 
-  # Extract script name
-  local script_name=$(echo $selected | cut -d: -f1)
+  # Extract script name - split on the first occurrence of :::
+  local script_name=$(echo $selected | sed 's/:::.*//')
 
   # Determine which package manager to use
   local cmd="npm run"

@@ -1,0 +1,17 @@
+{
+  "name": "test-package-scripts",
+  "version": "1.0.0",
+  "description": "Test package for demonstrating the run-script function",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo 'Starting the application'",
+    "build": "echo 'Building the application'",
+    "test": "echo 'Running tests'",
+    "lint": "echo 'Linting the code'",
+    "dev": "echo 'Running in development mode'",
+    "prod": "echo 'Running in production mode'",
+    "clean": "echo 'Cleaning build artifacts'"
+  },
+  "author": "",
+  "license": "ISC"
+}

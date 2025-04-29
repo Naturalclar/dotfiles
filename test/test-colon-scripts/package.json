@@ -1,0 +1,21 @@
+{
+  "name": "test-colon-scripts",
+  "version": "1.0.0",
+  "description": "Test package for demonstrating the run-script function with colon in script names",
+  "main": "index.js",
+  "scripts": {
+    "start": "echo 'Starting the application'",
+    "build": "echo 'Building the application'",
+    "build:dev": "echo 'Building for development'",
+    "build:prod": "echo 'Building for production'",
+    "test": "echo 'Running tests'",
+    "test:unit": "echo 'Running unit tests'",
+    "test:e2e": "echo 'Running end-to-end tests'",
+    "lint": "echo 'Linting the code'",
+    "lint:fix": "echo 'Linting and fixing the code'",
+    "dev:server": "echo 'Running development server'",
+    "prod:server": "echo 'Running production server'"
+  },
+  "author": "",
+  "license": "ISC"
+}
