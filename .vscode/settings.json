@@ -1,0 +1,87 @@
+{
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#00001a",
+    "activityBar.foreground": "#3333ff",
+    "editor.background": "#00001a",
+    "editor.foreground": "#f0f0f0",
+    "editor.lineHighlightBackground": "#00002a",
+    "editorGroupHeader.tabsBackground": "#000015",
+    "sideBar.background": "#000015",
+    "statusBar.background": "#000015",
+    "tab.activeBackground": "#00001a",
+    "tab.inactiveBackground": "#000015",
+    "titleBar.activeBackground": "#000015",
+    "terminal.background": "#000015",
+    "terminal.foreground": "#3333ff",
+    "input.background": "#000015",
+    "chat.editor.background": "#000015",
+    "editorWidget.background": "#000015",
+    "input.foreground": "#f0f0f0",
+    "chat.editor.foreground": "#f0f0f0",
+    "editorWidget.foreground": "#f0f0f0",
+    "searchEditor.findMatchBackground": "#f0f0f0",
+    "editor.findMatchBackground": "#f0f0f040",
+    "editor.findMatchHighlightBackground": "#f0f0f030",
+    "search.matchBackground": "#f0f0f040"
+  },
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": [
+          "comment",
+          "punctuation.definition.comment"
+        ],
+        "settings": {
+          "foreground": "#7b7bb8"
+        }
+      },
+      {
+        "scope": [
+          "string",
+          "constant.other.symbol"
+        ],
+        "settings": {
+          "foreground": "#6666ff"
+        }
+      },
+      {
+        "scope": [
+          "constant.numeric",
+          "constant.language"
+        ],
+        "settings": {
+          "foreground": "#9999ff"
+        }
+      },
+      {
+        "scope": [
+          "keyword",
+          "storage.type",
+          "storage.modifier"
+        ],
+        "settings": {
+          "foreground": "#3333ff"
+        }
+      },
+      {
+        "scope": [
+          "entity.name.function",
+          "support.function"
+        ],
+        "settings": {
+          "foreground": "#ccccff"
+        }
+      },
+      {
+        "scope": [
+          "variable",
+          "support.variable"
+        ],
+        "settings": {
+          "foreground": "#f0f0f0"
+        }
+      }
+    ]
+  }
+}
