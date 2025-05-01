@@ -40,3 +40,42 @@ After implementing the change:
 - Works consistently across both platforms
 - Maintains the same functionality and user experience
 - No conditional logic needed, reducing complexity
+
+## Additional Enhancement: Sharing History Between All Terminal Sessions
+
+### Problem
+
+By default, Zsh only shows the command history from the current terminal session. This means that commands executed in other terminal sessions are not available in the history search.
+
+### Solution
+
+Add Zsh history settings to enable sharing history between all terminal sessions. These settings ensure that commands from all terminal sessions are available in the history search.
+
+### Implementation Details
+
+Added the following settings to `.zshrc` after the OS detection section:
+
+```bash
+# History settings
+# Share history between all sessions
+setopt SHARE_HISTORY
+# Append commands to the history file as they are executed
+setopt INC_APPEND_HISTORY
+# Remove oldest duplicated command when the history file is full
+setopt HIST_EXPIRE_DUPS_FIRST
+# Don't add duplicated commands to the history
+setopt HIST_IGNORE_DUPS
+# Don't show duplicated commands when searching through history
+setopt HIST_FIND_NO_DUPS
+# Remove superfluous blanks from commands before adding them to the history
+setopt HIST_REDUCE_BLANKS
+# Set history file size
+HISTSIZE=10000
+SAVEHIST=10000
+```
+
+### Benefits
+- Commands from all terminal sessions are available in the history search
+- Improved workflow efficiency by having access to all previously executed commands
+- Consistent history across all terminal sessions
+- Duplicate commands are handled intelligently
