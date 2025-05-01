@@ -66,6 +66,23 @@ case "${OS}" in
     ;;
 esac
 
+# History settings
+# Share history between all sessions
+setopt SHARE_HISTORY
+# Append commands to the history file as they are executed
+setopt INC_APPEND_HISTORY
+# Remove oldest duplicated command when the history file is full
+setopt HIST_EXPIRE_DUPS_FIRST
+# Don't add duplicated commands to the history
+setopt HIST_IGNORE_DUPS
+# Don't show duplicated commands when searching through history
+setopt HIST_FIND_NO_DUPS
+# Remove superfluous blanks from commands before adding them to the history
+setopt HIST_REDUCE_BLANKS
+# Set history file size
+HISTSIZE=10000
+SAVEHIST=10000
+
 
 # Init direnv if it exists
 if command -v direnv &> /dev/null; then
@@ -445,9 +462,9 @@ vg() {
     rg -l "$1" | peco | xargs -o vim
 }
 
-# peco history selection
+# peco history selection (using tac for cross-platform compatibility between macOS and WSL)
 peco-history-selection() {
-    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+    BUFFER=`history -n 1 | tac | awk '!a[$0]++' | peco`
     CURSOR=$#BUFFER
     zle reset-prompt
 }
