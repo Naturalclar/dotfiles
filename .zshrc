@@ -262,11 +262,11 @@ alias gitsync="git remote set-head origin --auto"
 alias bl="git branch"
 alias branch="git branch"
 alias pull="git pull"
-alias up="git pull upstream master"
 # get default branch using git remote. its slower than using symbolic-ref, but symbolic-ref does not work with git worktree
 alias get_default_branch="git remote show origin | grep 'HEAD branch' | awk '{print \$3}'"
 alias get_default_branch_fast="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 
+alias up="git stash -u && git rebase main && git stash pop"
 
 # move to top level of repository
 autoload -Uz rr
