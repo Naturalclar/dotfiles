@@ -445,9 +445,9 @@ vg() {
     rg -l "$1" | peco | xargs -o vim
 }
 
-# peco history selection
+# peco history selection (using tac for cross-platform compatibility between macOS and WSL)
 peco-history-selection() {
-    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+    BUFFER=`history -n 1 | tac | awk '!a[$0]++' | peco`
     CURSOR=$#BUFFER
     zle reset-prompt
 }
