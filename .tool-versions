@@ -4,5 +4,5 @@ ghq 1.8.0
 yarn 1.22.19
 java adoptopenjdk-17.0.10+7
 nodejs 22.14.0
-deno 2.2.10
+deno 2.3.3
 golang 1.22.2
