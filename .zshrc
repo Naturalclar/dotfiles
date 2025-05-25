@@ -590,3 +590,7 @@ alias rs="run-script"
 
 # Keyboard shortcut for run-script (Ctrl+N)
 bindkey -s '^N' "run-script\n"
+
+if [ -x "$HOME/.claude/local/claude" ]; then
+    alias claude="$HOME/.claude/local/claude"
+fi
