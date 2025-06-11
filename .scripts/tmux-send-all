@@ -1,0 +1,163 @@
+#!/bin/bash
+
+# tmux-send-all: Send commands to all tmux panes with option to ignore specific panes
+# Usage: tmux-send-all [--ignore PANE_INDEX...] [--command] COMMAND
+# Example: tmux-send-all --ignore 1 5 --command ls -la
+
+show_help() {
+    cat << EOF
+Usage: tmux-send-all [-t PANE_INDEX... | -i PANE_INDEX...] [-c] COMMAND
+
+Send a command to tmux panes in the current session.
+
+Options:
+    -t, --target PANE_INDEX    Target specific pane(s) by index (can specify multiple)
+    -i, --ignore PANE_INDEX    Exclude pane(s) by index (can specify multiple)
+    -c, --command             Explicitly start command arguments (optional)
+    -h, --help                Show this help message
+
+Note: -t/--target and -i/--ignore are mutually exclusive. Use one or the other.
+
+Examples:
+    tmux-send-all ls                    # Send 'ls' to all panes
+    tmux-send-all -t 1 3 -c ls         # Send 'ls' to panes 1 and 3 only
+    tmux-send-all -i 1 5 -c ls         # Send 'ls' to all panes except 1 and 5
+    tmux-send-all -t 0 git status      # Send 'git status' to pane 0 only
+
+EOF
+}
+
+main() {
+    local ignore_panes=()
+    local target_panes_specified=()
+    local command_args=()
+    local parsing_ignore=false
+    local parsing_target=false
+    local use_target_mode=false
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -i|--ignore)
+                if [[ "$use_target_mode" == true ]]; then
+                    echo "Error: -i/--ignore and -t/--target are mutually exclusive"
+                    exit 1
+                fi
+                parsing_ignore=true
+                parsing_target=false
+                shift
+                ;;
+            -t|--target)
+                if [[ ${#ignore_panes[@]} -gt 0 ]]; then
+                    echo "Error: -i/--ignore and -t/--target are mutually exclusive"
+                    exit 1
+                fi
+                parsing_target=true
+                parsing_ignore=false
+                use_target_mode=true
+                shift
+                ;;
+            -c|--command)
+                parsing_ignore=false
+                parsing_target=false
+                shift
+                command_args+=("$@")
+                break
+                ;;
+            *)
+                if [[ "$parsing_ignore" == true ]]; then
+                    ignore_panes+=("$1")
+                elif [[ "$parsing_target" == true ]]; then
+                    target_panes_specified+=("$1")
+                else
+                    command_args+=("$1")
+                fi
+                shift
+                ;;
+        esac
+    done
+    
+    # Check if we have a command to send
+    if [[ ${#command_args[@]} -eq 0 ]]; then
+        echo "Error: No command specified"
+        show_help
+        exit 1
+    fi
+    
+    # Check if we're in a tmux session
+    if [[ -z "$TMUX" ]]; then
+        echo "Error: Not in a tmux session"
+        exit 1
+    fi
+    
+    # Get all pane indices
+    local all_panes=($(tmux list-panes -F '#{pane_index}' 2>/dev/null))
+    
+    if [[ ${#all_panes[@]} -eq 0 ]]; then
+        echo "Error: No panes found"
+        exit 1
+    fi
+    
+    # Determine target panes based on mode
+    local target_panes=()
+    
+    if [[ "$use_target_mode" == true ]]; then
+        # Target mode: only send to specified panes
+        for target_pane in "${target_panes_specified[@]}"; do
+            # Verify the pane exists
+            local pane_exists=false
+            for pane in "${all_panes[@]}"; do
+                if [[ "$pane" == "$target_pane" ]]; then
+                    pane_exists=true
+                    break
+                fi
+            done
+            if [[ "$pane_exists" == true ]]; then
+                target_panes+=("$target_pane")
+            else
+                echo "Warning: Pane $target_pane does not exist, skipping"
+            fi
+        done
+    else
+        # Default or ignore mode: send to all panes, optionally filtering out ignored ones
+        for pane in "${all_panes[@]}"; do
+            local should_ignore=false
+            for ignore_pane in "${ignore_panes[@]}"; do
+                if [[ "$pane" == "$ignore_pane" ]]; then
+                    should_ignore=true
+                    break
+                fi
+            done
+            if [[ "$should_ignore" == false ]]; then
+                target_panes+=("$pane")
+            fi
+        done
+    fi
+    
+    # Check if we have any target panes
+    if [[ ${#target_panes[@]} -eq 0 ]]; then
+        echo "Error: No valid target panes found"
+        exit 1
+    fi
+    
+    # Show what we're doing
+    echo "Sending command '${command_args[*]}' to panes: ${target_panes[*]}"
+    if [[ "$use_target_mode" == true ]]; then
+        echo "Targeting specific panes: ${target_panes_specified[*]}"
+    elif [[ ${#ignore_panes[@]} -gt 0 ]]; then
+        echo "Ignoring panes: ${ignore_panes[*]}"
+    fi
+    
+    # Send command to target panes
+    for pane in "${target_panes[@]}"; do
+        tmux send-keys -t "$pane" "${command_args[*]}" C-m
+    done
+    
+    echo "Command sent to ${#target_panes[@]} pane(s)"
+}
+
+main "$@"
