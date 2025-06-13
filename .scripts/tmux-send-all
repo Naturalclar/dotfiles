@@ -70,9 +70,23 @@ main() {
                 ;;
             *)
                 if [[ "$parsing_ignore" == true ]]; then
-                    ignore_panes+=("$1")
+                    # Check if this looks like a pane number
+                    if [[ "$1" =~ ^[0-9]+$ ]]; then
+                        ignore_panes+=("$1")
+                    else
+                        # Not a number, must be start of command
+                        parsing_ignore=false
+                        command_args+=("$1")
+                    fi
                 elif [[ "$parsing_target" == true ]]; then
-                    target_panes_specified+=("$1")
+                    # Check if this looks like a pane number
+                    if [[ "$1" =~ ^[0-9]+$ ]]; then
+                        target_panes_specified+=("$1")
+                    else
+                        # Not a number, must be start of command
+                        parsing_target=false
+                        command_args+=("$1")
+                    fi
                 else
                     command_args+=("$1")
                 fi
