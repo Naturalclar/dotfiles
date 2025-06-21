@@ -19,7 +19,7 @@ case "${OS}" in
         # initialize asdf
         . "$HOME/.asdf/asdf.sh"
         # Add Brew Path
-        export PATH="/opt/homebrew/bin:$PATH"
+        export PATH="$PATH:/opt/homebrew/bin"
         export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
     ;;
     Linux*)
