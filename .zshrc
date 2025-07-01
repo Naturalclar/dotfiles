@@ -60,6 +60,12 @@ case "${OS}" in
       export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
       export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
       export PATH=/snap/bin:$PATH
+      # WSL Explorer command (similar to macOS 'open')
+      alias open="explorer.exe"
+      # npm global path for WSL
+      export PATH=~/.npm-global/bin:$PATH
+      # Set SHELL for WSL
+      export SHELL=/usr/bin/zsh
       # end set JAVA_HOME
       # TODO: only do this if linuxbrew exists
       # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
