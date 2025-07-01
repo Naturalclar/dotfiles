@@ -603,3 +603,6 @@ bindkey -s '^N' "run-script\n"
 if [ -x "$HOME/.claude/local/claude" ]; then
     alias claude="$HOME/.claude/local/claude"
 fi
+
+# Claude Code update alias
+alias claude-code-update="cd ~/.claude/local && npm update @anthropic-ai/claude-code"
