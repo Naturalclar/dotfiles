@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# killport - Kill processes running on a specified port
+# Usage: killport <port>
+
+if [ $# -eq 0 ]; then
+    echo "Usage: killport <port>"
+    echo "Example: killport 8080"
+    exit 1
+fi
+
+port=$1
+
+# Check if port is a valid number
+if ! [[ "$port" =~ ^[0-9]+$ ]]; then
+    echo "Error: Port must be a number"
+    exit 1
+fi
+
+# Find processes using the port
+processes=$(lsof -ti:$port 2>/dev/null)
+
+if [ -z "$processes" ]; then
+    echo "No processes found running on port $port"
+    exit 0
+fi
+
+echo "Killing processes on port $port:"
+echo "$processes" | while read -r pid; do
+    if ps -p $pid > /dev/null 2>&1; then
+        echo "  PID $pid"
+    fi
+done
+
+# Kill the processes
+echo "$processes" | xargs kill -9 2>/dev/null
+
+echo "Done."
