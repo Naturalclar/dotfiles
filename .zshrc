@@ -508,8 +508,22 @@ export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
 # jq
-## list scripts in package.json
-alias ns="jq '.scripts' package.json"
+## list scripts in package.json or tasks in deno.json
+ns() {
+  if [[ -f package.json ]]; then
+    echo "📦 npm scripts:"
+    jq '.scripts' package.json
+  elif [[ -f deno.json ]]; then
+    echo "🦕 deno tasks:"
+    jq '.tasks' deno.json
+  elif [[ -f deno.jsonc ]]; then
+    echo "🦕 deno tasks:"
+    jq '.tasks' deno.jsonc
+  else
+    echo "❌ No package.json or deno.json found in current directory"
+    return 1
+  fi
+}
 
 # set JAVA_HOME on every change directory
 asdf_update_java_home() {
