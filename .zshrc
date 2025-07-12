@@ -251,6 +251,8 @@ alias gbranch="git branch"
 alias gcm="git commit -m"
 alias gcb="git switch -c"
 alias gco="git checkout"
+# get default branch using git remote. its slower than using symbolic-ref, but symbolic-ref does not work with git worktree
+alias get_default_branch="git remote show origin | grep 'HEAD branch' | awk '{print \$3}'"
 alias gcod='git switch $(get_default_branch)'
 alias gcom="git switch master"
 alias gcp="git cherry-pick"
@@ -285,8 +287,6 @@ alias gitsync="git remote set-head origin --auto"
 alias bl="git branch"
 alias branch="git branch"
 alias pull="git pull"
-# get default branch using git remote. its slower than using symbolic-ref, but symbolic-ref does not work with git worktree
-alias get_default_branch="git remote show origin | grep 'HEAD branch' | awk '{print \$3}'"
 alias get_default_branch_fast="git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
 
 alias up="git stash -u && git rebase main && git stash pop"
@@ -509,7 +509,7 @@ export PATH="$PNPM_HOME:$PATH"
 
 # jq
 ## list scripts in package.json or tasks in deno.json
-ns() {
+show_scripts() {
   if [[ -f package.json ]]; then
     echo "📦 npm scripts:"
     jq '.scripts' package.json
@@ -524,6 +524,9 @@ ns() {
     return 1
   fi
 }
+
+# alias for backward compatibility
+alias ns="show_scripts"
 
 # set JAVA_HOME on every change directory
 asdf_update_java_home() {
