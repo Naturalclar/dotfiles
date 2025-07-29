@@ -133,3 +133,6 @@ Set-Alias -Name branch -Value "git branch"
 Set-Alias -Name pull -Value "git pull"
 Set-Alias -Name up -Value "git pull upstream master"
 Set-Alias -Name get_default_branch_fast -Value "git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
+
+# Add alias for cygpath
+Set-Alias cygpath "$env:USERPROFILE\scoop\apps\git\current\usr\bin\cygpath.exe"
