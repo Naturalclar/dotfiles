@@ -35,6 +35,13 @@ config: # Create symlinks of .config at home directory
 	@$(foreach val, $(CONFIG_PATH), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@echo '------------------------'
 
+claudeCommands: # Symlink Claude Code custom commands to ~/.claude/commands
+	@echo 'claudeCommands - Setting symlink for Claude Code commands'
+	@echo '------------------------'
+	@mkdir -p $(HOME)/.claude
+	@ln -sfnv $(abspath .config/claude/commands) $(HOME)/.claude/commands
+	@echo '------------------------'
+
 vscodeExtensions: # Sync VSCode extensions
 	@echo 'vscodeExtensions - Syncing VSCode extensions'
 	@echo '------------------------'

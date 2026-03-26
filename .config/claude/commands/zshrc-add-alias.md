@@ -1,0 +1,1 @@
+Add a new alias to .zshrc. Ask for the alias name and the command it should expand to. Place it in the appropriate section of the file based on the tool/category it belongs to. If no matching section exists, add it near the end before the environment-specific blocks.

@@ -1,0 +1,1 @@
+Add a new Neovim plugin. Ask for the plugin name (GitHub repo). Create a new plugin config file at `.config/nvim/lua/plugins/<plugin-name>.lua` following the LazyVim plugin spec format used by the other plugins in that directory. Return the lazy.nvim spec so it can be reviewed before saving.

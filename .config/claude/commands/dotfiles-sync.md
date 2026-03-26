@@ -1,0 +1,1 @@
+Apply dotfiles and config symlinks to the home directory. Run both `make dotfiles` and `make config`, then report which symlinks were created or updated.

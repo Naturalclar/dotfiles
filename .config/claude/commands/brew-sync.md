@@ -1,0 +1,1 @@
+Compare currently installed Homebrew packages against the Brewfile in this repository. Show which packages are installed but not in the Brewfile, and which are in the Brewfile but not installed. Ask whether to update the Brewfile to match the current system.

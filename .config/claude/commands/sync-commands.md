@@ -1,0 +1,1 @@
+Run `make claudeCommands` in the dotfiles repository to update the symlink from `.config/claude/commands/` to `~/.claude/commands/`. Report which commands are now available by listing the files in the commands directory.

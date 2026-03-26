@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `make` or `make dotfiles` — symlink all dotfiles (`.??*` except `.git`, `.gitignore`, etc.) into `$HOME`
 - `make config` — symlink `.config/*` entries into `$HOME/.config/`
 - `make vscodeExtensions` — sync VSCode extensions via `configs/.vscode/vscodeSync.sh`
+- `make claudeCommands` — symlink `.config/claude/commands/` to `~/.claude/commands/` for global Claude Code slash commands
 - `make list` — show which dotfiles will be symlinked
 - `make help` — print all make targets
 - Windows setup: run `./bootstrap.ps1` to concatenate `windows/*.ps1` into the PowerShell `$PROFILE`
