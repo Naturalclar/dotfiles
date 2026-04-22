@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# tmux-pane-name: Rename the current tmux window to the current git branch.
+# Usage: tmux-pane-name [NAME]
+#   With no argument, uses the current git branch name.
+#   With an argument, uses that string as the window name.
+
+set -e
+
+if [[ -z "$TMUX" ]]; then
+    echo "Error: Not in a tmux session" >&2
+    exit 1
+fi
+
+if [[ $# -gt 0 ]]; then
+    name="$*"
+else
+    name=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || true)
+    if [[ -z "$name" ]]; then
+        echo "Error: not inside a git repository (pass a name explicitly to override)" >&2
+        exit 1
+    fi
+fi
+
+tmux rename-window "$name"
