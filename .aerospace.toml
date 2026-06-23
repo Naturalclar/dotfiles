@@ -3,6 +3,18 @@
 enable-normalization-flatten-containers = false
 enable-normalization-opposite-orientation-for-nested-containers = false
 
+[workspace-to-monitor-force-assignment]
+11 = 'secondary'
+12 = 'secondary'
+13 = 'secondary'
+14 = 'secondary'
+15 = 'secondary'
+16 = 'secondary'
+17 = 'secondary'
+18 = 'secondary'
+19 = 'secondary'
+20 = 'secondary'
+
 [mode.main.binding]
 alt-enter = 'exec-and-forget open -n ~/Applications/.app'
 
@@ -78,6 +90,50 @@ alt-shift-u = 'move-node-to-workspace 7'
 alt-shift-i = 'move-node-to-workspace 8'
 alt-shift-o = 'move-node-to-workspace 9'
 alt-shift-p = 'move-node-to-workspace 10'
+
+alt-ctrl-1 = 'workspace 11'
+alt-ctrl-2 = 'workspace 12'
+alt-ctrl-3 = 'workspace 13'
+alt-ctrl-4 = 'workspace 14'
+alt-ctrl-5 = 'workspace 15'
+alt-ctrl-6 = 'workspace 16'
+alt-ctrl-7 = 'workspace 17'
+alt-ctrl-8 = 'workspace 18'
+alt-ctrl-9 = 'workspace 19'
+alt-ctrl-0 = 'workspace 20'
+
+alt-ctrl-shift-1 = 'move-node-to-workspace 11'
+alt-ctrl-shift-2 = 'move-node-to-workspace 12'
+alt-ctrl-shift-3 = 'move-node-to-workspace 13'
+alt-ctrl-shift-4 = 'move-node-to-workspace 14'
+alt-ctrl-shift-5 = 'move-node-to-workspace 15'
+alt-ctrl-shift-6 = 'move-node-to-workspace 16'
+alt-ctrl-shift-7 = 'move-node-to-workspace 17'
+alt-ctrl-shift-8 = 'move-node-to-workspace 18'
+alt-ctrl-shift-9 = 'move-node-to-workspace 19'
+alt-ctrl-shift-0 = 'move-node-to-workspace 20'
+
+alt-ctrl-q = 'workspace 11'
+alt-ctrl-w = 'workspace 12'
+alt-ctrl-e = 'workspace 13'
+alt-ctrl-r = 'workspace 14'
+alt-ctrl-t = 'workspace 15'
+alt-ctrl-y = 'workspace 16'
+alt-ctrl-u = 'workspace 17'
+alt-ctrl-i = 'workspace 18'
+alt-ctrl-o = 'workspace 19'
+alt-ctrl-p = 'workspace 20'
+
+alt-ctrl-shift-q = 'move-node-to-workspace 11'
+alt-ctrl-shift-w = 'move-node-to-workspace 12'
+alt-ctrl-shift-e = 'move-node-to-workspace 13'
+alt-ctrl-shift-r = 'move-node-to-workspace 14'
+alt-ctrl-shift-t = 'move-node-to-workspace 15'
+alt-ctrl-shift-y = 'move-node-to-workspace 16'
+alt-ctrl-shift-u = 'move-node-to-workspace 17'
+alt-ctrl-shift-i = 'move-node-to-workspace 18'
+alt-ctrl-shift-o = 'move-node-to-workspace 19'
+alt-ctrl-shift-p = 'move-node-to-workspace 20'
 
 alt-shift-c = 'reload-config'
 
