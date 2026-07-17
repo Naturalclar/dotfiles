@@ -4,6 +4,10 @@
 # set vim motion
 set -o vi
 
+# Force a UTF-8 locale so multibyte (e.g. Japanese) renders over SSH clients
+# like Termius, which don't forward the locale Terminal.app sets locally.
+export LANG=en_US.UTF-8
+
 # Uncomment the following line to profile zsh
 # zmodload zsh/zprof
 zmodload zsh/datetime
