@@ -479,6 +479,7 @@ alias cl="clasp"
 # tmux
 alias tsa="tmux-send-all"
 alias pn="tmux-pane-name"
+alias td="tmux detach"
 
 # opam configuration
 test -r "$HOME/.opam/opam-init/init.zsh" && . "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null || true
