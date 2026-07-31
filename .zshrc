@@ -1,5 +1,7 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+export LANG=ja_JP.UTF-8
+export LC_ALL=ja_JP.UTF-8
 
 # set vim motion
 set -o vi
@@ -26,6 +28,13 @@ case "${OS}" in
         # Add Brew Path
         export PATH="/opt/homebrew/bin:$PATH"
         export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
+        # Repair SSH_AUTH_SOCK when missing (e.g. inside tmux) by pointing
+        # at the macOS launchd ssh-agent socket
+        if [[ -z "$SSH_AUTH_SOCK" || ! -S "$SSH_AUTH_SOCK" ]]; then
+            _launchd_sock=(/private/tmp/com.apple.launchd.*/Listeners(N))
+            [[ -n "$_launchd_sock" ]] && export SSH_AUTH_SOCK="${_launchd_sock[1]}"
+            unset _launchd_sock
+        fi
     ;;
     Linux*)
         # ASDF config - expected to be cloned from git
@@ -143,7 +152,14 @@ zstyle ':vcs_info:*' actionformats '[%b|%a]'
 
 setopt prompt_subst
 
-PROMPT="%F{green}╭─ %~ %f"'${vcs_info_msg_0_}'"
+### SSH接続時はプロンプト先頭に目立つバッジを表示する
+if [[ -n "$SSH_CONNECTION" || -n "$SSH_TTY" ]]; then
+  SSH_INDICATOR=$'%K{magenta}%F{white} SSH:%m %f%k\n'
+else
+  SSH_INDICATOR=""
+fi
+
+PROMPT="${SSH_INDICATOR}%F{green}╭─ %~ %f"'${vcs_info_msg_0_}'"
 %F{green}╰─%B$%b %f"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
@@ -623,9 +639,9 @@ alias rs="run-script"
 # Keyboard shortcut for run-script (Ctrl+N)
 bindkey -s '^N' "run-script\n"
 
-if [ -x "$HOME/.claude/local/claude" ]; then
-    alias claude="$HOME/.claude/local/claude"
+if [ -x "$HOME/.local/bin/claude" ]; then
+    alias claude="$HOME/.local/bin/claude"
 fi
 
 # Claude Code update alias
-alias claude-code-update="cd ~/.claude/local && npm update @anthropic-ai/claude-code"
+alias claude-code-update="cd ~/.local/bin && npm update @anthropic-ai/claude-code"
