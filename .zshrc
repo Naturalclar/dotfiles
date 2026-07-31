@@ -149,7 +149,7 @@ setopt prompt_subst
 
 ### SSH接続時はプロンプト先頭に目立つバッジを表示する
 if [[ -n "$SSH_CONNECTION" || -n "$SSH_TTY" ]]; then
-  SSH_INDICATOR="%K{magenta}%F{white} SSH:%m %f%k "
+  SSH_INDICATOR=$'%K{magenta}%F{white} SSH:%m %f%k\n'
 else
   SSH_INDICATOR=""
 fi
