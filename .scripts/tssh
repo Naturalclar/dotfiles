@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+
+# tssh - list Tailscale hosts and ssh into the selected one
+#
+# Usage:
+#   tssh                 pick a host via fzf, then ssh into it
+#   tssh <name>          ssh into the host matching <name> (substring match)
+#   tssh <user>@<name>   ssh into the matching host as <user>
+#   tssh -l              list hosts only, no ssh
+#   tssh -u <user>       ssh as <user> (default: current user on the target)
+#   tssh -a              include devices that can't be ssh'd into (iOS/Android/tvOS)
+#   tssh -p / -t         force plain ssh / force `tailscale ssh`
+#
+# The Tailscale SSH *server* only runs on Linux, so by default Linux targets go
+# through `tailscale ssh` and everything else falls back to plain ssh.
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: tssh [options] [user@]name
+
+Options:
+  -l, --list        list hosts and exit
+  -u, --user USER   ssh as USER
+  -a, --all         include non-sshable devices (iOS/Android/tvOS)
+  -p, --plain       force plain ssh
+  -t, --tailscale   force `tailscale ssh`
+  -h, --help        show this help
+
+Without -p/-t: Linux hosts use `tailscale ssh`, others use plain ssh.
+EOF
+}
+
+# The macOS App Store build hides the CLI inside the app bundle
+if command -v tailscale >/dev/null 2>&1; then
+  TS=tailscale
+elif [[ -x /Applications/Tailscale.app/Contents/MacOS/Tailscale ]]; then
+  TS=/Applications/Tailscale.app/Contents/MacOS/Tailscale
+else
+  echo "tailscale not found" >&2
+  exit 1
+fi
+
+for cmd in jq fzf; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "$cmd is required but not installed" >&2
+    exit 1
+  fi
+done
+
+list_only=0
+show_all=0
+mode="auto"
+user=""
+query=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -l|--list) list_only=1; shift ;;
+    -a|--all) show_all=1; shift ;;
+    -p|--plain) mode="plain"; shift ;;
+    -t|--tailscale) mode="tailscale"; shift ;;
+    -u|--user) user="${2:-}"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    -*) echo "unknown option: $1" >&2; usage >&2; exit 1 ;;
+    *) query="$1"; shift ;;
+  esac
+done
+
+# Allow `tssh user@host` as shorthand for `tssh -u user host`
+if [[ "$query" == *@* ]]; then
+  user="${query%%@*}"
+  query="${query#*@}"
+fi
+
+status_file=$(mktemp)
+trap 'rm -f "$status_file"' EXIT
+
+if ! "$TS" status --json >"$status_file" 2>/dev/null; then
+  echo "could not read tailscale status (is tailscale running?)" >&2
+  exit 1
+fi
+
+# Peers as: dnsname \t hostname \t os \t ip \t online
+peers=$(jq -r --argjson all "$show_all" '
+  .Peer // {}
+  | to_entries
+  | map(.value)
+  | map(select($all == 1 or ((.OS // "") | ascii_downcase | IN("ios", "android", "tvos") | not)))
+  | sort_by([(if .Online then 0 else 1 end), (.HostName // "" | ascii_downcase)])
+  | .[]
+  | [(.DNSName // "" | rtrimstr(".")), (.HostName // "-"), (.OS // "-"), (.TailscaleIPs[0] // "-"), (if .Online then "online" else "offline" end)]
+  | @tsv
+' "$status_file")
+
+if [[ -z "$peers" ]]; then
+  echo "no tailscale hosts found" >&2
+  exit 1
+fi
+
+# dnsname \t padded display columns \t os (fzf shows field 2 only)
+rows=$(printf '%s\n' "$peers" | awk -F'\t' '{
+  short = $1; sub(/\..*$/, "", short)
+  printf "%s\t%-24s %-9s %-16s %s\t%s\n", $1, short, $3, $4, $5, $3
+}')
+
+if [[ "$list_only" -eq 1 ]]; then
+  printf '%s\n' "$rows" | cut -f2
+  exit 0
+fi
+
+row=""
+if [[ -n "$query" ]]; then
+  matches=$(printf '%s\n' "$rows" | grep -i -- "$query" || true)
+  match_count=$(printf '%s' "$matches" | grep -c '' || true)
+  if [[ -z "$matches" ]]; then
+    echo "no tailscale host matching '$query'" >&2
+    exit 1
+  elif [[ "$match_count" -eq 1 ]]; then
+    row="$matches"
+  else
+    rows="$matches"
+  fi
+fi
+
+if [[ -z "$row" ]]; then
+  row=$(printf '%s\n' "$rows" | fzf \
+    --layout=reverse \
+    --delimiter='\t' \
+    --with-nth=2 \
+    --prompt="ssh: " \
+    --header="host                     os        ip               status" \
+    --preview "jq -r --arg dns {1} '.Peer[] | select((.DNSName // \"\" | rtrimstr(\".\")) == \$dns) | \"host:      \(.HostName)\ndns:       \(.DNSName | rtrimstr(\".\"))\nos:        \(.OS)\nips:       \(.TailscaleIPs | join(\", \"))\nonline:    \(.Online)\nlast seen: \(.LastSeen)\nrelay:     \(.Relay)\nexit node: \(.ExitNode)\"' $status_file")
+fi
+
+if [[ -z "$row" ]]; then
+  exit 0
+fi
+
+host=$(printf '%s' "$row" | cut -f1)
+host_os=$(printf '%s' "$row" | cut -f3 | tr '[:upper:]' '[:lower:]')
+
+target="$host"
+if [[ -n "$user" ]]; then
+  target="$user@$host"
+fi
+
+# Tailscale SSH only has a server on Linux; anything else needs the target's
+# own sshd (macOS: System Settings > General > Sharing > Remote Login).
+use_ts=0
+case "$mode" in
+  tailscale) use_ts=1 ;;
+  plain) use_ts=0 ;;
+  auto) [[ "$host_os" == "linux" ]] && use_ts=1 ;;
+esac
+
+if [[ "$use_ts" -eq 1 ]]; then
+  echo "tailscale ssh $target"
+  exec "$TS" ssh "$target"
+else
+  echo "ssh $target"
+  exec ssh "$target"
+fi
