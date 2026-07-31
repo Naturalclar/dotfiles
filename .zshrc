@@ -147,7 +147,14 @@ zstyle ':vcs_info:*' actionformats '[%b|%a]'
 
 setopt prompt_subst
 
-PROMPT="%F{green}╭─ %~ %f"'${vcs_info_msg_0_}'"
+### SSH接続時はプロンプト先頭に目立つバッジを表示する
+if [[ -n "$SSH_CONNECTION" || -n "$SSH_TTY" ]]; then
+  SSH_INDICATOR="%K{magenta}%F{white} SSH:%m %f%k "
+else
+  SSH_INDICATOR=""
+fi
+
+PROMPT="${SSH_INDICATOR}%F{green}╭─ %~ %f"'${vcs_info_msg_0_}'"
 %F{green}╰─%B$%b %f"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
