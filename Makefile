@@ -5,6 +5,8 @@ VSCODE_SCRIPT_PATH := $(abspath configs/.vscode)
 CONFIG_PATH := $(wildcard .config/??*)
 .DEFAULT_GOAL	:= dotfiles
 
+.PHONY: list dotfiles config unlink vscodeExtensions help
+
 list: # Show dotfiles in this repository
 	@echo 'list - Showing list of dotfiles in this repository'
 	@echo '------------------------'
@@ -12,27 +14,22 @@ list: # Show dotfiles in this repository
 	@echo '------------------------'
 
 dotfiles: # Create symlinks of dotfiles to home directory
-	@echo 'dotfiles - Setting simlinks of dotfiles in HOME directory'
+	@echo 'dotfiles - Setting symlinks of dotfiles in HOME directory'
 	@echo '------------------------'
-# if using macos
-ifeq ($(shell uname),Darwin)
 	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
-endif
-# if using linux
-ifeq ($(shell uname),Linux)
-	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
-endif
-# if using windows
-ifeq ($(shell uname -o),Msys)
-	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) ~/$(val);)
-endif
 	@echo '------------------------'
 
 config: # Create symlinks of .config at home directory
-	@echo 'dotfiles - Setting simlinks of .config in HOME directory'
+	@echo 'config - Setting symlinks of .config in HOME directory'
 	@echo '------------------------'
 	@echo $(abspath $(CONFIG_PATH))
 	@$(foreach val, $(CONFIG_PATH), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@echo '------------------------'
+
+unlink: # Remove dotfile symlinks from home directory
+	@echo 'unlink - Removing dotfile symlinks from HOME directory'
+	@echo '------------------------'
+	@$(foreach val, $(TARGET) $(CONFIG_PATH), if [ -L "$(HOME)/$(val)" ]; then rm -v "$(HOME)/$(val)"; fi;)
 	@echo '------------------------'
 
 vscodeExtensions: # Sync VSCode extensions
@@ -41,7 +38,7 @@ vscodeExtensions: # Sync VSCode extensions
 	@bash $(VSCODE_SCRIPT_PATH)/vscodeSync.sh
 	@echo '------------------------'
 
-help: # Print Usge
+help: # Print Usage
 	@echo 'help - showing usage'
 	@echo '------------------------'
 	@grep '^[^#[:space:]].*: #' Makefile
