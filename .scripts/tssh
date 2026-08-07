@@ -32,11 +32,19 @@ Without -p/-t: Linux hosts use `tailscale ssh`, others use plain ssh.
 EOF
 }
 
-# The macOS App Store build hides the CLI inside the app bundle
+# The macOS App Store build hides the CLI inside the app bundle. Under WSL there
+# is usually no Linux tailscaled, so fall back to the Windows client: WSL2 routes
+# to the tailnet through the host, and MagicDNS resolves via the host's resolver,
+# so listing and plain ssh both work. Its `ssh` subcommand does not -- it spawns a
+# Windows ssh.exe, which dies with CreateProcessW error:2 when called from WSL.
+ts_is_win=0
 if command -v tailscale >/dev/null 2>&1; then
   TS=tailscale
 elif [[ -x /Applications/Tailscale.app/Contents/MacOS/Tailscale ]]; then
   TS=/Applications/Tailscale.app/Contents/MacOS/Tailscale
+elif [[ -x "/mnt/c/Program Files/Tailscale/tailscale.exe" ]]; then
+  TS="/mnt/c/Program Files/Tailscale/tailscale.exe"
+  ts_is_win=1
 else
   echo "tailscale not found" >&2
   exit 1
@@ -154,6 +162,17 @@ case "$mode" in
   plain) use_ts=0 ;;
   auto) [[ "$host_os" == "linux" ]] && use_ts=1 ;;
 esac
+
+# Under WSL the Windows client can list the tailnet but not ssh from it, so send
+# everything through WSL's own ssh -- it reaches tailnet IPs and MagicDNS names.
+if [[ "$use_ts" -eq 1 && "$ts_is_win" -eq 1 ]]; then
+  if [[ "$mode" == "tailscale" ]]; then
+    echo "-t/--tailscale does not work under WSL: the Windows tailscale.exe" >&2
+    echo "cannot spawn ssh from WSL. Use plain ssh (the default) instead." >&2
+    exit 1
+  fi
+  use_ts=0
+fi
 
 if [[ "$use_ts" -eq 1 ]]; then
   echo "tailscale ssh $target"
