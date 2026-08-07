@@ -18,7 +18,7 @@ if ! [[ "$port" =~ ^[0-9]+$ ]]; then
 fi
 
 # Find processes using the port
-processes=$(lsof -ti:$port 2>/dev/null)
+processes=$(lsof -ti:"$port" 2>/dev/null)
 
 if [ -z "$processes" ]; then
     echo "No processes found running on port $port"
@@ -27,7 +27,7 @@ fi
 
 echo "Killing processes on port $port:"
 echo "$processes" | while read -r pid; do
-    if ps -p $pid > /dev/null 2>&1; then
+    if ps -p "$pid" > /dev/null 2>&1; then
         echo "  PID $pid"
     fi
 done

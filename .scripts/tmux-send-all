@@ -108,8 +108,11 @@ main() {
         exit 1
     fi
     
-    # Get all pane indices
-    local all_panes=($(tmux list-panes -F '#{pane_index}' 2>/dev/null))
+    # Get all pane indices (no mapfile: macOS /bin/bash is 3.2)
+    local all_panes=()
+    while IFS= read -r pane_index; do
+        all_panes+=("$pane_index")
+    done < <(tmux list-panes -F '#{pane_index}' 2>/dev/null)
     
     if [[ ${#all_panes[@]} -eq 0 ]]; then
         echo "Error: No panes found"
