@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Fuzzy-select a tmux window across all sessions and switch to it.
+# Bound to F4 in .tmux.conf, launched through display-popup so fzf gets a tty.
+
+set -euo pipefail
+
+# Columns are aligned with tmux's own #{pN:...} padding so that no external
+# `column` is needed. The target is the first field, kept free of the active
+# marker so it can be handed to tmux verbatim.
+format='#{p24:#{session_name}:#{window_index}} #{?window_active,*, } #{p20:#{window_name}} #{pane_current_command}'
+
+selected=$(
+  tmux list-windows -a -F "$format" |
+    fzf --reverse \
+      --prompt='window> ' \
+      --preview 'tmux capture-pane -ep -t {1}' \
+      --preview-window=down:60%
+) || exit 0
+
+if [[ -z $selected ]]; then
+  exit 0
+fi
+
+target=$(awk '{print $1}' <<<"$selected")
+
+tmux switch-client -t "${target%%:*}"
+tmux select-window -t "$target"
