@@ -4,6 +4,15 @@ This directory contains test cases for various functions and scripts in the dotf
 
 ## Contents
 
+### scripts.bats
+
+Automated [bats-core](https://github.com/bats-core/bats-core) tests for the non-interactive behaviors of the tools in `.scripts/` (`urlencode`, `killport`, help/usage flags, and the outside-tmux guards). These run in CI on every push; locally:
+
+```bash
+brew install bats-core
+bats test/scripts.bats
+```
+
 ### test-package-scripts
 
 A test package to demonstrate the basic `run-script` function added to your .zshrc file. This test shows how to use the function to list and run npm scripts using fzf.
