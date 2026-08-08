@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# tmux-cheatsheet: show the prefix-less (root table) keybinds in a popup.
+# Generated from `tmux list-keys`, so new binds show up automatically.
+# Bound to F6 in .tmux.conf via display-popup; mouse bindings are skipped.
+
+set -euo pipefail
+
+printf 'Prefix-less keybinds\n'
+printf '====================\n\n'
+
+tmux list-keys -T root |
+  awk '$4 !~ /Mouse|Wheel|Click|Drag/ {
+    cmd = ""
+    for (i = 5; i <= NF; i++) cmd = cmd (i > 5 ? " " : "") $i
+    if (length(cmd) > 68) cmd = substr(cmd, 1, 65) "..."
+    printf "%-8s %s\n", $4, cmd
+  }'
+
+printf '\n(press any key to close)'
+read -rsn1 || true
