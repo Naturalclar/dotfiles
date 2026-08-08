@@ -32,31 +32,6 @@ Without -p/-t: Linux hosts use `tailscale ssh`, others use plain ssh.
 EOF
 }
 
-# The macOS App Store build hides the CLI inside the app bundle. Under WSL there
-# is usually no Linux tailscaled, so fall back to the Windows client: WSL2 routes
-# to the tailnet through the host, and MagicDNS resolves via the host's resolver,
-# so listing and plain ssh both work. Its `ssh` subcommand does not -- it spawns a
-# Windows ssh.exe, which dies with CreateProcessW error:2 when called from WSL.
-ts_is_win=0
-if command -v tailscale >/dev/null 2>&1; then
-  TS=tailscale
-elif [[ -x /Applications/Tailscale.app/Contents/MacOS/Tailscale ]]; then
-  TS=/Applications/Tailscale.app/Contents/MacOS/Tailscale
-elif [[ -x "/mnt/c/Program Files/Tailscale/tailscale.exe" ]]; then
-  TS="/mnt/c/Program Files/Tailscale/tailscale.exe"
-  ts_is_win=1
-else
-  echo "tailscale not found" >&2
-  exit 1
-fi
-
-for cmd in jq fzf; do
-  if ! command -v "$cmd" >/dev/null 2>&1; then
-    echo "$cmd is required but not installed" >&2
-    exit 1
-  fi
-done
-
 list_only=0
 show_all=0
 mode="auto"
@@ -81,6 +56,32 @@ if [[ "$query" == *@* ]]; then
   user="${query%%@*}"
   query="${query#*@}"
 fi
+
+# Dependency checks come after parsing so --help works without tailscale.
+# The macOS App Store build hides the CLI inside the app bundle. Under WSL there
+# is usually no Linux tailscaled, so fall back to the Windows client: WSL2 routes
+# to the tailnet through the host, and MagicDNS resolves via the host's resolver,
+# so listing and plain ssh both work. Its `ssh` subcommand does not -- it spawns a
+# Windows ssh.exe, which dies with CreateProcessW error:2 when called from WSL.
+ts_is_win=0
+if command -v tailscale >/dev/null 2>&1; then
+  TS=tailscale
+elif [[ -x /Applications/Tailscale.app/Contents/MacOS/Tailscale ]]; then
+  TS=/Applications/Tailscale.app/Contents/MacOS/Tailscale
+elif [[ -x "/mnt/c/Program Files/Tailscale/tailscale.exe" ]]; then
+  TS="/mnt/c/Program Files/Tailscale/tailscale.exe"
+  ts_is_win=1
+else
+  echo "tailscale not found" >&2
+  exit 1
+fi
+
+for cmd in jq fzf; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "$cmd is required but not installed" >&2
+    exit 1
+  fi
+done
 
 status_file=$(mktemp)
 trap 'rm -f "$status_file"' EXIT
