@@ -40,6 +40,7 @@ Run `bootstrap.ps1` to setup configuration for PowerShell
 | --- | --- |
 | `pmux` | Pick a ghq-managed repo via fzf (with README preview) and open/attach a tmux session for it. Bound to `F1` in tmux. |
 | `tmux-window-fzf` | Fuzzy-select a tmux window across all sessions (with pane preview) and switch to it. Bound to `F4` and `prefix + w` in tmux. |
+| `tmux-cheatsheet` | Show the prefix-less keybinds in a popup, generated from `tmux list-keys`. Bound to `F6` in tmux. |
 | `tmux-send-all` | Send a command to tmux panes in the current session, targeting (`-t`) or excluding (`-i`) specific panes. |
 | `tmux-cleanup-windows.sh` | Close all tmux windows except the active one and windows 0–2. |
 | `tmux-pane-name` | Rename the current tmux window to the current git branch (or a given name). |
