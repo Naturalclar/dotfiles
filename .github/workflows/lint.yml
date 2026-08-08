@@ -36,6 +36,16 @@ jobs:
           bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint -color
 
+  bats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install bats and lsof
+        run: sudo apt-get update && sudo apt-get install -y bats lsof
+      - name: Run script tests
+        run: bats test/scripts.bats
+
   gitleaks:
     runs-on: ubuntu-latest
     steps:
