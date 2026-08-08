@@ -24,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run shellcheck on .scripts
-        run: shellcheck .scripts/*
+        run: shellcheck .scripts/* install.sh
 
   actionlint:
     runs-on: ubuntu-latest

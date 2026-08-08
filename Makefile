@@ -5,7 +5,7 @@ VSCODE_SCRIPT_PATH := $(abspath configs/.vscode)
 CONFIG_PATH := $(wildcard .config/??*)
 .DEFAULT_GOAL	:= dotfiles
 
-.PHONY: list dotfiles config unlink brew vscodeExtensions help
+.PHONY: list dotfiles config unlink brew bootstrap vscodeExtensions help
 
 list: # Show dotfiles in this repository
 	@echo 'list - Showing list of dotfiles in this repository'
@@ -31,6 +31,9 @@ unlink: # Remove dotfile symlinks from home directory
 	@echo '------------------------'
 	@$(foreach val, $(TARGET) $(CONFIG_PATH), if [ -L "$(HOME)/$(val)" ]; then rm -v "$(HOME)/$(val)"; fi;)
 	@echo '------------------------'
+
+bootstrap: # Full new-machine setup (Homebrew, packages, symlinks, asdf runtimes)
+	@./install.sh
 
 brew: # Install Homebrew packages from Brewfile
 	@echo 'brew - Installing Homebrew packages from Brewfile'
