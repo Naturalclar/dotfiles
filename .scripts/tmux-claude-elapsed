@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# tmux-claude-elapsed: Print a compact elapsed-time label ("45s", "12m", "2h05m")
+# for the epoch-seconds timestamp given as $1. Prints nothing (and still exits 0)
+# when the argument is missing or not a number, so it can be embedded in the tmux
+# status line as #(tmux-claude-elapsed #{@claude_at}) without leaving garbage
+# when no Claude mark is set.
+
+at="$1"
+[[ "$at" =~ ^[0-9]+$ ]] || exit 0
+
+now=$(date +%s)
+elapsed=$(( now - at ))
+(( elapsed < 0 )) && elapsed=0
+
+if (( elapsed < 60 )); then
+    echo "${elapsed}s"
+elif (( elapsed < 3600 )); then
+    echo "$(( elapsed / 60 ))m"
+else
+    printf '%dh%02dm\n' "$(( elapsed / 3600 ))" "$(( (elapsed % 3600) / 60 ))"
+fi

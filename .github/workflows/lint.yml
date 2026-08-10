@@ -41,8 +41,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install bats and lsof
-        run: sudo apt-get update && sudo apt-get install -y bats lsof
+      - name: Install bats, lsof and tmux
+        run: sudo apt-get update && sudo apt-get install -y bats lsof tmux
       - name: Run script tests
         run: bats test/scripts.bats
 

@@ -6,7 +6,9 @@
 #   tmux-pane-highlight off       # clear (revert pane border + window indicator)
 # Sets @pane_color on the pane (drives the border color via .tmux.conf) and
 # @claude_status on the window (drives a colored-emoji prefix in the Catppuccin
-# window status). No-op when not inside tmux, so it is safe to call from hooks.
+# window status). Also records @claude_at (epoch seconds) on both scopes so the
+# status line can show how long the mark has been up (see tmux-claude-elapsed).
+# No-op when not inside tmux, so it is safe to call from hooks.
 
 [[ -z "$TMUX" || -z "$TMUX_PANE" ]] && exit 0
 
@@ -14,7 +16,9 @@ color="${1:-off}"
 
 if [[ "$color" == "off" ]]; then
     tmux set-option -p -t "$TMUX_PANE" -u @pane_color 2>/dev/null || true
+    tmux set-option -p -t "$TMUX_PANE" -u @claude_at 2>/dev/null || true
     tmux set-option -w -t "$TMUX_PANE" -u @claude_status 2>/dev/null || true
+    tmux set-option -w -t "$TMUX_PANE" -u @claude_at 2>/dev/null || true
     exit 0
 fi
 
@@ -28,5 +32,8 @@ case "$color" in
     *)       icon="⏺" ;;
 esac
 
+now=$(date +%s)
 tmux set-option -p -t "$TMUX_PANE" @pane_color "$color"
+tmux set-option -p -t "$TMUX_PANE" @claude_at "$now"
 tmux set-option -w -t "$TMUX_PANE" @claude_status "$icon"
+tmux set-option -w -t "$TMUX_PANE" @claude_at "$now"

@@ -5,7 +5,7 @@ VSCODE_SCRIPT_PATH := $(abspath configs/.vscode)
 CONFIG_PATH := $(wildcard .config/??*)
 .DEFAULT_GOAL	:= dotfiles
 
-.PHONY: list dotfiles config unlink brew bootstrap vscodeExtensions help
+.PHONY: list dotfiles config claude unlink brew bootstrap vscodeExtensions help
 
 list: # Show dotfiles in this repository
 	@echo 'list - Showing list of dotfiles in this repository'
@@ -24,6 +24,13 @@ config: # Create symlinks of .config at home directory
 	@echo '------------------------'
 	@echo $(abspath $(CONFIG_PATH))
 	@$(foreach val, $(CONFIG_PATH), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@echo '------------------------'
+
+claude: # Create symlink of Claude Code settings.json in ~/.claude
+	@echo 'claude - Setting symlink of Claude Code settings.json in ~/.claude'
+	@echo '------------------------'
+	@mkdir -p $(HOME)/.claude
+	@ln -sfnv $(abspath configs/claude/settings.json) $(HOME)/.claude/settings.json
 	@echo '------------------------'
 
 unlink: # Remove dotfile symlinks from home directory
