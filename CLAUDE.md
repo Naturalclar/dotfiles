@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `make` or `make dotfiles` — symlink all dotfiles (`.??*` except `.git`, `.gitignore`, etc.) into `$HOME`
 - `make config` — symlink `.config/*` entries into `$HOME/.config/`
+- `make claude` — symlink `configs/claude/settings.json` to `~/.claude/settings.json` (Claude Code hooks etc.; machine-local state like `feedbackSurveyState` is intentionally not committed)
 - `make vscodeExtensions` — sync VSCode extensions via `configs/.vscode/vscodeSync.sh`
 - `make list` — show which dotfiles will be symlinked
 - `make help` — print all make targets
