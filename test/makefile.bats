@@ -89,7 +89,6 @@ assert_links_to() {
 }
 
 @test "make config succeeds when HOME/.config does not exist yet" {
-  skip "known bug, tracked in #259"
   run make -C "$REPO" config HOME="$FAKE_HOME"
   [ "$status" -eq 0 ]
   assert_links_to "$FAKE_HOME/.config/nvim" "$REPO/.config/nvim"

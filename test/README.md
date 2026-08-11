@@ -22,7 +22,7 @@ brew install bats-core
 bats test/makefile.bats
 ```
 
-A few tests are marked `skip` because they cover bugs that are still open (#259, #260). They are written to pass once those are fixed — drop the `skip` line as part of the fix.
+A couple of tests are marked `skip` because they cover a bug that is still open (#260). They are written to pass once it is fixed — drop the `skip` line as part of the fix.
 
 ### test-package-scripts
 
