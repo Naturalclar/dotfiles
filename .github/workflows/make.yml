@@ -5,8 +5,11 @@ on: [push, pull_request]
 jobs:
   build:
     strategy:
+      # Report both platforms even when one fails; the Makefile hits GNU vs BSD
+      # differences (ln, mktemp) that are only visible per-OS.
+      fail-fast: false
       matrix:
-        os: [macOS-latest]
+        os: [macOS-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -14,5 +17,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Install bats (macOS)
+        if: runner.os == 'macOS'
+        run: brew install bats-core
+
+      - name: Install bats (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y bats
+
+      # Exercises dotfiles/config/claude/unlink against a throwaway $HOME and
+      # asserts on the symlinks produced, not just on make's exit status.
+      - name: Run Makefile tests
+        run: bats test/makefile.bats
+
+      # Still run the real thing against the runner's own $HOME, so the
+      # everyday `make` path stays covered on both platforms.
       - name: Run Make
         run: make
