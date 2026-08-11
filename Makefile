@@ -23,6 +23,7 @@ config: # Create symlinks of .config at home directory
 	@echo 'config - Setting symlinks of .config in HOME directory'
 	@echo '------------------------'
 	@echo $(abspath $(CONFIG_PATH))
+	@mkdir -p $(HOME)/.config
 	@$(foreach val, $(CONFIG_PATH), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
 	@echo '------------------------'
 
