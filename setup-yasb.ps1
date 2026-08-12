@@ -1,6 +1,4 @@
-# create symbolic link for yasb config file
+# Link the yasb status-bar config into the home directory.
+. "$PSScriptRoot\powershell\DotfilesSetup.ps1"
 
-$configDir = "$env:USERPROFILE\.yasb"
-
-New-Item -ItemType SymbolicLink -Path $configDir -Value $PSScriptRoot\.yasb
-
+New-DotfilesLink -Path "$env:USERPROFILE\.yasb" -Target "$PSScriptRoot\.yasb" | Out-Null

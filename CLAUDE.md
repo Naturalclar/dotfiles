@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `make vscodeExtensions` — sync VSCode extensions via `configs/.vscode/vscodeSync.sh`
 - `make list` — show which dotfiles will be symlinked
 - `make help` — print all make targets
-- Windows setup: run `./bootstrap.ps1` to point the PowerShell `$PROFILE` at `windows/*.ps1` in the clone; the `setup-*.ps1` scripts symlink the remaining configs and need Developer Mode or an elevated shell; `setup-defaults.ps1` applies one-time machine settings (key repeat) and is not part of the profile
+- Windows setup: run `./install.ps1` (counterpart of `install.sh`) — it calls `bootstrap.ps1` to point the PowerShell `$PROFILE` at `windows/*.ps1` in the clone, the `setup-*.ps1` link scripts, and `setup-defaults.ps1` for one-time machine settings. Symlinks need Developer Mode or an elevated shell. Linking helpers live in `powershell/DotfilesSetup.ps1`, deliberately outside `windows/` since that is sourced into every shell
 
 ## CI
 
@@ -29,7 +29,7 @@ This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mec
 - `.config/fish/` — Fish shell config (experimental, best-effort). zsh is the source of truth for aliases and functions; fish carries only a subset. An alias defined in both shells must behave identically — add it to the matching `.zsh/*.zsh` module first
 - `configs/.vscode/` — VSCode settings, keybindings, and extension sync script
 - `.scripts/` — custom CLI tools added to PATH (`duck`, `google`, `pmux`, `git-worktree-pull`)
-- `powershell/` — komorebi window manager start/stop scripts
+- `powershell/` — komorebi start/stop scripts, and `DotfilesSetup.ps1` (the symlink helper the `setup-*.ps1` scripts share). Kept out of `windows/`, which `bootstrap.ps1` sources into every shell
 - `ahk/` — AutoHotKey scripts (remap keys, language switching, shortcuts)
 - `keymaps/` — custom keyboard layout mappings
 - `.config/kitty/`, `.config/hypr/`, `.config/i3/`, `.config/waybar/` — terminal and WM configs

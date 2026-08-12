@@ -1,6 +1,4 @@
-# create symbolic link for komorebi config file
+# Link the whkd hotkey config into ~/.config.
+. "$PSScriptRoot\powershell\DotfilesSetup.ps1"
 
-$whkdrcDir = "$env:USERPROFILE\.config\whkdrc"
-
-
-New-Item -ItemType SymbolicLink -Path $whkdrcDir -Value $PSScriptRoot\.config\whkdrc
+New-DotfilesLink -Path "$env:USERPROFILE\.config\whkdrc" -Target "$PSScriptRoot\.config\whkdrc" | Out-Null

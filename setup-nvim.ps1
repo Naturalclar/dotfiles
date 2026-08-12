@@ -1,6 +1,4 @@
-# create symbolic link for nvim config directory
+# Link the Neovim config into %LOCALAPPDATA%.
+. "$PSScriptRoot\powershell\DotfilesSetup.ps1"
 
-$nvimDir = "$env:USERPROFILE\AppData\Local\nvim"
-
-New-Item -ItemType SymbolicLink -Path $nvimDir -Value $PSScriptRoot\.config\nvim
-
+New-DotfilesLink -Path "$env:USERPROFILE\AppData\Local\nvim" -Target "$PSScriptRoot\.config\nvim" | Out-Null
