@@ -114,17 +114,24 @@ end
 # accept-autosuggestion, Ctrl+W backward-kill-word, Ctrl+N history-next); that
 # is deliberate, since the point is for the two shells to feel the same.
 function fish_user_key_bindings
-  # history search -- Ctrl+Z as well, which is where zsh had it first
-  bind \cr 'peco_select_history (commandline -b)'
-  bind \cz 'peco_select_history (commandline -b)'
+  # zsh runs `set -o vi`; match it. fish_variables pins the same choice, so
+  # this does not rewrite that file on every start.
+  fish_vi_key_bindings
 
-  bind \cw ws              # ghq repo via peco
-  bind \ca wf              # ghq repo via fzf, with README preview
-  bind \cf pmux            # ghq repo -> tmux session
-  bind \cb switch-worktree # git worktree
-  bind \cn run-script      # package.json script
+  # Bound in both vi modes, so they work whether or not you are in insert mode.
+  for mode in default insert
+    # history search -- Ctrl+Z as well, which is where zsh had it first
+    bind -M $mode \cr 'peco_select_history (commandline -b)'
+    bind -M $mode \cz 'peco_select_history (commandline -b)'
 
-  bind \c] ws
+    bind -M $mode \cw ws              # ghq repo via peco
+    bind -M $mode \ca wf              # ghq repo via fzf, with README preview
+    bind -M $mode \cf pmux            # ghq repo -> tmux session
+    bind -M $mode \cb switch-worktree # git worktree
+    bind -M $mode \cn run-script      # package.json script
+
+    bind -M $mode \c] ws
+  end
 end
 
 #open code and github
