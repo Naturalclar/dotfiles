@@ -17,7 +17,8 @@ zle-refresh() {
 zle -N zle-refresh
 # alias
 alias zshedit="vim ~/.zshrc"
-bindkey '^R' zle-refresh
+# Ctrl+R is history search, matching fish and every other shell; reload the
+# config with the `zshr` alias instead.
 alias zshr=refresh
 
 # lynx

@@ -9,6 +9,7 @@
 
 REPO="$BATS_TEST_DIRNAME/.."
 FISH_DIR="$BATS_TEST_DIRNAME/../.config/fish"
+FISH_FUNCS="$FISH_DIR/functions"
 
 setup() {
   command -v fish >/dev/null || skip "fish not available"
@@ -103,4 +104,66 @@ stub_locale() {
     echo "fish=[$from_fish] zsh=[$from_zsh]"
     false
   }
+}
+
+# --- keybinding targets ported from zsh (#272) --------------------------------
+
+# fzf is interactive, so it is replaced with "take the first candidate". That is
+# enough to exercise everything around the picker.
+make_repo() {
+  git init -q "$1"
+  git -C "$1" config user.email t@example.com
+  git -C "$1" config user.name test
+  git -C "$1" commit -qm init --allow-empty
+}
+
+fish_pick_first() {
+  sh_run fish -c "
+    source $FISH_FUNCS/$1.fish
+    function fzf; head -1; end
+    $2
+  "
+}
+
+@test "run-script refuses to run outside a package.json directory" {
+  run sh_run fish -c "cd $WORK; source $FISH_FUNCS/run-script.fish; run-script"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"No package.json"* ]]
+}
+
+@test "run-script picks the package manager from the lockfile" {
+  mkdir -p "$WORK/pkg"
+  cat >"$WORK/pkg/package.json" <<'JSON'
+{ "scripts": { "start": "true" } }
+JSON
+
+  run fish_pick_first run-script "cd $WORK/pkg; run-script"
+  [[ "$output" == *"Running: npm run start"* ]]
+
+  for pair in "yarn.lock:yarn start" "pnpm-lock.yaml:pnpm start" "bun.lockb:bun run start"; do
+    lock="${pair%%:*}"
+    expected="${pair#*:}"
+    : >"$WORK/pkg/$lock"
+    run fish_pick_first run-script "cd $WORK/pkg; run-script"
+    [[ "$output" == *"Running: $expected"* ]] || {
+      echo "$lock should select '$expected', got: $output"
+      false
+    }
+    rm -f "$WORK/pkg/$lock"
+  done
+}
+
+@test "switch-worktree reports when there are no linked worktrees" {
+  make_repo "$WORK/repo"
+  run sh_run fish -c "cd $WORK/repo; source $FISH_FUNCS/switch-worktree.fish; switch-worktree"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"No linked worktrees"* ]]
+}
+
+@test "switch-worktree changes to the selected worktree" {
+  make_repo "$WORK/repo"
+  git -C "$WORK/repo" worktree add -q "$WORK/wt" -b feature
+  run fish_pick_first switch-worktree "cd $WORK/repo; switch-worktree; echo \$PWD"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"$WORK/wt"* ]]
 }
