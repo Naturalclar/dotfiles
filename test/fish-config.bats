@@ -94,7 +94,7 @@ stub_locale() {
   # takes just _prompt_path. Sourcing the whole file would drag in compinit,
   # plugins and tool hooks -- none of which this is testing, and any one of
   # which can leave a process behind holding the CI step's pipes open.
-  zsh_locale_block="$(sed -n '/^for _l in /,/^unset _l$/p' "$REPO/.zshrc")"
+  zsh_locale_block="$(sed -n '/^for _l in /,/^unset _l$/p' "$REPO"/.zsh/*.zsh)"
   [ -n "$zsh_locale_block" ]
 
   from_fish="$(sh_run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL" 2>/dev/null)"

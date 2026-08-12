@@ -13,7 +13,8 @@
 #
 # Run locally with `bats test/prompt.bats` (needs zsh and bats-core).
 
-ZSHRC="$BATS_TEST_DIRNAME/../.zshrc"
+# _prompt_path lives in .zsh/40-prompt.zsh since .zshrc became a loader.
+ZSH_PARTS=("$BATS_TEST_DIRNAME"/../.zsh/*.zsh)
 FISH_FUNCS="$BATS_TEST_DIRNAME/../.config/fish/functions"
 
 setup() {
@@ -38,7 +39,7 @@ prompt_path_in() {
   (
     cd "$1" || return 1
     zsh -c "
-      $(sed -n '/^_prompt_path() {/,/^}$/p' "$ZSHRC")
+      $(sed -n '/^_prompt_path() {/,/^}$/p' "${ZSH_PARTS[@]}")
       _prompt_path
       print -r -- \$_prompt_path_msg
     "

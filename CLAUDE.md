@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## CI
 
-- **lint.yml** — checks `.zshrc` syntax with `zsh -n` and sources it on Ubuntu
+- **lint.yml** — checks `.zshrc` and each `.zsh/*.zsh` module with `zsh -n`, sources the whole config, then runs shellcheck, actionlint, gitleaks and the bats suites on Ubuntu
 - **make.yml** — runs `make` on macOS
 
 ## Architecture
@@ -22,9 +22,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mechanism is simple: `make dotfiles` creates symlinks from this repo into `$HOME`.
 
 ### Key files
-- `.zshrc` — main shell config; defines aliases, functions, PATH setup, keybindings. OS-specific blocks use `uname` detection (Darwin/Linux/Msys)
+- `.zshrc` — loader only; sources `.zsh/*.zsh` in filename order
+- `.zsh/*.zsh` — the actual shell config, split by concern. The numeric prefix is load order and matters: `00` options/locale, `10` OS-specific (`uname` detection for Darwin/Linux/Msys), `20` history, `30` runtimes, `40` prompt, `50` PATH, `60` plugins, `70`–`75` aliases and widgets, `80`+ late setup. Concatenating them in order reproduces the single file they replaced
 - `.config/nvim/` — Neovim config using LazyVim framework (`config/lazy.lua` bootstraps lazy.nvim, plugins in `lua/plugins/`)
-- `.config/fish/` — Fish shell config (experimental, best-effort). `.zshrc` is the source of truth for aliases and functions; fish carries only a subset. An alias defined in both shells must behave identically — add it to `.zshrc` first
+- `.config/fish/` — Fish shell config (experimental, best-effort). zsh is the source of truth for aliases and functions; fish carries only a subset. An alias defined in both shells must behave identically — add it to the matching `.zsh/*.zsh` module first
 - `configs/.vscode/` — VSCode settings, keybindings, and extension sync script
 - `.scripts/` — custom CLI tools added to PATH (`duck`, `google`, `pmux`, `git-worktree-pull`)
 - `powershell/` — komorebi window manager start/stop scripts
@@ -54,8 +55,9 @@ Tests are in `test/`. Each subdirectory has a `package.json` for testing the `ru
 - Match existing formatting in each file
 - Shell scripts: prefer POSIX-compatible syntax when possible
 - PowerShell scripts: follow Microsoft best practices
-- The `.zshrc` uses vi mode (`set -o vi`)
+- The zsh config uses vi mode (`set -o vi`, in `.zsh/00-core.zsh`)
+- Add zsh settings to the module that matches their concern, not to `.zshrc`
 
 ## Environment Variables
 
-Secret API keys go in `~/.config/secrets/credentials.sh` (auto-sourced by `.zshrc`, gitignored).
+Secret API keys go in `~/.config/secrets/credentials.sh` (auto-sourced by `.zsh/80-late.zsh`, gitignored).

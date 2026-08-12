@@ -21,6 +21,14 @@ jobs:
         run: sudo apt-get update; sudo apt-get install zsh
       - name: Check Zshrc Syntax
         run: zsh -n ./.zshrc
+      # Each module on its own, so a syntax error is reported against the file
+      # that has it rather than against the loader.
+      - name: Check zsh module syntax
+        run: |
+          for f in .zsh/*.zsh; do
+            echo "==> $f"
+            zsh -n "$f"
+          done
       - name: Check Zshrc Commands
         run: zsh -c "source ./.zshrc"
 
