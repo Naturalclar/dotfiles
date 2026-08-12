@@ -41,8 +41,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install bats, lsof, tmux and zsh
-        run: sudo apt-get update && sudo apt-get install -y bats lsof tmux zsh
+      - name: Install bats, lsof, tmux, zsh and fish
+        run: sudo apt-get update && sudo apt-get install -y bats lsof tmux zsh fish
       - name: Run script tests
         run: bats test/scripts.bats
       # Keeps the shells from drifting apart again: .zshrc is the source of

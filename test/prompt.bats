@@ -14,6 +14,7 @@
 # Run locally with `bats test/prompt.bats` (needs zsh and bats-core).
 
 ZSHRC="$BATS_TEST_DIRNAME/../.zshrc"
+FISH_FUNCS="$BATS_TEST_DIRNAME/../.config/fish/functions"
 
 setup() {
   command -v zsh >/dev/null || skip "zsh not available"
@@ -42,6 +43,44 @@ prompt_path_in() {
       print -r -- \$_prompt_path_msg
     "
   )
+}
+
+# The fish prompt carries its own copy of this logic, so the two are checked
+# against each other rather than against a second list of expectations.
+fish_prompt_path_in() {
+  (
+    cd "$1" || return 1
+    fish -c "source $FISH_FUNCS/__prompt_path.fish; __prompt_path"
+  )
+}
+
+@test "fish and zsh agree on the prompt path in every layout" {
+  command -v fish >/dev/null || skip "fish not available"
+
+  git -C "$WORK/myrepo" worktree add -q "$WORK/wt" -b feature
+  git clone -q --bare "$WORK/myrepo" "$WORK/foo.git"
+  git -C "$WORK/foo.git" worktree add -q "$WORK/foo-wt" 2>/dev/null || true
+  mkdir -p "$WORK/proj"
+  git clone -q --bare "$WORK/myrepo" "$WORK/proj/.bare"
+  echo "gitdir: ./.bare" >"$WORK/proj/.git"
+  git -C "$WORK/proj" worktree add -q main 2>/dev/null || true
+
+  for dir in \
+    "$WORK" \
+    "$WORK/myrepo" \
+    "$WORK/myrepo/src/components" \
+    "$WORK/wt" \
+    "$WORK/foo-wt" \
+    "$WORK/proj/main"; do
+    [ -d "$dir" ] || continue
+    from_zsh="$(prompt_path_in "$dir")"
+    from_fish="$(fish_prompt_path_in "$dir")"
+    # zsh doubles % for prompt expansion; fish does not reinterpret its prompt.
+    [ "${from_zsh//%%/%}" = "$from_fish" ] || {
+      echo "$dir: zsh=[$from_zsh] fish=[$from_fish]"
+      false
+    }
+  done
 }
 
 @test "outside a git repository the full path is shown" {
