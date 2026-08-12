@@ -90,8 +90,15 @@ stub_locale() {
   command -v zsh >/dev/null || skip "zsh not available"
   stub_locale 'C\nC.utf8\nen_US.utf8\nPOSIX'
 
-  from_fish="$(sh_run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL")"
-  from_zsh="$(sh_run env PATH="$WORK/bin:$PATH" zsh -c "source $REPO/.zshrc >/dev/null 2>&1; echo \$LC_ALL")"
+  # Only the locale block is pulled out of .zshrc, the same way prompt.bats
+  # takes just _prompt_path. Sourcing the whole file would drag in compinit,
+  # plugins and tool hooks -- none of which this is testing, and any one of
+  # which can leave a process behind holding the CI step's pipes open.
+  zsh_locale_block="$(sed -n '/^for _l in /,/^unset _l$/p' "$REPO/.zshrc")"
+  [ -n "$zsh_locale_block" ]
+
+  from_fish="$(sh_run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL" 2>/dev/null)"
+  from_zsh="$(sh_run env PATH="$WORK/bin:$PATH" zsh -c "$zsh_locale_block"'; echo $LC_ALL' 2>/dev/null)"
   [ "$from_fish" = "$from_zsh" ] || {
     echo "fish=[$from_fish] zsh=[$from_zsh]"
     false
