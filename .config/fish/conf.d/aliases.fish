@@ -135,7 +135,7 @@ function n
   yarn (cat package.json | jq .scripts |  sed '1d' | sed '$d' | pf | sed 's/: ".*".//g' | sed 's/"//g' | sed 's/[ ]//g');
 end
 
-alias ..='cd ..'
+alias ..='cd ../'
 alias ....='cd ../..'
 alias ......='cd ../../..'
 

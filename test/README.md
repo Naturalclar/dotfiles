@@ -13,6 +13,15 @@ brew install bats-core
 bats test/scripts.bats
 ```
 
+### aliases.bats
+
+Automated [bats-core](https://github.com/bats-core/bats-core) tests that keep `.zshrc` and `.config/fish/` from drifting apart. They enforce the rule documented in the root `README.md`: `.zshrc` is the source of truth, and an alias defined in **both** shells must expand to the same thing. Fish is not required to carry every zsh alias — only to agree on the ones it does carry. A second check catches an alias defined twice in `.zshrc`, where the later definition silently wins. These run in CI on every push; locally:
+
+```bash
+brew install bats-core
+bats test/aliases.bats
+```
+
 ### makefile.bats
 
 Automated [bats-core](https://github.com/bats-core/bats-core) tests for the symlink targets in the `Makefile` (`dotfiles`, `config`, `claude`, `unlink`, `list`, `help`). Each test points `HOME` at a throwaway directory, so a fresh machine is reproduced without touching the real one, and asserts on the symlinks that were actually produced — `ln -sfn` can fail in ways that still leave `make` green. These run in CI on both macOS and Linux; locally:
