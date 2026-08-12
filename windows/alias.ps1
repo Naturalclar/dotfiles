@@ -13,7 +13,7 @@ Set-Alias -Name psh -Value pwsh
 # Add Alias for git commands
 Set-Alias -Name g -Value git
 Function gst {
-    git status    
+    git status
 }
 Function gaa {
     git add --all

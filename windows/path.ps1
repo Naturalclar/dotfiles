@@ -1,5 +1,8 @@
-# Add direnv config path
-Invoke-Expression "$(direnv hook pwsh)"
+# Add direnv config path. Guarded the way .zsh/30-runtimes.zsh guards it, so a
+# machine without direnv does not get an error on every shell start.
+if (Get-Command direnv -ErrorAction SilentlyContinue) {
+    direnv hook pwsh | Out-String | Invoke-Expression
+}
 
 $env:CLAUDE_CODE_GIT_BASH_PATH = "$env:USERPROFILE\scoop\shims\bash.exe"
 

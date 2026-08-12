@@ -60,6 +60,12 @@ creating one symlink:
 | `setup-whkdrc.ps1` | `.config/whkdrc` → `%USERPROFILE%\.config` |
 | `setup-yasb.ps1` | `.yasb` → `%USERPROFILE%` |
 
+One more is not a symlink: `setup-defaults.ps1` applies the machine settings —
+key repeat and the persistent `PROMPT` variable. Run it once per machine. It is
+the Windows counterpart of the `defaults write` step in `install.sh`, and it is
+deliberately *not* in the profile: it writes to the registry, which has no
+business happening on every shell start.
+
 **Creating symlinks on Windows needs either an elevated shell or Developer Mode**
 (Settings → Privacy & security → For developers). Without one of those,
 `New-Item -ItemType SymbolicLink` fails with a permissions error.
