@@ -50,6 +50,48 @@ jobs:
           bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint -color
 
+  # The Windows scripts were the only ones nothing checked. pwsh is preinstalled
+  # on ubuntu-latest and parsing does not need Windows, so no Windows runner.
+  powershell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Check PowerShell syntax
+        shell: pwsh
+        run: |
+          $failed = 0
+          Get-ChildItem -Path . -Filter *.ps1 -Recurse | ForEach-Object {
+            $path = Resolve-Path -Relative $_.FullName
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors) {
+              $failed++
+              foreach ($e in $errors) {
+                Write-Host "::error file=$path,line=$($e.Extent.StartLineNumber)::$($e.Message)"
+              }
+            } else {
+              Write-Host "ok $path"
+            }
+          }
+          exit $failed
+      # Warnings are printed but do not fail the build; only Error-severity
+      # findings do. Tighten this once the warning list has been triaged.
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -ErrorAction Stop
+          $results = @(Invoke-ScriptAnalyzer -Path . -Recurse)
+          if ($results.Count -eq 0) {
+            Write-Host "PSScriptAnalyzer: no findings"
+          } else {
+            $results | Format-Table -AutoSize RuleName, Severity, ScriptName, Line, Message
+          }
+          $errors = @($results | Where-Object { $_.Severity -eq 'Error' })
+          Write-Host "$($errors.Count) error-severity finding(s)"
+          if ($errors.Count -gt 0) { exit 1 }
+
   bats:
     runs-on: ubuntu-latest
     # These tests spawn shells; a shell that blocks on a read would otherwise
