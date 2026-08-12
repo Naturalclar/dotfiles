@@ -167,3 +167,20 @@ JSON
   [ "$status" -eq 0 ]
   [[ "$output" == *"$WORK/wt"* ]]
 }
+
+# --- parity with zsh on editor and key bindings (#274) ------------------------
+
+@test "fish and zsh export the same editor variables" {
+  from_fish="$(sh_run fish -c "source $FISH_DIR/conf.d/editor.fish; echo \$EDITOR \$GIT_EDITOR" 2>/dev/null)"
+  from_zsh="$(sh_run zsh -c "source $REPO/.zsh/50-path.zsh >/dev/null 2>&1; echo \$EDITOR \$GIT_EDITOR" 2>/dev/null)"
+  [ "$from_fish" = "vim vim" ]
+  [ "$from_fish" = "$from_zsh" ]
+}
+
+@test "both shells use vi key bindings" {
+  # zsh sets it with `set -o vi`; fish pins fish_key_bindings as a universal
+  # variable, which is committed so it does not get rewritten on every start.
+  run sh_run zsh -c "source $REPO/.zsh/00-core.zsh >/dev/null 2>&1; setopt"
+  [[ "$output" == *"vi"* ]]
+  grep -qx "SETUVAR fish_key_bindings:fish_vi_key_bindings" "$FISH_DIR/fish_variables"
+}

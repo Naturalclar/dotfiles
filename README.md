@@ -54,6 +54,8 @@ If you touch aliases:
 
 `test/aliases.bats` enforces that in CI. It compares aliases textually, and — because a name can be an alias in one shell and a function in the other, where there is nothing to compare across two different syntaxes — it also requires any such pair to be listed in `KNOWN_EQUIVALENT` with a note saying it was checked by hand. A new mismatched pair therefore cannot appear unnoticed. It also fails if an alias is defined twice across the modules (where the later definition silently wins).
 
+Both shells use vi key bindings (`set -o vi` in zsh, `fish_key_bindings` in fish) and export `EDITOR=vim` and `GIT_EDITOR=vim`.
+
 Keybindings are mirrored too: `Ctrl+R`/`Ctrl+Z` history search, `Ctrl+W`/`Ctrl+A` ghq repo pickers, `Ctrl+F` tmux session, `Ctrl+B` git worktree, `Ctrl+N` package.json script. Several of them take over a fish default (`Ctrl+A` beginning-of-line, `Ctrl+F` accept-autosuggestion, `Ctrl+W` backward-kill-word), which is deliberate — the point is for the two shells to feel the same.
 
 The prompt is the one place where fish deliberately carries a copy of zsh logic: `.config/fish/functions/__prompt_path.fish` mirrors `_prompt_path` in `.zsh/40-prompt.zsh`, and `__prompt_git_state.fish` mirrors the `vcs_info` zstyles. `test/prompt.bats` runs both implementations over the same repository layouts and fails if they disagree.
