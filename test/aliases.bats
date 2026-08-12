@@ -27,7 +27,10 @@ FISH_ALIASES="$FISH_DIR/conf.d/aliases.fish"
 #   ws        zsh calls peco-workspace; fish inlines the same one-liner
 #   n         zsh calls list(); fish inlines it plus a trailing-space strip,
 #             because fish's (...) does not word-split the way zsh's $(...) does
-KNOWN_EQUIVALENT="gbd gcod gpcb n rundroid ws"
+#   wf        zsh aliases fzf-workspace; fish inlines it, sharing the fzf
+#             preview string verbatim since fzf runs it with sh either way
+#   run-script  same selector, same lockfile order; rewritten in fish syntax
+KNOWN_EQUIVALENT="gbd gcod gpcb n run-script rundroid wf ws"
 
 # Print "name<TAB>definition" for every `alias name=...` line in $1. The
 # surrounding quotes and any trailing comment are stripped so that the two

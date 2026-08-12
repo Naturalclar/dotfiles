@@ -109,8 +109,21 @@ function ws
   cd (ghq list --full-path | peco)
 end
 
+# NOTE: these mirror the bindkey lines in .zsh/, which are the source of truth.
+# Several of them take over a fish default (Ctrl+A beginning-of-line, Ctrl+F
+# accept-autosuggestion, Ctrl+W backward-kill-word, Ctrl+N history-next); that
+# is deliberate, since the point is for the two shells to feel the same.
 function fish_user_key_bindings
+  # history search -- Ctrl+Z as well, which is where zsh had it first
   bind \cr 'peco_select_history (commandline -b)'
+  bind \cz 'peco_select_history (commandline -b)'
+
+  bind \cw ws              # ghq repo via peco
+  bind \ca wf              # ghq repo via fzf, with README preview
+  bind \cf pmux            # ghq repo -> tmux session
+  bind \cb switch-worktree # git worktree
+  bind \cn run-script      # package.json script
+
   bind \c] ws
 end
 
@@ -128,6 +141,9 @@ end
 
 # alias to copy file or folder to dotfiles repository
 # alias cpdf="cp -r "(ls -a | pf)" $DOTFILES"
+
+# alias for run-script (bound to Ctrl+N, see fish_user_key_bindings)
+alias rs="run-script"
 
 # alias for npm scripts
 # list npm scripts and output chosen script
