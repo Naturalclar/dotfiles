@@ -66,14 +66,24 @@ assert_links_to() {
 }
 
 @test "make dotfiles does not nest the link inside an existing real directory" {
-  skip "known bug, tracked in #260"
   mkdir -p "$FAKE_HOME/.vim/pack"
   run make -C "$REPO" dotfiles HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
   [ ! -e "$FAKE_HOME/.vim/.vim" ]
+  # The user's directory is left exactly as it was, and the skip is reported.
+  [ -d "$FAKE_HOME/.vim/pack" ]
+  [ ! -L "$FAKE_HOME/.vim" ]
+  [[ "$output" == *"skip $FAKE_HOME/.vim"* ]]
+}
+
+@test "make dotfiles replaces a symlinked directory rather than skipping it" {
+  ln -s /tmp "$FAKE_HOME/.vim"
+  run make -C "$REPO" dotfiles HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  assert_links_to "$FAKE_HOME/.vim" "$REPO/.vim"
 }
 
 @test "make dotfiles does not symlink repository tooling directories" {
-  skip "known bug, tracked in #260"
   make -C "$REPO" dotfiles HOME="$FAKE_HOME"
   [ ! -e "$FAKE_HOME/.devcontainer" ]
   [ ! -e "$FAKE_HOME/.vscode" ]
@@ -86,6 +96,16 @@ assert_links_to() {
   run make -C "$REPO" config HOME="$FAKE_HOME"
   [ "$status" -eq 0 ]
   assert_links_to "$FAKE_HOME/.config/nvim" "$REPO/.config/nvim"
+}
+
+@test "make config does not nest the link inside an existing real directory" {
+  mkdir -p "$FAKE_HOME/.config/nvim/lua"
+  run make -C "$REPO" config HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  [ ! -e "$FAKE_HOME/.config/nvim/nvim" ]
+  [ -d "$FAKE_HOME/.config/nvim/lua" ]
+  # Unaffected entries are still linked.
+  assert_links_to "$FAKE_HOME/.config/kitty" "$REPO/.config/kitty"
 }
 
 @test "make config succeeds when HOME/.config does not exist yet" {

@@ -22,8 +22,6 @@ brew install bats-core
 bats test/makefile.bats
 ```
 
-A couple of tests are marked `skip` because they cover a bug that is still open (#260). They are written to pass once it is fixed — drop the `skip` line as part of the fix.
-
 ### test-package-scripts
 
 A test package to demonstrate the basic `run-script` function added to your .zshrc file. This test shows how to use the function to list and run npm scripts using fzf.

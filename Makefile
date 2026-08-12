@@ -1,11 +1,22 @@
 DOTFILES 	:= $(wildcard .??*)
-IGNORE	:= .DS_Store .git .gitmodules .gitignore .github .config
+# .devcontainer and .vscode configure this repository, not $HOME. ~/.vscode in
+# particular is VSCode's own extensions directory, so linking over it is wrong.
+IGNORE	:= .DS_Store .git .gitmodules .gitignore .github .config .devcontainer .vscode
 TARGET	:= $(filter-out $(IGNORE), $(DOTFILES))
 VSCODE_SCRIPT_PATH := $(abspath configs/.vscode)
 CONFIG_PATH := $(wildcard .config/??*)
 .DEFAULT_GOAL	:= dotfiles
 
 .PHONY: list dotfiles config claude unlink brew bootstrap vscodeExtensions help
+
+# link <source> <destination>
+# `ln -sfn dest` puts the link *inside* dest when dest is already a real
+# directory, which leaves make green while the config never takes effect. Skip
+# those instead, so a directory we did not create is never touched. A plain
+# file is still replaced -- overwriting a stock ~/.bashrc is the whole point.
+define link
+if [ -d "$(2)" ] && [ ! -L "$(2)" ]; then echo "skip $(2): already a directory, remove or rename it to link"; else ln -sfnv "$(1)" "$(2)"; fi;
+endef
 
 list: # Show dotfiles in this repository
 	@echo 'list - Showing list of dotfiles in this repository'
@@ -16,7 +27,7 @@ list: # Show dotfiles in this repository
 dotfiles: # Create symlinks of dotfiles to home directory
 	@echo 'dotfiles - Setting symlinks of dotfiles in HOME directory'
 	@echo '------------------------'
-	@$(foreach val, $(TARGET), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@$(foreach val, $(TARGET), $(call link,$(abspath $(val)),$(HOME)/$(val)))
 	@echo '------------------------'
 
 config: # Create symlinks of .config at home directory
@@ -24,7 +35,7 @@ config: # Create symlinks of .config at home directory
 	@echo '------------------------'
 	@echo $(abspath $(CONFIG_PATH))
 	@mkdir -p $(HOME)/.config
-	@$(foreach val, $(CONFIG_PATH), ln -sfnv $(abspath $(val)) $(HOME)/$(val);)
+	@$(foreach val, $(CONFIG_PATH), $(call link,$(abspath $(val)),$(HOME)/$(val)))
 	@echo '------------------------'
 
 claude: # Create symlink of Claude Code settings.json in ~/.claude
