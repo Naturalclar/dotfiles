@@ -12,7 +12,8 @@
 #
 # Run locally with `bats test/aliases.bats` (brew install bats-core).
 
-ZSHRC="$BATS_TEST_DIRNAME/../.zshrc"
+# .zshrc is only a loader now; the definitions live in .zsh/*.zsh.
+ZSH_PARTS=("$BATS_TEST_DIRNAME"/../.zsh/*.zsh)
 FISH_DIR="$BATS_TEST_DIRNAME/../.config/fish"
 FISH_ALIASES="$FISH_DIR/conf.d/aliases.fish"
 
@@ -32,7 +33,7 @@ KNOWN_EQUIVALENT="gbd gcod gpcb n rundroid ws"
 # surrounding quotes and any trailing comment are stripped so that the two
 # shells can be compared as plain text regardless of quoting style.
 alias_defs() {
-  grep -E "^[[:space:]]*alias [A-Za-z0-9_.:-]+=" "$1" |
+  grep -hE "^[[:space:]]*alias [A-Za-z0-9_.:-]+=" "$@" |
     sed -E "s/^[[:space:]]*alias[[:space:]]+//" |
     sed -E "s/^([A-Za-z0-9_.:-]+)=/\1\t/" |
     sed -E "s/\t['\"]/\t/; s/['\"][[:space:]]*(#.*)?\$//"
@@ -43,9 +44,9 @@ alias_defs() {
 # function, which is how `ws` came to mean two different things.
 zsh_names() {
   {
-    grep -oE "^[[:space:]]*alias [A-Za-z0-9_.:-]+=" "$ZSHRC" | sed -E 's/^[[:space:]]*alias //; s/=$//'
-    grep -oE "^[A-Za-z_][A-Za-z0-9_-]*\(\)" "$ZSHRC" | sed 's/()//'
-    grep -oE "^function [A-Za-z_][A-Za-z0-9_-]*" "$ZSHRC" | sed 's/^function //'
+    grep -hoE "^[[:space:]]*alias [A-Za-z0-9_.:-]+=" "${ZSH_PARTS[@]}" | sed -E 's/^[[:space:]]*alias //; s/=$//'
+    grep -hoE "^[A-Za-z_][A-Za-z0-9_-]*\(\)" "${ZSH_PARTS[@]}" | sed 's/()//'
+    grep -hoE "^function [A-Za-z_][A-Za-z0-9_-]*" "${ZSH_PARTS[@]}" | sed 's/^function //'
   } | sort -u
 }
 
@@ -59,7 +60,7 @@ fish_names() {
 
 defined_as_alias() {
   case "$1" in
-    zsh) grep -qE "^[[:space:]]*alias $2=" "$ZSHRC" ;;
+    zsh) grep -qhE "^[[:space:]]*alias $2=" "${ZSH_PARTS[@]}" ;;
     fish) grep -qhE "^[[:space:]]*alias $2=" "$FISH_DIR"/conf.d/*.fish ;;
   esac
 }
@@ -67,16 +68,16 @@ defined_as_alias() {
 # Guard against the extraction silently matching nothing, which would make
 # every other check in this file pass for the wrong reason.
 @test "alias extraction finds the aliases in both shells" {
-  [ "$(alias_defs "$ZSHRC" | wc -l)" -gt 50 ]
+  [ "$(alias_defs "${ZSH_PARTS[@]}" | wc -l)" -gt 50 ]
   [ "$(alias_defs "$FISH_ALIASES" | wc -l)" -gt 30 ]
-  [[ "$(alias_defs "$ZSHRC")" == *"gst"$'\t'"git status"* ]]
+  [[ "$(alias_defs "${ZSH_PARTS[@]}")" == *"gst"$'\t'"git status"* ]]
   [[ "$(alias_defs "$FISH_ALIASES")" == *"gst"$'\t'"git status"* ]]
 }
 
-@test "no alias is defined more than once in .zshrc" {
-  dupes="$(alias_defs "$ZSHRC" | cut -f1 | sort | uniq -d)"
+@test "no alias is defined more than once across the zsh config" {
+  dupes="$(alias_defs "${ZSH_PARTS[@]}" | cut -f1 | sort | uniq -d)"
   if [ -n "$dupes" ]; then
-    echo "these aliases are defined twice; the later one silently wins:"
+    echo "these aliases are defined twice across .zsh/*.zsh; the later one wins:"
     echo "$dupes"
     false
   fi
@@ -84,7 +85,7 @@ defined_as_alias() {
 
 @test "an alias defined in both shells means the same thing" {
   conflicts="$(join -t$'\t' \
-    <(alias_defs "$ZSHRC" | sort -u -t$'\t' -k1,1) \
+    <(alias_defs "${ZSH_PARTS[@]}" | sort -u -t$'\t' -k1,1) \
     <(alias_defs "$FISH_ALIASES" | sort -u -t$'\t' -k1,1) |
     awk -F'\t' '$2 != $3 { printf "%s\n  zsh:  %s\n  fish: %s\n", $1, $2, $3 }')"
   if [ -n "$conflicts" ]; then
