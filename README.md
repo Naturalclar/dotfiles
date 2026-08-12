@@ -52,6 +52,8 @@ If you touch aliases:
 
 `test/aliases.bats` enforces that in CI, and also fails if an alias is defined twice in `.zshrc` (where the later definition silently wins).
 
+The prompt is the one place where fish deliberately carries a copy of zsh logic: `.config/fish/functions/__prompt_path.fish` mirrors `_prompt_path` in `.zshrc`, and `__prompt_git_state.fish` mirrors the `vcs_info` zstyles. `test/prompt.bats` runs both implementations over the same repository layouts and fails if they disagree.
+
 ### Setting up fish
 
 Fish is opt-in. `install.sh` does not touch it and it is deliberately absent from the `Brewfile`.
