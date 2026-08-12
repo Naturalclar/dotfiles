@@ -13,6 +13,15 @@ brew install bats-core
 bats test/scripts.bats
 ```
 
+### prompt.bats
+
+Automated [bats-core](https://github.com/bats-core/bats-core) tests for `_prompt_path` in `.zshrc`, which replaces the working directory in the prompt with `<repo>[/<worktree>]` plus the path from the repository root. Each test covers one of the things the logic is easy to get wrong: `--git-common-dir` coming back relative from a subdirectory, detecting a linked worktree by `<root>/.git` being a file, and doubling `%` so a directory name cannot corrupt the prompt. The function is pulled out of `.zshrc` on its own, so the rest of the file does not have to be loadable. Needs `zsh`; these run in CI on every push. Locally:
+
+```bash
+brew install bats-core
+bats test/prompt.bats
+```
+
 ### aliases.bats
 
 Automated [bats-core](https://github.com/bats-core/bats-core) tests that keep `.zshrc` and `.config/fish/` from drifting apart. They enforce the rule documented in the root `README.md`: `.zshrc` is the source of truth, and an alias defined in **both** shells must expand to the same thing. Fish is not required to carry every zsh alias — only to agree on the ones it does carry. A second check catches an alias defined twice in `.zshrc`, where the later definition silently wins. These run in CI on every push; locally:
