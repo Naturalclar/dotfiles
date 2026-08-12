@@ -50,6 +50,38 @@ If you touch aliases:
 - Add or change them in `.zshrc` first.
 - Porting to fish is optional — but **an alias that exists in both shells must behave identically**. A name that means one thing in zsh and another in fish is worse than not having it in fish at all.
 
+`test/aliases.bats` enforces that in CI, and also fails if an alias is defined twice in `.zshrc` (where the later definition silently wins).
+
+### Setting up fish
+
+Fish is opt-in. `install.sh` does not touch it and it is deliberately absent from the `Brewfile`.
+
+1. **Install fish.**
+
+   ```bash
+   brew install fish            # macOS
+   sudo apt-get install fish    # Debian/Ubuntu/WSL
+   ```
+
+2. **Symlink the config.** `.config/fish/` is picked up by the existing target — no fish-specific step:
+
+   ```bash
+   make config
+   ```
+
+3. **Optionally make it your login shell.** zsh remains the shell this repo is built around, so this is a deliberate choice, not part of setup:
+
+   ```bash
+   echo "$(command -v fish)" | sudo tee -a /etc/shells
+   chsh -s "$(command -v fish)"
+   ```
+
+That is the whole setup — everything else fish needs is either already in the repo or shared with zsh:
+
+- **No plugin-manager step.** The `fisher` plugins listed in `.config/fish/fishfile` (`plugin-asdf`, `plugin-peco`, `plugin-balias`, `fish-nvm`) are vendored under `.config/fish/functions/` and `.config/fish/conf.d/`, so they arrive with the symlink.
+- **No extra packages.** `peco` and `fzf` come from the `Brewfile`. Fish uses its own default prompt rather than a separate prompt tool.
+- **asdf, rustup and opam are optional.** `config.fish` picks up asdf from the `~/.asdf` clone `install.sh` creates — the same install `.zshrc` uses — and each of the three is guarded, so fish starts cleanly whether or not they are present.
+
 ## Scripts
 
 `.scripts/` is symlinked into `$HOME` by `make` and added to `PATH` by `.zshrc`.

@@ -1,6 +1,3 @@
-# Starship
-starship init fish | source
-
 # Ruby
 set -gx PATH $HOME/Software/ruby $PATH
 set -gx PATH $HOME/Software/ruby/bin $PATH
@@ -29,5 +26,8 @@ set -gx PATH $ANDROID_HOME/emulator $PATH
 # opam configuration
 source $HOME/.opam/opam-init/init.fish > /dev/null 2> /dev/null || true
 
-# asdf version manager
-source /usr/local/opt/asdf/asdf.fish
+# asdf version manager. install.sh clones asdf to ~/.asdf and .zshrc sources it
+# from there, so keep fish on the same install rather than a Homebrew prefix.
+if test -f $HOME/.asdf/asdf.fish
+    source $HOME/.asdf/asdf.fish
+end
