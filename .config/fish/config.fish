@@ -1,3 +1,6 @@
+# Scripts (.zshrc does the same; .scripts is symlinked into $HOME by `make`)
+set -gx PATH $HOME/.scripts $PATH
+
 # Ruby
 set -gx PATH $HOME/Software/ruby $PATH
 set -gx PATH $HOME/Software/ruby/bin $PATH

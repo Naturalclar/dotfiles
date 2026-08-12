@@ -103,10 +103,10 @@ alias get="ghq get"
 # rimraf
 alias rimraf="rm -rf"
 
-# cd to ghq directories
+# cd to ghq directories. zsh's ws is peco-workspace, which uses plain peco --
+# not pf, which turns on the fuzzy filter.
 function ws
-  set repo (ghq list --full-path | pf)
-  cd $repo  
+  cd (ghq list --full-path | peco)
 end
 
 function fish_user_key_bindings

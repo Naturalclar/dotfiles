@@ -13,6 +13,15 @@ brew install bats-core
 bats test/scripts.bats
 ```
 
+### fish-config.bats
+
+Automated [bats-core](https://github.com/bats-core/bats-core) tests for the parts of `.config/fish/` that mirror `.zshrc`: `.scripts` being on `PATH`, and the UTF-8 locale forcing that keeps multibyte output readable over SSH clients like Termius. Both fail silently when missing — the shell still starts, the scripts just are not there and text breaks — so each is asserted directly, with a stub `locale` used to vary which locales are available. A final test checks that fish and zsh pick the *same* locale from the same input. Needs `fish`; these run in CI on every push. Locally:
+
+```bash
+brew install bats-core
+bats test/fish-config.bats
+```
+
 ### prompt.bats
 
 Automated [bats-core](https://github.com/bats-core/bats-core) tests for `_prompt_path` in `.zshrc`, which replaces the working directory in the prompt with `<repo>[/<worktree>]` plus the path from the repository root. Each test covers one of the things the logic is easy to get wrong: `--git-common-dir` coming back relative from a subdirectory, detecting a linked worktree by `<root>/.git` being a file, and doubling `%` so a directory name cannot corrupt the prompt. The function is pulled out of `.zshrc` on its own, so the rest of the file does not have to be loadable. Needs `zsh`; these run in CI on every push. Locally:

@@ -48,9 +48,9 @@ Run `bootstrap.ps1` to setup configuration for PowerShell
 If you touch aliases:
 
 - Add or change them in `.zshrc` first.
-- Porting to fish is optional — but **an alias that exists in both shells must behave identically**. A name that means one thing in zsh and another in fish is worse than not having it in fish at all.
+- Porting to fish is optional — but **a name that exists in both shells must behave identically**. A name that means one thing in zsh and another in fish is worse than not having it in fish at all.
 
-`test/aliases.bats` enforces that in CI, and also fails if an alias is defined twice in `.zshrc` (where the later definition silently wins).
+`test/aliases.bats` enforces that in CI. It compares aliases textually, and — because a name can be an alias in one shell and a function in the other, where there is nothing to compare across two different syntaxes — it also requires any such pair to be listed in `KNOWN_EQUIVALENT` with a note saying it was checked by hand. A new mismatched pair therefore cannot appear unnoticed. It also fails if an alias is defined twice in `.zshrc` (where the later definition silently wins).
 
 The prompt is the one place where fish deliberately carries a copy of zsh logic: `.config/fish/functions/__prompt_path.fish` mirrors `_prompt_path` in `.zshrc`, and `__prompt_git_state.fish` mirrors the `vcs_info` zstyles. `test/prompt.bats` runs both implementations over the same repository layouts and fails if they disagree.
 

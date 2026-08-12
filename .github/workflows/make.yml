@@ -2,8 +2,15 @@ name: Main workflow
 
 on: [push, pull_request]
 
+# push and pull_request both fire for a PR branch, so without this every commit
+# starts two identical sets of runs and a force-push leaves the old ones going.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
+    timeout-minutes: 10
     strategy:
       # Report both platforms even when one fails; the Makefile hits GNU vs BSD
       # differences (ln, mktemp) that are only visible per-OS.
