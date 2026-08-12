@@ -1,6 +1,4 @@
-# create symbolic link for wezterm config file
+# Link the WezTerm config into the home directory.
+. "$PSScriptRoot\powershell\DotfilesSetup.ps1"
 
-$configDir = "$env:USERPROFILE\.wezterm.lua"
-
-New-Item -ItemType SymbolicLink -Path $configDir -Value $PSScriptRoot\.wezterm.lua
-
+New-DotfilesLink -Path "$env:USERPROFILE\.wezterm.lua" -Target "$PSScriptRoot\.wezterm.lua" | Out-Null

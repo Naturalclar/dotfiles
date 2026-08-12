@@ -33,55 +33,54 @@ make config     # symlink .config entries
 
 ## Windows
 
-Run `bootstrap.ps1` to point the PowerShell profile at this repository:
+One command on a new machine:
 
 ```
-./bootstrap.ps1
+git clone https://github.com/Naturalclar/dotfiles.git; cd dotfiles; .\install.ps1
 ```
 
-It writes a `$PROFILE` that sources `windows/*.ps1` from the clone, in filename
-order — the same idea as the symlinks `make` creates on Unix. A `git pull` takes
-effect on the next shell, so this only needs running once per machine. Edit
-`windows/*.ps1` here rather than `$PROFILE`, which is overwritten.
-
-Any profile you already had is copied to `$PROFILE.bak` first. Re-running is
-safe: it will not overwrite that backup with the generated loader.
-
-### Everything else on Windows
-
-`bootstrap.ps1` only sets up the shell. The rest is separate scripts, each
-creating one symlink:
-
-| Script | Links |
-| --- | --- |
-| `setup-nvim.ps1` | `.config/nvim` → `%USERPROFILE%\AppData\Local\nvim` |
-| `setup-wezterm.ps1` | `.wezterm.lua` → `%USERPROFILE%` |
-| `setup-komorebi.ps1` | `.config/komorebi/*.json` → `%USERPROFILE%\.config` |
-| `setup-whkdrc.ps1` | `.config/whkdrc` → `%USERPROFILE%\.config` |
-| `setup-yasb.ps1` | `.yasb` → `%USERPROFILE%` |
-
-One more is not a symlink: `setup-defaults.ps1` applies the machine settings —
-key repeat and the persistent `PROMPT` variable. Run it once per machine. It is
-the Windows counterpart of the `defaults write` step in `install.sh`, and it is
-deliberately *not* in the profile: it writes to the registry, which has no
-business happening on every shell start.
+`install.ps1` is the counterpart of `install.sh`: it points the PowerShell
+profile at the clone, links the configs, and applies the machine settings. It is
+idempotent, so re-running is safe.
 
 **Creating symlinks on Windows needs either an elevated shell or Developer Mode**
-(Settings → Privacy & security → For developers). Without one of those,
-`New-Item -ItemType SymbolicLink` fails with a permissions error.
+(Settings → Privacy & security → For developers). Without one of those the link
+steps warn and carry on, rather than stopping the run.
 
-These are not idempotent yet and assume `%USERPROFILE%\.config` already exists —
-see #280.
+### What it runs
 
-The window-manager side is [komorebi](https://github.com/LGUG2Z/komorebi) with
+| Script | Does |
+| --- | --- |
+| `bootstrap.ps1` | Writes a `$PROFILE` that sources `windows/*.ps1` from the clone |
+| `setup-nvim.ps1` | Links `.config/nvim` → `%LOCALAPPDATA%\nvim` |
+| `setup-wezterm.ps1` | Links `.wezterm.lua` → `%USERPROFILE%` |
+| `setup-komorebi.ps1` | Links `.config/komorebi/*.json` → `%USERPROFILE%\.config` |
+| `setup-whkdrc.ps1` | Links `.config/whkdrc` → `%USERPROFILE%\.config` |
+| `setup-yasb.ps1` | Links `.yasb` → `%USERPROFILE%` |
+| `setup-defaults.ps1` | Key repeat and the persistent `PROMPT` variable |
+
+Each runs standalone too. Linking follows the same rule as `make` on Unix: a
+link we made before is replaced, and anything else already at the destination is
+left alone with a warning.
+
+`setup-ahk.ps1` links `ahk/*.ahk` into the Startup folder so they run at login —
+remapping Windows to Ctrl, switching input language, and a few shortcuts.
+`install.ps1` does **not** call it, since whether those should start
+automatically is a choice rather than part of setting the machine up.
+
+The profile is a loader, not a copy: a `git pull` takes effect on the next
+shell. Edit `windows/*.ps1` here rather than `$PROFILE`, which is overwritten.
+Any profile you already had is copied to `$PROFILE.bak` first, once.
+
+### Other pieces
+
+The window manager is [komorebi](https://github.com/LGUG2Z/komorebi) with
 [whkd](https://github.com/LGUG2Z/whkd) for hotkeys and
 [yasb](https://github.com/amnweb/yasb) for the status bar;
 `powershell/komorebi-start.ps1` and `komorebi-stop.ps1` (plus `.bat` wrappers)
-drive it. `ahk/` holds AutoHotKey scripts for remapping Windows to Ctrl,
-switching input language, and a few shortcuts — there is no setup script for
-those, so place them in the startup folder yourself.
+drive it.
 
-There is no `Brewfile` equivalent: the tools above, plus whatever
+There is no `Brewfile` equivalent: those tools, plus whatever
 `windows/path.ps1` expects (scoop, direnv, poetry), have to be installed by
 hand.
 
