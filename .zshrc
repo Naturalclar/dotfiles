@@ -477,12 +477,6 @@ alias dce="docker compose exec"
 # alias for ripgrep
 alias rgi="rg --no-ignore"
 
-# alias for clear
-alias cl="clear"
-
-# clasp
-alias cl="clasp"
-
 # tmux
 alias tsa="tmux-send-all"
 alias pn="tmux-pane-name"

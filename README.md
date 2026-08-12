@@ -39,6 +39,17 @@ Run `bootstrap.ps1` to setup configuration for PowerShell
 ./bootstrap.ps1
 ```
 
+## Shells
+
+**zsh (`.zshrc`) is the source of truth.** It is the shell this repo is built around: it is what `install.sh` sets up, what CI lints (`zsh -n` plus a full `source`), and where every alias, function and keybinding lands first.
+
+`.config/fish/` is **experimental** and maintained on a best-effort basis. It carries a subset of the zsh aliases and none of the more involved functions (`run-script`, `peco-workspace`, `fzf-workspace`, …). Fish is not installed by `install.sh` and is not in the `Brewfile`.
+
+If you touch aliases:
+
+- Add or change them in `.zshrc` first.
+- Porting to fish is optional — but **an alias that exists in both shells must behave identically**. A name that means one thing in zsh and another in fish is worse than not having it in fish at all.
+
 ## Scripts
 
 `.scripts/` is symlinked into `$HOME` by `make` and added to `PATH` by `.zshrc`.

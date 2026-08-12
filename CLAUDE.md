@@ -24,7 +24,7 @@ This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mec
 ### Key files
 - `.zshrc` — main shell config; defines aliases, functions, PATH setup, keybindings. OS-specific blocks use `uname` detection (Darwin/Linux/Msys)
 - `.config/nvim/` — Neovim config using LazyVim framework (`config/lazy.lua` bootstraps lazy.nvim, plugins in `lua/plugins/`)
-- `.config/fish/` — Fish shell config (alternative shell)
+- `.config/fish/` — Fish shell config (experimental, best-effort). `.zshrc` is the source of truth for aliases and functions; fish carries only a subset. An alias defined in both shells must behave identically — add it to `.zshrc` first
 - `configs/.vscode/` — VSCode settings, keybindings, and extension sync script
 - `.scripts/` — custom CLI tools added to PATH (`duck`, `google`, `pmux`, `git-worktree-pull`)
 - `powershell/` — komorebi window manager start/stop scripts
