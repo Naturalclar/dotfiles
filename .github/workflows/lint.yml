@@ -52,6 +52,9 @@ jobs:
       # zsh -n only checks syntax; these check what the prompt actually renders.
       - name: Run prompt tests
         run: bats test/prompt.bats
+      # .scripts on PATH and the UTF-8 locale both fail silently when missing.
+      - name: Run fish config tests
+        run: bats test/fish-config.bats
 
   gitleaks:
     runs-on: ubuntu-latest
