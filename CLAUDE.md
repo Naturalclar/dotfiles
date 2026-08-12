@@ -10,12 +10,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `make vscodeExtensions` — sync VSCode extensions via `configs/.vscode/vscodeSync.sh`
 - `make list` — show which dotfiles will be symlinked
 - `make help` — print all make targets
-- Windows setup: run `./bootstrap.ps1` to concatenate `windows/*.ps1` into the PowerShell `$PROFILE`
+- Windows setup: run `./bootstrap.ps1` to point the PowerShell `$PROFILE` at `windows/*.ps1` in the clone; the `setup-*.ps1` scripts symlink the remaining configs and need Developer Mode or an elevated shell
 
 ## CI
 
 - **lint.yml** — checks `.zshrc` and each `.zsh/*.zsh` module with `zsh -n`, sources the whole config, then runs shellcheck, actionlint, gitleaks and the bats suites on Ubuntu
 - **make.yml** — runs `make` on macOS
+- PowerShell scripts are parsed and linted with PSScriptAnalyzer on Ubuntu (`pwsh` needs no Windows runner for that); nothing exercises them on Windows
 
 ## Architecture
 

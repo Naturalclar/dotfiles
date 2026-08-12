@@ -47,6 +47,42 @@ effect on the next shell, so this only needs running once per machine. Edit
 Any profile you already had is copied to `$PROFILE.bak` first. Re-running is
 safe: it will not overwrite that backup with the generated loader.
 
+### Everything else on Windows
+
+`bootstrap.ps1` only sets up the shell. The rest is separate scripts, each
+creating one symlink:
+
+| Script | Links |
+| --- | --- |
+| `setup-nvim.ps1` | `.config/nvim` → `%USERPROFILE%\AppData\Local\nvim` |
+| `setup-wezterm.ps1` | `.wezterm.lua` → `%USERPROFILE%` |
+| `setup-komorebi.ps1` | `.config/komorebi/*.json` → `%USERPROFILE%\.config` |
+| `setup-whkdrc.ps1` | `.config/whkdrc` → `%USERPROFILE%\.config` |
+| `setup-yasb.ps1` | `.yasb` → `%USERPROFILE%` |
+
+**Creating symlinks on Windows needs either an elevated shell or Developer Mode**
+(Settings → Privacy & security → For developers). Without one of those,
+`New-Item -ItemType SymbolicLink` fails with a permissions error.
+
+These are not idempotent yet and assume `%USERPROFILE%\.config` already exists —
+see #280.
+
+The window-manager side is [komorebi](https://github.com/LGUG2Z/komorebi) with
+[whkd](https://github.com/LGUG2Z/whkd) for hotkeys and
+[yasb](https://github.com/amnweb/yasb) for the status bar;
+`powershell/komorebi-start.ps1` and `komorebi-stop.ps1` (plus `.bat` wrappers)
+drive it. `ahk/` holds AutoHotKey scripts for remapping Windows to Ctrl,
+switching input language, and a few shortcuts — there is no setup script for
+those, so place them in the startup folder yourself.
+
+There is no `Brewfile` equivalent: the tools above, plus whatever
+`windows/path.ps1` expects (scoop, direnv, poetry), have to be installed by
+hand.
+
+CI runs on Linux and macOS only. The PowerShell scripts are parsed and linted
+with PSScriptAnalyzer on every push, but nothing exercises them on Windows —
+changes there are worth trying on a real machine.
+
 ## Shells
 
 **zsh is the source of truth.** It is the shell this repo is built around: it is what `install.sh` sets up, what CI lints (`zsh -n` per module plus a full `source`), and where every alias, function and keybinding lands first.
