@@ -1,4 +1,3 @@
-setx PROMPT "%PROMPT%"
 # Set the shell to display current branch name
 function prompt {
   $loc = $executionContext.SessionState.Path.CurrentLocation;
@@ -21,7 +20,7 @@ function prompt {
       $branchColor = "Green"
   }
   Write-Host "╭─ " -NoNewline -ForegroundColor "DarkGreen"
-  Write-Host "$directoryName " -NoNewline -ForegroundColor "Magenta" 
+  Write-Host "$directoryName " -NoNewline -ForegroundColor "Magenta"
   Write-Host "[$branch] " -ForegroundColor $branchColor
   Write-Host "╰─$ " -NoNewline -ForegroundColor "DarkGreen"
 

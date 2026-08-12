@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `make vscodeExtensions` — sync VSCode extensions via `configs/.vscode/vscodeSync.sh`
 - `make list` — show which dotfiles will be symlinked
 - `make help` — print all make targets
-- Windows setup: run `./bootstrap.ps1` to point the PowerShell `$PROFILE` at `windows/*.ps1` in the clone; the `setup-*.ps1` scripts symlink the remaining configs and need Developer Mode or an elevated shell
+- Windows setup: run `./bootstrap.ps1` to point the PowerShell `$PROFILE` at `windows/*.ps1` in the clone; the `setup-*.ps1` scripts symlink the remaining configs and need Developer Mode or an elevated shell; `setup-defaults.ps1` applies one-time machine settings (key repeat) and is not part of the profile
 
 ## CI
 
