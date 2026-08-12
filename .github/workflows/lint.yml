@@ -45,6 +45,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y bats lsof tmux
       - name: Run script tests
         run: bats test/scripts.bats
+      # Keeps the shells from drifting apart again: .zshrc is the source of
+      # truth, and an alias present in both must mean the same thing.
+      - name: Run alias tests
+        run: bats test/aliases.bats
 
   gitleaks:
     runs-on: ubuntu-latest
