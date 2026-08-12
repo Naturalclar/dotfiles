@@ -41,14 +41,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install bats, lsof and tmux
-        run: sudo apt-get update && sudo apt-get install -y bats lsof tmux
+      - name: Install bats, lsof, tmux and zsh
+        run: sudo apt-get update && sudo apt-get install -y bats lsof tmux zsh
       - name: Run script tests
         run: bats test/scripts.bats
       # Keeps the shells from drifting apart again: .zshrc is the source of
       # truth, and an alias present in both must mean the same thing.
       - name: Run alias tests
         run: bats test/aliases.bats
+      # zsh -n only checks syntax; these check what the prompt actually renders.
+      - name: Run prompt tests
+        run: bats test/prompt.bats
 
   gitleaks:
     runs-on: ubuntu-latest
