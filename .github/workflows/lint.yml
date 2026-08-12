@@ -2,6 +2,12 @@ name: Check Zshrc syntax
 
 on: [push, pull_request]
 
+# push and pull_request both fire for a PR branch, so without this every commit
+# starts two identical sets of runs and a force-push leaves the old ones going.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     strategy:
@@ -38,6 +44,9 @@ jobs:
 
   bats:
     runs-on: ubuntu-latest
+    # These tests spawn shells; a shell that blocks on a read would otherwise
+    # hold the runner for hours. The whole job takes well under a minute.
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4

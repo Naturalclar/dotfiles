@@ -19,11 +19,18 @@ teardown() {
   [ -n "${WORK:-}" ] && rm -rf "$WORK"
 }
 
+# Shells are always run with stdin closed and a deadline. A shell that blocks
+# on a read would otherwise stall the CI step for hours instead of failing, and
+# the timeout makes it obvious *which* case is at fault.
+sh_run() {
+  timeout 30 "$@" </dev/null
+}
+
 # Run fish with $HOME pointing at a throwaway directory that has .scripts
 # linked in, the way `make` sets it up.
 fish_with_home() {
   ln -sfn "$(cd "$REPO" && pwd)/.scripts" "$WORK/.scripts"
-  HOME="$WORK" fish -c "source $FISH_DIR/config.fish 2>/dev/null; $1"
+  HOME="$WORK" sh_run fish -c "source $FISH_DIR/config.fish 2>/dev/null; $1"
 }
 
 # Put a stub `locale` earlier on PATH so the available locales can be varied.
@@ -58,14 +65,14 @@ stub_locale() {
 
 @test "fish prefers en_US.UTF-8 when it is generated" {
   stub_locale 'C\nC.utf8\nen_US.utf8\nPOSIX'
-  run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL"
+  run sh_run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL"
   [ "$status" -eq 0 ]
   [ "$output" = "en_US.UTF-8" ]
 }
 
 @test "fish falls back to C.UTF-8 when that is all there is" {
   stub_locale 'C\nC.utf8\nPOSIX'
-  run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL"
+  run sh_run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL"
   [ "$status" -eq 0 ]
   [ "$output" = "C.UTF-8" ]
 }
@@ -74,7 +81,7 @@ stub_locale() {
   stub_locale 'C\nPOSIX'
   # fish sets LANG=C.UTF-8 on its own when the environment has no usable
   # locale, so LC_ALL is what shows whether the block actually ran.
-  run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL"
+  run sh_run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL"
   [ "$status" -eq 0 ]
   [ "$output" = "" ]
 }
@@ -83,8 +90,8 @@ stub_locale() {
   command -v zsh >/dev/null || skip "zsh not available"
   stub_locale 'C\nC.utf8\nen_US.utf8\nPOSIX'
 
-  from_fish="$(env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL")"
-  from_zsh="$(env PATH="$WORK/bin:$PATH" zsh -c "source $REPO/.zshrc >/dev/null 2>&1; echo \$LC_ALL")"
+  from_fish="$(sh_run env PATH="$WORK/bin:$PATH" fish -c "source $FISH_DIR/conf.d/locale.fish; echo \$LC_ALL")"
+  from_zsh="$(sh_run env PATH="$WORK/bin:$PATH" zsh -c "source $REPO/.zshrc >/dev/null 2>&1; echo \$LC_ALL")"
   [ "$from_fish" = "$from_zsh" ] || {
     echo "fish=[$from_fish] zsh=[$from_zsh]"
     false
