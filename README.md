@@ -33,11 +33,19 @@ make config     # symlink .config entries
 
 ## Windows
 
-Run `bootstrap.ps1` to setup configuration for PowerShell
+Run `bootstrap.ps1` to point the PowerShell profile at this repository:
 
 ```
 ./bootstrap.ps1
 ```
+
+It writes a `$PROFILE` that sources `windows/*.ps1` from the clone, in filename
+order — the same idea as the symlinks `make` creates on Unix. A `git pull` takes
+effect on the next shell, so this only needs running once per machine. Edit
+`windows/*.ps1` here rather than `$PROFILE`, which is overwritten.
+
+Any profile you already had is copied to `$PROFILE.bak` first. Re-running is
+safe: it will not overwrite that backup with the generated loader.
 
 ## Shells
 
