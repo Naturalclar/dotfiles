@@ -1,4 +1,7 @@
-alias get_default_branch="git remote show origin | grep 'HEAD branch' | cut -d ':' -f2 | sed 's/[ ]//g'"
+# NOTE: .zshrc is the source of truth for these. See README.md -- when an alias
+# exists in both shells it must behave identically here.
+
+alias get_default_branch="git remote show origin | grep 'HEAD branch' | awk '{print \$3}'"
 alias git_current_branch="git branch | grep \* | cut -d ' ' -f2"
 
 #alias for peco
@@ -38,7 +41,7 @@ alias gsu="git stash -u"
 alias bl="git branch"
 alias branch="git branch"
 alias pull="git pull"
-alias up="git pull upstream master"
+alias up="git stash -u && git rebase main && git stash pop"
 
 # git functions
 
@@ -65,9 +68,7 @@ alias yl="yarn lint"
 alias ytc="yarn type-check"
 alias build="yarn build"
 alias start="yarn start"
-alias lint="yarn lint"
 alias type-check="yarn type-check"
-alias tc="yarn type-check"
 alias ybuild="yarn build"
 alias ystart="yarn start"
 alias ylint="yarn lint"
@@ -76,10 +77,14 @@ alias ybt="yarn bootstrap"
 alias yarnstrap="yarn bootstrap"
 alias yad="yarn add -D"
 alias ya="yarn add"
-alias add="yarn add"
-alias addd="yarn add -D"
 alias yag="yarn global add"
-alias addg="yarn global add"
+
+# pnpm
+alias add="pnpm add"
+alias addd="pnpm add -D"
+alias addg="pnpm global add"
+alias lint="pnpm lint"
+alias tc="pnpm type-check"
 alias yw="yarn watch"
 alias ytest="yarn test"
 alias yyb="yarn && yarn bootstrap"
@@ -113,12 +118,12 @@ end
 alias ch="hub browse && code ."
 
 # alias to run android emulator
-alias emulaor="$HOME/Library/Android/sdk/emulator/emulator"
-alias listdroid='emulator -list-avds'
+set -gx EMULATOR "$HOME/Library/Android/sdk/emulator/emulator"
+alias listdroid='$EMULATOR -list-avds'
 
 # open selected android emulator
 function rundroid
-  emulator -avd (listdroid | peco)
+  $EMULATOR -avd (listdroid | peco)
 end
 
 # alias to copy file or folder to dotfiles repository
@@ -141,9 +146,6 @@ alias dkill="docker kill"
 
 # alias for ripgrep
 alias rgi="rg --no-ignore"
-
-# alias for clear
-alias cl="clear"
 
 # alias for exit
 alias .exit="exit"
