@@ -86,53 +86,74 @@ Set-Alias -Name lg -Value lazygit
 
 $Env:KOMOREBI_CONFIG_HOME = "$Env:USERPROFILE\.config"
 
-# Add aliases for pnpm commands
+# NOTE: these are functions, not Set-Alias. Set-Alias binds a name to a single
+# command, so `Set-Alias pb "pnpm build"` creates an alias for a command called
+# "pnpm build" -- which does not exist, and fails the moment you run it. Only
+# argument-less aliases (below) can use Set-Alias.
+#
+# Definitions follow .zsh/*.zsh, which is the source of truth. See README.md.
+
+# pnpm
 Set-Alias -Name p -Value pnpm
-Set-Alias -Name pb -Value "pnpm build"
-Set-Alias -Name ph -Value "pnpm start"
-Set-Alias -Name pi -Value "pnpm install"
-Set-Alias -Name add -Value "pnpm add"
-Set-Alias -Name addd -Value "pnpm add -D"
-Set-Alias -Name addg -Value "pnpm global add"
-Set-Alias -Name lint -Value "pnpm lint"
-Set-Alias -Name format -Value "pnpm format"
-Set-Alias -Name tc -Value "pnpm type-check"
-Set-Alias -Name type-check -Value "pnpm type-check"
-Set-Alias -Name ptc -Value "pnpm type:check"
+Function pb { pnpm build $args }
+Function ph { pnpm start $args }
+Function pi { pnpm install $args }
+Function add { pnpm add $args }
+Function addd { pnpm add -D $args }
+Function addg { pnpm global add $args }
+Function lint { pnpm lint $args }
+Function format { pnpm format $args }
+Function tc { pnpm type-check $args }
+Function ptc { pnpm type:check $args }
+# zsh has this one on yarn, not pnpm
+Function type-check { yarn type-check $args }
 
-# Add aliases for npx commands
-Set-Alias -Name upset -Value "npx git-upstream --set"
+# npx
+Function upset { npx git-upstream --set $args }
 
-# Add aliases for ghq commands
-Set-Alias -Name get -Value "ghq get"
-Set-Alias -Name getb -Value "ghq get --bare"
+# ghq -- `get` is defined as a function further up
+Function getb { ghq get --bare $args }
 
-# Add additional git aliases
-Set-Alias -Name gbr -Value "git branch"
-Set-Alias -Name gbranch -Value "git branch"
-Set-Alias -Name gcom -Value "git switch master"
-Set-Alias -Name gcp -Value "git cherry-pick"
-Set-Alias -Name gdm -Value "git branch --merged|egrep -v '\*|develop|master|release'|xargs git branch -d"
-Set-Alias -Name glog -Value "git log"
-Set-Alias -Name gpcbf -Value "git push origin $(get_current_branch) --force-with-lease"
-Set-Alias -Name gpom -Value "git push origin -u master"
-Set-Alias -Name gpl -Value "git pull"
-Set-Alias -Name gplcb -Value "git pull origin $(get_current_branch)"
-Set-Alias -Name gpsub -Value "git submodule update --init --recursive"
-Set-Alias -Name gptag -Value "git push origin --tags"
-Set-Alias -Name gpum -Value "git pull upstream master"
-Set-Alias -Name gr -Value "gcod && gpull"
-Set-Alias -Name grh -Value "git restore --worktree"
-Set-Alias -Name grb -Value "git rebase"
-Set-Alias -Name gsd -Value "git switch develop"
-Set-Alias -Name gsm -Value "git switch master"
-Set-Alias -Name gw -Value "git worktree"
-Set-Alias -Name gitsync -Value "git remote set-head origin --auto"
-Set-Alias -Name bl -Value "git branch"
-Set-Alias -Name branch -Value "git branch"
-Set-Alias -Name pull -Value "git pull"
-Set-Alias -Name up -Value "git pull upstream master"
-Set-Alias -Name get_default_branch_fast -Value "git symbolic-ref refs/remotes/origin/HEAD --short | sed 's/origin\///'"
+# git
+Function gbr { git branch $args }
+Function gbranch { git branch $args }
+Function bl { git branch $args }
+Function branch { git branch $args }
+Function gcom { git switch master }
+Function gsm { git switch master }
+Function gsd { git switch develop }
+Function gcp { git cherry-pick $args }
+Function glog { git log $args }
+Function grb { git rebase $args }
+Function grh { git restore --worktree $args }
+Function gw { git worktree $args }
+Function gpl { git pull $args }
+Function pull { git pull $args }
+Function gpom { git push origin -u master }
+Function gptag { git push origin --tags }
+Function gpum { git pull upstream master }
+Function gpsub { git submodule update --init --recursive }
+Function gitsync { git remote set-head origin --auto }
+Function gr { gcod && gpull }
+Function up { git stash -u && git rebase main && git stash pop }
+
+# The branch has to be resolved when the command runs. Inside a double-quoted
+# Set-Alias value $( ) expands once, at profile load, so these used to push to
+# whichever branch happened to be checked out when the shell opened.
+Function gpcbf { git push origin (get_current_branch) --force-with-lease $args }
+Function gplcb { git pull origin (get_current_branch) $args }
+
+# sed, egrep and xargs are not there on Windows, so these differ from the zsh
+# definitions in wording while doing the same thing.
+Function get_default_branch_fast {
+    (git symbolic-ref refs/remotes/origin/HEAD --short) -replace '^origin/', ''
+}
+Function gdm {
+    # delete merged branches
+    git branch --merged |
+        Where-Object { $_ -notmatch '^\*|develop|master|release' } |
+        ForEach-Object { git branch -d $_.Trim() }
+}
 
 # Add alias for cygpath
 Set-Alias cygpath "$env:USERPROFILE\scoop\apps\git\current\usr\bin\cygpath.exe"

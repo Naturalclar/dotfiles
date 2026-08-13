@@ -14,6 +14,7 @@
 
 # .zshrc is only a loader now; the definitions live in .zsh/*.zsh.
 ZSH_PARTS=("$BATS_TEST_DIRNAME"/../.zsh/*.zsh)
+PS_ALIASES="$BATS_TEST_DIRNAME/../windows/alias.ps1"
 FISH_DIR="$BATS_TEST_DIRNAME/../.config/fish"
 FISH_ALIASES="$FISH_DIR/conf.d/aliases.fish"
 
@@ -31,6 +32,14 @@ FISH_ALIASES="$FISH_DIR/conf.d/aliases.fish"
 #             preview string verbatim since fzf runs it with sh either way
 #   run-script  same selector, same lockfile order; rewritten in fish syntax
 KNOWN_EQUIVALENT="gbd gcod gpcb n run-script rundroid wf ws"
+
+# Same idea for PowerShell. Only the one-liners are comparable at all; anything
+# multi-line is rewritten in PowerShell and is not checked here.
+#
+#   gpcbf, gplcb  command substitution syntax, and zsh's git_current_branch is
+#                 spelled get_current_branch on the PowerShell side
+#   open          zsh runs explorer.exe under WSL; PowerShell has Invoke-Item
+PS_KNOWN_EQUIVALENT="gpcbf gplcb open"
 
 # Print "name<TAB>definition" for every `alias name=...` line in $1. The
 # surrounding quotes and any trailing comment are stripped so that the two
@@ -58,6 +67,21 @@ fish_names() {
     grep -hoE "^[[:space:]]*alias [A-Za-z0-9_.:-]+=" "$FISH_DIR"/conf.d/*.fish | sed -E 's/^[[:space:]]*alias //; s/=$//'
     grep -hoE "^function [A-Za-z0-9_.:-]+" "$FISH_DIR"/conf.d/*.fish | sed 's/^function //'
     basename -s .fish "$FISH_DIR"/functions/*.fish
+  } | sort -u
+}
+
+# name<TAB>definition for the PowerShell one-liners: single-line functions with
+# the trailing $args forwarding removed, plus Set-Alias entries that take no
+# arguments. Set-Alias cannot carry arguments -- binding it to "pnpm build"
+# produces an alias for a command of that name, which does not exist -- so an
+# argument-carrying entry is a bug rather than something to compare.
+ps_defs() {
+  {
+    grep -oE "^Function [A-Za-z0-9_.-]+ \{ [^}]+ \}" "$PS_ALIASES" |
+      sed -E 's/^Function ([A-Za-z0-9_.-]+) \{ (.*) \}$/\1\t\2/' |
+      sed -E 's/[[:space:]]*\$args[[:space:]]*$//'
+    grep -oE "^Set-Alias -Name [A-Za-z0-9_.-]+ -Value [A-Za-z0-9_.-]+$" "$PS_ALIASES" |
+      sed -E 's/^Set-Alias -Name ([A-Za-z0-9_.-]+) -Value (.*)$/\1\t\2/'
   } | sort -u
 }
 
@@ -138,6 +162,49 @@ defined_as_alias() {
   done
   if [ -n "$stale" ]; then
     echo "KNOWN_EQUIVALENT lists names that are no longer in both shells:$stale"
+    false
+  fi
+}
+
+# --- PowerShell ---------------------------------------------------------------
+
+@test "no Set-Alias carries arguments" {
+  # Set-Alias binds a name to one command. Given "pnpm build" it makes an alias
+  # for a command called "pnpm build", which fails the moment it is run.
+  bad="$(grep -nE '^Set-Alias .* -Value "[^"]* ' "$PS_ALIASES" || true)"
+  if [ -n "$bad" ]; then
+    echo "these aliases can never run; make them functions instead:"
+    echo "$bad"
+    false
+  fi
+}
+
+@test "no Set-Alias expands a subshell at load time" {
+  # $( ) inside a double-quoted value runs when the profile loads, freezing the
+  # result -- which for gpcbf meant force-pushing to whatever branch was checked
+  # out when the shell opened.
+  bad="$(grep -nE '^Set-Alias .*\$\(' "$PS_ALIASES" || true)"
+  if [ -n "$bad" ]; then
+    echo "these evaluate at profile load rather than when run:"
+    echo "$bad"
+    false
+  fi
+}
+
+@test "PowerShell definition extraction finds the one-liners" {
+  [ "$(ps_defs | wc -l)" -gt 30 ]
+  ps_defs | grep -qx "$(printf 'gbr\tgit branch')"
+}
+
+@test "a name defined in zsh and PowerShell means the same thing" {
+  conflicts="$(join -t$'\t' \
+    <(alias_defs "${ZSH_PARTS[@]}" | sort -u -t$'\t' -k1,1) \
+    <(ps_defs | sort -u -t$'\t' -k1,1) |
+    awk -F'\t' -v known=" $PS_KNOWN_EQUIVALENT " \
+      '$2 != $3 && index(known, " " $1 " ") == 0 { printf "%s\n  zsh: %s\n  ps:  %s\n", $1, $2, $3 }')"
+  if [ -n "$conflicts" ]; then
+    echo "these disagree between zsh and PowerShell (.zsh/*.zsh is the source of truth):"
+    echo "$conflicts"
     false
   fi
 }

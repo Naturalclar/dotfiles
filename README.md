@@ -101,7 +101,13 @@ If you touch aliases:
 - Add or change them in the matching `.zsh/*.zsh` module first.
 - Porting to fish is optional — but **a name that exists in both shells must behave identically**. A name that means one thing in zsh and another in fish is worse than not having it in fish at all.
 
-`test/aliases.bats` enforces that in CI. It compares aliases textually, and — because a name can be an alias in one shell and a function in the other, where there is nothing to compare across two different syntaxes — it also requires any such pair to be listed in `KNOWN_EQUIVALENT` with a note saying it was checked by hand. A new mismatched pair therefore cannot appear unnoticed. It also fails if an alias is defined twice across the modules (where the later definition silently wins).
+PowerShell (`windows/alias.ps1`) follows the same rule for the definitions that
+can be compared at all — the one-liners. Its prompt mirrors the zsh one too.
+Anything genuinely platform-specific (`open` is `explorer.exe` under WSL and
+`Invoke-Item` in PowerShell) is recorded as a known difference rather than
+forced to match.
+
+`test/aliases.bats` enforces that in CI. It compares aliases textually, and — because a name can be an alias in one shell and a function in the other, where there is nothing to compare across two different syntaxes — it also requires any such pair to be listed in `KNOWN_EQUIVALENT` with a note saying it was checked by hand. A new mismatched pair therefore cannot appear unnoticed. It also fails if an alias is defined twice across the modules (where the later definition silently wins), and it rejects two PowerShell mistakes that cannot work: a `Set-Alias` carrying arguments (`Set-Alias pb "pnpm build"` aliases a command *named* `pnpm build`, which does not exist) and a `Set-Alias` whose value contains `$( )`, which runs once at profile load rather than when the command is used.
 
 Both shells use vi key bindings (`set -o vi` in zsh, `fish_key_bindings` in fish) and export `EDITOR=vim` and `GIT_EDITOR=vim`.
 
