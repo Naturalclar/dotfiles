@@ -120,9 +120,9 @@ Keybindings are mirrored too:
 | `Ctrl+A` | ghq repo (fzf) | ✓ | ✓ | ✓ |
 | `Ctrl+B` | git worktree | ✓ | ✓ | ✓ |
 | `Ctrl+N` | package.json script | ✓ | ✓ | ✓ |
-| `Ctrl+F` | tmux session (`pmux`) | ✓ | ✓ | — |
+| `Ctrl+F` | tmux session (`pmux`) | ✓ | ✓ | ✓ (repo, no tmux) |
 
-`Ctrl+F` has no PowerShell binding because there is no tmux there. `Ctrl+A` on Windows picks without the README preview, since fzf runs its preview through cmd and the Unix version leans on `find` and `bat`.
+`Ctrl+F` opens a tmux session for the picked repository on Unix. There is no tmux on Windows, so it switches to the repository instead — the same thing `Ctrl+W` does. The habit survives even though the destination is a shell rather than a session. `Ctrl+A` on Windows picks without the README preview, since fzf runs its preview through cmd and the Unix version leans on `find` and `bat`.
 
 Several of these take over a default (`Ctrl+A` beginning-of-line, `Ctrl+F` accept-autosuggestion in fish, `Ctrl+W` backward-kill-word), which is deliberate — the point is for the shells to feel the same. In fish and PowerShell they are bound in both vi modes, so they work whether or not you are in insert mode.
 

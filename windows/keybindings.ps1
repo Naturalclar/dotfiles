@@ -1,8 +1,10 @@
 # NOTE: mirrors the bindkey lines in .zsh/ and fish_user_key_bindings in fish.
 # zsh is the source of truth -- see README.md.
 #
-# Ctrl+F is deliberately absent: it opens a tmux session on the Unix side, and
-# there is no tmux here.
+# Ctrl+F is the one that differs. On the Unix side it opens a tmux session for
+# the picked repository; there is no tmux here, so it switches to the repository
+# the same way Ctrl+W does. The muscle memory -- "Ctrl+F takes me to a project"
+# -- carries over even though the destination is a shell rather than a session.
 
 if (-not (Get-Module PSReadLine)) {
     Import-Module PSReadLine -ErrorAction SilentlyContinue
@@ -47,6 +49,11 @@ Set-PSReadLineKeyHandler -Chord 'Ctrl+z' -ViMode Insert -Description 'search his
 # These change directory, so redraw the prompt afterwards rather than leaving
 # the old one on screen.
 Set-Binding -Chord 'Ctrl+w' -Description 'ghq repo (peco)' -Action {
+    ws
+    [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
+}
+# No tmux here, so this lands in the repository instead of a session.
+Set-Binding -Chord 'Ctrl+f' -Description 'ghq repo (peco)' -Action {
     ws
     [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt()
 }
