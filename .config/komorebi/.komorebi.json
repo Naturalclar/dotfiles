@@ -31,6 +31,11 @@
       "kind": "Exe",
       "id": "claude.exe",
       "matching_strategy": "Equals"
+    },
+    {
+      "kind": "Exe",
+      "id": "UAD Console.exe",
+      "matching_strategy": "Equals"
     }
   ],
   "monitors": [
