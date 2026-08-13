@@ -30,6 +30,7 @@ This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mec
 - `configs/.vscode/` — VSCode settings, keybindings, and extension sync script
 - `.scripts/` — custom CLI tools added to PATH (`duck`, `google`, `pmux`, `git-worktree-pull`)
 - `powershell/` — komorebi start/stop scripts, and `DotfilesSetup.ps1` (the symlink helper the `setup-*.ps1` scripts share). Kept out of `windows/`, which `bootstrap.ps1` sources into every shell
+- `windows/*.ps1` — PowerShell profile parts, sourced in filename order by the `$PROFILE` loader `bootstrap.ps1` writes. `keybindings.ps1` mirrors the zsh keybinds via PSReadLine; `functions.ps1` holds what they call
 - `ahk/` — AutoHotKey scripts (remap keys, language switching, shortcuts)
 - `keymaps/` — custom keyboard layout mappings
 - `.config/kitty/`, `.config/hypr/`, `.config/i3/`, `.config/waybar/` — terminal and WM configs
