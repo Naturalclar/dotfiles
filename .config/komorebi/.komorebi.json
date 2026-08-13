@@ -45,6 +45,20 @@
       }
     ]
   ],
+  "ignore_rules": [
+    [
+      {
+        "kind": "Exe",
+        "id": "UAD Console.exe",
+        "matching_strategy": "Equals"
+      },
+      {
+        "kind": "Title",
+        "id": "UAD Console",
+        "matching_strategy": "DoesNotStartWith"
+      }
+    ]
+  ],
   "monitors": [
     {
       "workspaces": [
