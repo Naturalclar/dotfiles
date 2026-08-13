@@ -26,6 +26,13 @@
   "animation": {
     "enabled": false
   },
+  "manage_rules": [
+    {
+      "kind": "Exe",
+      "id": "claude.exe",
+      "matching_strategy": "Equals"
+    }
+  ],
   "monitors": [
     {
       "workspaces": [
