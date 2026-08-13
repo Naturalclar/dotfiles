@@ -80,6 +80,20 @@ The window manager is [komorebi](https://github.com/LGUG2Z/komorebi) with
 `powershell/komorebi-start.ps1` and `komorebi-stop.ps1` (plus `.bat` wrappers)
 drive it.
 
+`manage_rules` in `.config/komorebi/.komorebi.json` force-manages windows
+komorebi would otherwise leave floating. Scope those rules as tightly as the
+application allows: a bare `Exe` rule matches *every* window of that process,
+so an app whose plugin or dialog windows are separate top-level windows would
+get all of them tiled too. A nested array is a composite rule — every entry in
+it has to match — which is how the UAD Console entry keeps to the main window.
+Note that `manage_rules` wins over `ignore_rules`, so a too-broad force-manage
+rule cannot be walked back with an ignore rule; narrow the rule itself.
+
+`komorebic visible-windows` prints the exe, title and class of what is on
+screen, which is where the ids in those rules come from. Matching is exact for
+`Equals`, so a wrong id is a silent no-op. Changes need
+`komorebic reload-configuration`.
+
 There is no `Brewfile` equivalent: those tools, plus whatever
 `windows/path.ps1` expects (scoop, direnv, poetry), have to be installed by
 hand.
