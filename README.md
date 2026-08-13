@@ -101,8 +101,9 @@ If you touch aliases:
 - Add or change them in the matching `.zsh/*.zsh` module first.
 - Porting to fish is optional — but **a name that exists in both shells must behave identically**. A name that means one thing in zsh and another in fish is worse than not having it in fish at all.
 
-PowerShell (`windows/alias.ps1`) follows the same rule for the definitions that
-can be compared at all — the one-liners. Its prompt mirrors the zsh one too.
+PowerShell (`windows/alias.ps1`, `windows/functions.ps1`) follows the same rule
+for the definitions that can be compared at all: one-liners, plus multi-line
+functions whose body is a single command — which most of them are. Its prompt mirrors the zsh one too.
 Anything genuinely platform-specific (`open` is `explorer.exe` under WSL and
 `Invoke-Item` in PowerShell) is recorded as a known difference rather than
 forced to match.

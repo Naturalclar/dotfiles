@@ -15,6 +15,7 @@
 # .zshrc is only a loader now; the definitions live in .zsh/*.zsh.
 ZSH_PARTS=("$BATS_TEST_DIRNAME"/../.zsh/*.zsh)
 PS_ALIASES="$BATS_TEST_DIRNAME/../windows/alias.ps1"
+PS_FUNCS="$BATS_TEST_DIRNAME/../windows/functions.ps1"
 FISH_DIR="$BATS_TEST_DIRNAME/../.config/fish"
 FISH_ALIASES="$FISH_DIR/conf.d/aliases.fish"
 
@@ -39,7 +40,19 @@ KNOWN_EQUIVALENT="gbd gcod gpcb n run-script rundroid wf ws"
 #   gpcbf, gplcb  command substitution syntax, and zsh's git_current_branch is
 #                 spelled get_current_branch on the PowerShell side
 #   open          zsh runs explorer.exe under WSL; PowerShell has Invoke-Item
-PS_KNOWN_EQUIVALENT="gpcbf gplcb open"
+#   gpcb, gpcbf, gplcb  command substitution syntax; zsh's git_current_branch
+#                       is spelled get_current_branch here
+#   ws                  zsh calls peco-workspace; PowerShell inlines the same
+#                       one-liner
+#   get_default_branch, get_default_branch_fast
+#                       rewritten with Select-String and -replace, since awk and
+#                       sed are not on Windows
+#   open                zsh runs explorer.exe under WSL; PowerShell Invoke-Item
+#
+# Anything whose PowerShell side is longer than one command is not extracted at
+# all and so cannot be listed here -- gdm, wf, run-script and switch-worktree
+# are real rewrites, described in the comments where they are defined.
+PS_KNOWN_EQUIVALENT="get_default_branch get_default_branch_fast gpcb gpcbf gplcb open ws"
 
 # Print "name<TAB>definition" for every `alias name=...` line in $1. The
 # surrounding quotes and any trailing comment are stripped so that the two
@@ -77,12 +90,24 @@ fish_names() {
 # argument-carrying entry is a bug rather than something to compare.
 ps_defs() {
   {
-    grep -oE "^Function [A-Za-z0-9_.-]+ \{ [^}]+ \}" "$PS_ALIASES" |
-      sed -E 's/^Function ([A-Za-z0-9_.-]+) \{ (.*) \}$/\1\t\2/' |
-      sed -E 's/[[:space:]]*\$args[[:space:]]*$//'
-    grep -oE "^Set-Alias -Name [A-Za-z0-9_.-]+ -Value [A-Za-z0-9_.-]+$" "$PS_ALIASES" |
+    grep -hoE "^Function [A-Za-z0-9_.-]+ \{ [^}]+ \}" "$PS_ALIASES" "$PS_FUNCS" |
+      sed -E 's/^Function ([A-Za-z0-9_.-]+) \{ (.*) \}$/\1\t\2/'
+    # Multi-line functions whose body is a single command. Most of them are --
+    # `gst { git status }` written across three lines -- and skipping those is
+    # how `gco` and `gpull` drifted unnoticed. Anything longer is a genuine
+    # PowerShell rewrite and belongs in PS_KNOWN_EQUIVALENT instead.
+    awk '
+      /^Function [A-Za-z0-9_.-]+ \{$/ { name = $2; n = 0; next }
+      name && /^\}$/ { if (n == 1) print name "\t" body; name = ""; next }
+      name && !/^[[:space:]]*#/ && !/^[[:space:]]*$/ {
+        line = $0
+        sub(/^[[:space:]]+/, "", line); sub(/[[:space:]]+$/, "", line)
+        body = line; n++
+      }
+    ' "$PS_ALIASES" "$PS_FUNCS"
+    grep -hoE "^Set-Alias -Name [A-Za-z0-9_.-]+ -Value [A-Za-z0-9_.-]+$" "$PS_ALIASES" |
       sed -E 's/^Set-Alias -Name ([A-Za-z0-9_.-]+) -Value (.*)$/\1\t\2/'
-  } | sort -u
+  } | sed -E 's/[[:space:]]*\$args[[:space:]]*$//' | sort -u
 }
 
 defined_as_alias() {
@@ -205,6 +230,29 @@ defined_as_alias() {
   if [ -n "$conflicts" ]; then
     echo "these disagree between zsh and PowerShell (.zsh/*.zsh is the source of truth):"
     echo "$conflicts"
+    false
+  fi
+}
+
+@test "PS_KNOWN_EQUIVALENT has no stale entries" {
+  # An entry earns its place only while the two sides actually differ. Once they
+  # agree, keeping it here would quietly stop checking a name that is fine.
+  paired="$(join -t$'\t' \
+    <(alias_defs "${ZSH_PARTS[@]}" | sort -u -t$'\t' -k1,1) \
+    <(ps_defs | sort -u -t$'\t' -k1,1))"
+
+  stale=""
+  for name in $PS_KNOWN_EQUIVALENT; do
+    row="$(echo "$paired" | awk -F'\t' -v n="$name" '$1 == n')"
+    if [ -z "$row" ]; then
+      stale="$stale $name(not-compared)"
+    elif [ "$(echo "$row" | cut -f2)" = "$(echo "$row" | cut -f3)" ]; then
+      stale="$stale $name(now-agrees)"
+    fi
+  done
+
+  if [ -n "$stale" ]; then
+    echo "PS_KNOWN_EQUIVALENT entries that are no longer needed:$stale"
     false
   fi
 }

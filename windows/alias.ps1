@@ -22,7 +22,7 @@ Function gcmm {
     git commit -m $args
 }
 Function gpull {
-    git pull origin $args
+    git pull $args
 }
 Function get_current_branch {
     git branch --show-current
@@ -34,7 +34,7 @@ Function gsc {
     git switch -c $args
 }
 Function gco {
-    git switch $args
+    git checkout $args
 }
 Function get_default_branch {
     git remote show origin | Select-String "HEAD branch" | ForEach-Object { $_.ToString().Split(":")[1].Trim() }
