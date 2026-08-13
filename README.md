@@ -89,6 +89,12 @@ it has to match — which is how the UAD Console entry keeps to the main window.
 Note that `manage_rules` wins over `ignore_rules`, so a too-broad force-manage
 rule cannot be walked back with an ignore rule; narrow the rule itself.
 
+`ignore_rules` is for the other direction: windows komorebi *would* tile on its
+own but shouldn't. The UAD entry is the negative of its manage rule — every
+window of that process whose title is not the Console's — so the plugin editor
+windows stay floating however they are titled. A window already on screen when
+the config is reloaded keeps its current state; reopen it to re-evaluate.
+
 `komorebic visible-windows` prints the exe, title and class of what is on
 screen, which is where the ids in those rules come from. Matching is exact for
 `Equals`, so a wrong id is a silent no-op. Changes need
