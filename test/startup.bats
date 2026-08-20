@@ -12,6 +12,20 @@
 
 setup() {
   REPO="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
+
+  # Every test here sources .zshrc, and on Linux that starts an ssh-agent
+  # (#303). An agent inherits the pipe bats is reading, does not exit with the
+  # shell that spawned it, and so holds that pipe open -- which is how the bats
+  # job once sat for 34 minutes after every test had already passed. Stub it
+  # out: `eval "$(ssh-agent)"` with no output is a no-op.
+  STUB="$(mktemp -d)"
+  printf '#!/bin/sh\nexit 0\n' >"$STUB/ssh-agent"
+  chmod +x "$STUB/ssh-agent"
+  PATH="$STUB:$PATH"
+}
+
+teardown() {
+  [ -n "${STUB:-}" ] && rm -rf "$STUB"
 }
 
 # The modules print their own advice on a machine that is missing asdf, ghq and
