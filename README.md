@@ -115,6 +115,13 @@ changes there are worth trying on a real machine.
 
 `.zshrc` itself is only a loader — the configuration lives in `.zsh/*.zsh`, sourced in filename order. The numeric prefix *is* the load order and it matters (options and PATH before what uses them, syntax highlighting after the aliases it highlights), so add new settings to the module that fits rather than to `.zshrc`.
 
+When startup feels slow, the loader can time and profile itself. Both are off by default — a shell that prints on every start corrupts anything reading its output:
+
+```bash
+ZSH_STARTUP_TIME=1 zsh -i -c exit   # zsh startup: 123ms
+ZSH_PROFILE=1 zsh -i -c exit        # zprof table: where that time went
+```
+
 `.config/fish/` is **experimental** and maintained on a best-effort basis. It carries a subset of the zsh aliases and none of the more involved functions (`run-script`, `peco-workspace`, `fzf-workspace`, …). Fish is not installed by `install.sh` and is not in the `Brewfile`.
 
 If you touch aliases:

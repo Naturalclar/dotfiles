@@ -36,6 +36,3 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 export PATH="$HOME/.phpenv/bin:$PATH"
 export PATH="/usr/local/opt/bison@2.7/bin:$PATH"
 
-end_time=$(strftime '%s%.')
-echo $((end_time - start_time))
-

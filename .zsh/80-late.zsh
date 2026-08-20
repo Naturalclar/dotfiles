@@ -1,5 +1,3 @@
-# Uncomment the following line to profile zsh
-# zprof
 alias altest="FIRESTORE_EMULATOR_HOST=127.0.0.1:8457 GCLOUD_PROJECT=pseudo-foobar PGHOST=127.0.0.1 PGUSER=postgres PGPASSWORD=postgres pnpm test"
 alias alwatch="FIRESTORE_EMULATOR_HOST=127.0.0.1:8457 GCLOUD_PROJECT=pseudo-foobar PGHOST=127.0.0.1 PGUSER=postgres PGPASSWORD=postgres pnpm test:watch"
 

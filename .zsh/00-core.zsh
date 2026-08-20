@@ -18,10 +18,8 @@ for _l in en_US.UTF-8 C.UTF-8; do
 done
 unset _l
 
-# Uncomment the following line to profile zsh
-# zmodload zsh/zprof
-zmodload zsh/datetime
-start_time=$(strftime '%s%.')
+# Profiling and startup timing are opt-in and live in .zshrc; see the comment
+# there for ZSH_PROFILE and ZSH_STARTUP_TIME.
 
 OS=`uname`
 
