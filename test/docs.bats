@@ -53,9 +53,23 @@ setup() {
   }
 }
 
+# Comments are stripped first: the workflow explains the glob in a comment that
+# names test/*.bats, and matching that would pass whatever the steps do.
+ci_globs_suites() {
+  local wf
+  for wf in "$REPO"/.github/workflows/*.yml; do
+    sed 's/#.*//' "$wf" | grep -q 'test/\*\.bats' && return 0
+  done
+  return 1
+}
+
 @test "every bats suite is run by CI" {
   # Adding a suite and forgetting the workflow step leaves it passing locally
-  # and never running anywhere else.
+  # and never running anywhere else. A workflow that globs test/*.bats gets
+  # that right for every suite at once, so it satisfies this on its own; the
+  # per-suite check is what applies if the steps are ever spelled out again.
+  ci_globs_suites && return 0
+
   local missing=""
   for suite in "$REPO"/test/*.bats; do
     grep -qr "bats test/$(basename "$suite")" "$REPO/.github/workflows" || missing+=" $(basename "$suite")"
@@ -64,6 +78,13 @@ setup() {
     echo "suites no workflow runs:$missing"
     false
   }
+}
+
+@test "the suites are found by CI rather than listed" {
+  # The glob is the thing that makes the check above unnecessary. Losing it
+  # silently is what this pins: a suite that never runs looks exactly like a
+  # suite that passes.
+  ci_globs_suites
 }
 
 @test "CLAUDE.md lists every bats suite" {

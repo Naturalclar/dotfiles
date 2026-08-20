@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## CI
 
-- **lint.yml** — checks `.zshrc` and each `.zsh/*.zsh` module with `zsh -n`, sources the whole config, then runs shellcheck, actionlint, gitleaks and the bats suites on Ubuntu
+- **lint.yml** (`Lint and test`) — checks `.zshrc` and each `.zsh/*.zsh` module with `zsh -n`, sources the whole config, then runs shellcheck, actionlint, gitleaks and every `test/*.bats` suite on Ubuntu. The bats job globs the suites rather than naming them, so a new one runs without touching the workflow
 - **make.yml** — runs `bats test/makefile.bats` and then `make` itself, on macOS and Ubuntu (the Makefile hits GNU vs BSD differences that only show up per-OS)
 - PowerShell scripts are parsed and linted with PSScriptAnalyzer on Ubuntu (`pwsh` needs no Windows runner for that); nothing exercises them on Windows
 
