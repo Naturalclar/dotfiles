@@ -112,10 +112,13 @@ those calls points at the wrong computer. Symptoms arrive one layer at a time
   Server-to-server localhost calls are fine; only what the browser fetches
   matters.
 
-- **Serve has exactly three HTTPS ports: 443, 8443, 10000.** That is the whole
-  budget — e.g. frontend on 443, API on 8443, auth emulator on 10000
-  (`tailscale serve --bg --https=8443 8080`). More than three services means
-  path-mounting or rethinking.
+- **Give each service its own HTTPS port** with `--https`, e.g. frontend on 443,
+  API on 8443, auth emulator on 10000 (`tailscale serve --bg --https=8443 8080`).
+  Those three are the conventional choice, not a limit: the 443/8443/10000
+  allowlist belongs to Funnel, and Serve is not checked against it
+  (`verifyFunnelEnabled` runs only in the funnel path), so a fourth service can
+  take any port you like. Path-mounting with `--set-path` is the alternative
+  when you would rather keep everything on one port.
 
 - **Mixed content forces HTTPS for every one of them.** The page is now
   `https://`, so a browser call to `http://localhost:9099` is blocked even on
