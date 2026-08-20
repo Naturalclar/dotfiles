@@ -18,8 +18,9 @@ or all of them:
 bats test/*.bats
 ```
 
-CI runs every suite on every push, so a suite is only useful once it is wired
-into a workflow; `docs.bats` fails if one is not.
+CI runs every suite on every push: the bats job in `lint.yml` globs
+`test/*.bats`, so a new suite is picked up with no workflow change. It still
+needs a section here — `docs.bats` fails if one is missing.
 
 ## Contents
 

@@ -1,4 +1,4 @@
-name: Check Zshrc syntax
+name: Lint and test
 
 on: [push, pull_request]
 
@@ -99,32 +99,28 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install bats, lsof, tmux, zsh and fish
         run: sudo apt-get update && sudo apt-get install -y bats lsof tmux zsh fish
-      - name: Run script tests
-        run: bats test/scripts.bats
-      # Keeps the shells from drifting apart again: .zshrc is the source of
-      # truth, and an alias present in both must mean the same thing.
-      - name: Run alias tests
-        run: bats test/aliases.bats
-      # zsh -n only checks syntax; these check what the prompt actually renders.
-      - name: Run prompt tests
-        run: bats test/prompt.bats
-      # .scripts on PATH and the UTF-8 locale both fail silently when missing.
-      - name: Run fish config tests
-        run: bats test/fish-config.bats
-      # A shell that prints on every start corrupts whatever reads its stdout.
-      - name: Run startup tests
-        run: bats test/startup.bats
-      # One ssh-agent per machine, not one per shell. Stubbed, so no agent is
-      # started on the runner.
-      - name: Run ssh-agent tests
-        run: bats test/ssh-agent.bats
-      # Docs drift silently; this suite also fails if a new bats suite is not
-      # documented or not given a step here.
-      - name: Run docs tests
-        run: bats test/docs.bats
+      # Every suite, found rather than listed. Naming them one step at a time
+      # meant a new test/*.bats ran nowhere until someone remembered to add a
+      # step, and a suite that never runs looks exactly like a suite that
+      # passes. What each one covers is in its own header comment, and in
+      # test/README.md.
+      #
+      # makefile.bats runs here as well as in make.yml, which is where it has
+      # to be to cover macOS. A couple of seconds, against the cost of the
+      # glob having an exception in it.
+      - name: Run bats suites
+        run: |
+          shopt -s nullglob
+          suites=(test/*.bats)
+          if [ ${#suites[@]} -eq 0 ]; then
+            echo "::error::no bats suites found under test/"
+            exit 1
+          fi
+          printf 'running: %s\n' "${suites[@]}"
+          bats "${suites[@]}"
 
   gitleaks:
     runs-on: ubuntu-latest
