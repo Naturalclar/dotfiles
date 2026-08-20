@@ -102,6 +102,36 @@ startup_stderr() {
   grep -q '^sourced=1$' <<<"$output"
 }
 
+# --- $DOTFILES ---------------------------------------------------------------
+
+# It used to be the literal /Users/`whoami`/.ghq/github.com/Naturalclar/dotfiles
+# (#304): wrong on Linux and WSL, and wrong for a clone kept anywhere else.
+# Deriving it from the module's own path is only correct if it survives the
+# ~/.zshrc symlink, which is how every real shell reaches it.
+
+@test "DOTFILES points at this repository" {
+  run env zsh -c "source '$REPO/.zshrc'; print \"dotfiles=\$DOTFILES\"" 2>/dev/null
+  grep -q "^dotfiles=$REPO\$" <<<"$output"
+}
+
+@test "DOTFILES survives being reached through the ~/.zshrc symlink" {
+  local home
+  home="$(mktemp -d)"
+  ln -s "$REPO/.zshrc" "$home/.zshrc"
+
+  run env HOME="$home" zsh -c "source '$home/.zshrc'; print \"dotfiles=\$DOTFILES\"" 2>/dev/null
+  rm -rf "$home"
+
+  grep -q "^dotfiles=$REPO\$" <<<"$output"
+}
+
+@test "DOTFILES is a directory holding the Makefile" {
+  # cpdf copies into it, so a stale path would scatter files into a directory
+  # that does not exist rather than fail.
+  run env zsh -c "source '$REPO/.zshrc'; [[ -f \$DOTFILES/Makefile ]] && print ok" 2>/dev/null
+  grep -q '^ok$' <<<"$output"
+}
+
 # --- structure ---------------------------------------------------------------
 
 @test "the timer lives in the loader, not in a module" {

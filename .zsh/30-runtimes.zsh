@@ -33,6 +33,13 @@ autoload -Uz vcs_info
 
 
 
-# Path to dotfiles repository
-export DOTFILES="/Users/`whoami`/.ghq/github.com/Naturalclar/dotfiles"
+# Path to dotfiles repository.
+#
+# Derived from this file rather than spelled out: the literal it replaced began
+# /Users/<name>/.ghq/..., so it was wrong on Linux and WSL, wrong for a clone
+# kept anywhere other than under ghq, and wrong for a worktree.
+#
+# %N is the file being sourced, :A resolves it through the ~/.zshrc symlink,
+# and the two :h take .zsh/30-runtimes.zsh up to the repository root.
+export DOTFILES="${${(%):-%N}:A:h:h}"
 
