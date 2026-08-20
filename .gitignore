@@ -10,6 +10,18 @@ lazy-lock.json
 # yasb log files
 yasb.log
 
-
-
+# Claude Code
+# The root .claude/ is Claude Code's own state (sessions, history, backups,
+# file-history, plugins, shell snapshots). Shared config lives in
+# configs/claude/ and is linked into ~/.claude by `make claude`.
+/.claude/
 **/.claude/settings.local.json
+**/.claude/history.jsonl
+**/.claude/sessions/
+**/.claude/session-env/
+**/.claude/file-history/
+**/.claude/shell-snapshots/
+**/.claude/backups/
+**/.claude/cache/
+**/.claude/projects/
+**/.claude/.last-cleanup
