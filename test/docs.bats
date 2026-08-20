@@ -77,6 +77,32 @@ setup() {
   }
 }
 
+# --- the tools the docs and CI assume are installed ---------------------------
+
+@test "every tool CI installs by hand is in the Brewfile" {
+  # `make brew` is how a new machine gets the toolchain, so anything CI has to
+  # `brew install` for itself is something that machine would otherwise not
+  # have. bats-core was missing that way: every suite here told you to install
+  # it separately (#307).
+  local missing=""
+  local formula
+  while IFS= read -r formula; do
+    grep -qE "^brew \"$formula\"" "$REPO/Brewfile" || missing+=" $formula"
+  done < <(grep -rhoE 'brew install [a-z0-9._-]+' "$REPO/.github/workflows" |
+    awk '{print $3}' | sort -u)
+
+  [ -z "$missing" ] || {
+    echo "formulae CI installs but the Brewfile does not list:$missing"
+    false
+  }
+}
+
+@test "the Brewfile carries the tools the test docs need" {
+  # test/README.md sends you to bats; regenerating the Brewfile from
+  # `brew leaves` on a machine would silently drop it again.
+  grep -qE '^brew "bats-core"' "$REPO/Brewfile"
+}
+
 # --- the paths the docs name still exist -------------------------------------
 
 @test "repository paths named in the docs exist" {

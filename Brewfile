@@ -1,6 +1,11 @@
 # Top-level tools only (from `brew leaves`) — dependencies resolve automatically.
 # Apply with `make brew`.
 # Note: node/ghq etc. are managed by asdf, and neovim by bob, not Homebrew.
+#
+# The "used by CI" block below is kept by hand: those are here so a new machine
+# can run what CI runs, whether or not they are installed on the machine this
+# file was last regenerated from. Regenerating from `brew leaves` drops them,
+# so put them back — test/docs.bats fails if one goes missing.
 
 tap "nikitabobko/tap"
 tap "stripe/stripe-cli"
@@ -21,8 +26,9 @@ brew "gh"
 brew "git-lfs"
 brew "lazygit"
 
-# Linters used in CI (shellcheck is an actionlint dep, but relied on directly)
+# Used by CI (shellcheck is an actionlint dep, but relied on directly)
 brew "actionlint"
+brew "bats-core"
 brew "gitleaks"
 brew "shellcheck"
 
