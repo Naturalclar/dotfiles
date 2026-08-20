@@ -64,3 +64,36 @@ set shell=/bin/zsh
 
 
 cnoreabbrev S s
+
+" SSH 越しのときは yank を OSC 52 で接続元のクリップボードに送る。
+" 素の Vim は OSC 52 を出さないので TextYankPost で自前で書き出す
+" (Vim 8.0.1394+)。ローカル起動では何もしない。
+" Neovim はこの vimrc を init.lua から source しているが、そちらは
+" lua/config/options.lua の clipboard プロバイダで対応済みなので除外する
+" (nvim には echoraw() が無く、0.11 以降はサーバー側に制御端末も無い)。
+if !has('nvim') && (!empty($SSH_TTY) || !empty($SSH_CONNECTION))
+  function! s:OscYank() abort
+    if v:event.operator !=# 'y' | return | endif
+    let l:text = join(v:event.regcontents, "\n")
+    if v:event.regtype ==# 'V' | let l:text .= "\n" | endif
+    let l:b64 = substitute(system('base64', l:text), '\n', '', 'g')
+    let l:seq = "\e]52;c;" . l:b64 . "\x07"
+    " tmux は set-clipboard on なら素の OSC 52 を外側の端末へ中継する。
+    " echoraw() (Vim 8.2.2044+) は Vim が使っている端末にそのまま書く。
+    " /dev/tty は制御端末が無い起動だと E482 になるので最後の手段にする
+    if exists('*echoraw')
+      call echoraw(l:seq)
+    else
+      " filewritable() が真でも制御端末が無いと open は ENXIO で失敗する。
+      " その場合はクリップボードに届かないだけなので黙って諦める
+      try
+        call writefile([l:seq], '/dev/tty', 'b')
+      catch /^Vim\%((\a\+)\)\=:E482/
+      endtry
+    endif
+  endfunction
+  augroup OscYank
+    autocmd!
+    autocmd TextYankPost * call s:OscYank()
+  augroup END
+endif
