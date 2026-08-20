@@ -122,6 +122,66 @@ assert_links_to() {
   assert_links_to "$FAKE_HOME/.claude/settings.json" "$REPO/configs/claude/settings.json"
 }
 
+@test "make claude symlinks each skill into ~/.claude/skills" {
+  run make -C "$REPO" claude HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
+    "$REPO/configs/claude/skills/tailscale-serve"
+  [ -f "$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md" ]
+}
+
+@test "make claude leaves skills it did not install alone" {
+  # ~/.claude/skills is shared, so linking the directory as a whole would hide
+  # whatever else is in it. Link the skills one at a time instead.
+  mkdir -p "$FAKE_HOME/.claude/skills/someone-elses"
+  touch "$FAKE_HOME/.claude/skills/someone-elses/SKILL.md"
+
+  run make -C "$REPO" claude HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  [ -f "$FAKE_HOME/.claude/skills/someone-elses/SKILL.md" ]
+  assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
+    "$REPO/configs/claude/skills/tailscale-serve"
+}
+
+@test "make claude does not nest the link inside an existing real skill directory" {
+  mkdir -p "$FAKE_HOME/.claude/skills/tailscale-serve"
+  echo "mine" >"$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md"
+
+  run make -C "$REPO" claude HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  [ ! -e "$FAKE_HOME/.claude/skills/tailscale-serve/tailscale-serve" ]
+  [ "$(cat "$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md")" = "mine" ]
+}
+
+@test "make claude is idempotent" {
+  make -C "$REPO" claude HOME="$FAKE_HOME"
+  run make -C "$REPO" claude HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
+    "$REPO/configs/claude/skills/tailscale-serve"
+  [ ! -e "$FAKE_HOME/.claude/skills/tailscale-serve/tailscale-serve" ]
+}
+
+# --- skills ------------------------------------------------------------------
+
+@test "every skill has SKILL.md with a name and description in its frontmatter" {
+  # Claude Code reads the frontmatter to decide when to load a skill, so a
+  # skill missing either field is installed but never triggers.
+  shopt -s nullglob
+  local found=0
+  for skill in "$REPO"/configs/claude/skills/*/; do
+    found=$((found + 1))
+    [ -f "$skill/SKILL.md" ]
+    run head -1 "$skill/SKILL.md"
+    [ "$output" = "---" ]
+    grep -q '^name: ' "$skill/SKILL.md"
+    grep -q '^description: ' "$skill/SKILL.md"
+    # The directory name is the skill name; a mismatch is confusing at best.
+    grep -q "^name: $(basename "$skill")\$" "$skill/SKILL.md"
+  done
+  [ "$found" -gt 0 ]
+}
+
 # --- make unlink -------------------------------------------------------------
 
 @test "make unlink removes the symlinks it created" {

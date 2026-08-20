@@ -29,6 +29,7 @@ For just the symlinks:
 ```
 make            # symlink dotfiles into $HOME
 make config     # symlink .config entries
+make claude     # symlink Claude Code settings and skills into ~/.claude
 ```
 
 ## Windows
@@ -198,6 +199,23 @@ That is the whole setup — everything else fish needs is either already in the 
 | `killport` | Kill the processes listening on a given port (`killport 8080`). |
 | `duck` / `google` | Search DuckDuckGo / Google from the terminal via lynx. |
 | `urlencode` | URL-encode arguments or stdin; used by `duck` and `google`. |
+
+## Claude Code
+
+`make claude` links `configs/claude/` into `~/.claude`: `settings.json`, plus
+every directory under `configs/claude/skills/` into `~/.claude/skills/`. The
+skills are linked one at a time rather than as a whole directory, so skills
+installed from anywhere else stay where they are. A skill directory that already
+exists in `~/.claude/skills` as a real directory is reported and skipped rather
+than overwritten.
+
+| Skill | Description |
+| --- | --- |
+| `tailscale-serve` | Expose a dev server on the machine you are SSH'd into to the rest of the tailnet with `tailscale serve`, so a browser on the machine you are sitting at can reach it. Pairs with `tssh`. |
+
+A skill is a `SKILL.md` with YAML frontmatter; the `name` has to match its
+directory and the `description` is what Claude Code matches against to decide
+when to load it. `test/makefile.bats` checks both.
 
 ## Environment Variables
 
