@@ -70,6 +70,38 @@ startup_stdout() {
   grep -q 'num  calls' <<<"$output"
 }
 
+# --- stderr ------------------------------------------------------------------
+
+# asdf is a git clone, not a package, so "not installed yet" is a normal state
+# for a fresh machine, a container or CI. The modules may advise you to install
+# it; they may not fail trying to load it (#302).
+startup_stderr() {
+  env "$@" zsh -c "source '$REPO/.zshrc'" 2>&1 >/dev/null
+}
+
+@test "a machine without asdf gets advice, not a load error" {
+  local home
+  home="$(mktemp -d)"
+
+  run startup_stderr HOME="$home"
+  rm -rf "$home"
+
+  ! grep -q 'asdf.sh' <<<"$output"
+  ! grep -q 'no such file or directory' <<<"$output"
+}
+
+@test "asdf is still sourced when it is there" {
+  local home
+  home="$(mktemp -d)"
+  mkdir -p "$home/.asdf"
+  echo 'export ASDF_WAS_SOURCED=1' >"$home/.asdf/asdf.sh"
+
+  run env HOME="$home" zsh -c "source '$REPO/.zshrc'; print \"sourced=\$ASDF_WAS_SOURCED\"" 2>/dev/null
+  rm -rf "$home"
+
+  grep -q '^sourced=1$' <<<"$output"
+}
+
 # --- structure ---------------------------------------------------------------
 
 @test "the timer lives in the loader, not in a module" {

@@ -1,10 +1,17 @@
+# asdf comes from a git clone rather than a package, so it is not always there:
+# a machine that has not run install.sh yet, a container, CI. Guard the source
+# -- unguarded it wrote "no such file or directory" to stderr on every start,
+# two lines before the message below that explains how to install it.
+#
+# Both branches did this identically, so it lives ahead of the case. That keeps
+# the order they had: asdf first, then the PATH entries that should win over
+# its shims.
+export ASDF_DIR="$HOME/.asdf"
+[ -f "$ASDF_DIR/asdf.sh" ] && . "$ASDF_DIR/asdf.sh"
+
 # Set option depending on OS
 case "${OS}" in
     Darwin*)
-        # ASDF config - expected to be cloned from git
-        export ASDF_DIR="$HOME/.asdf"
-        # initialize asdf
-        . "$HOME/.asdf/asdf.sh"
         # Add Brew Path
         export PATH="/opt/homebrew/bin:$PATH"
         export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
@@ -17,9 +24,6 @@ case "${OS}" in
         fi
     ;;
     Linux*)
-        # ASDF config - expected to be cloned from git
-        export ASDF_DIR="$HOME/.asdf"
-        . "$HOME/.asdf/asdf.sh"
         # Allow using ssh-add command
         eval "$(ssh-agent)"
         # set pbcopy to be similar to Darwin

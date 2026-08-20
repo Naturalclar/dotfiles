@@ -24,7 +24,11 @@ bindkey '^Z' peco-history-selection
 
 autoload -Uz compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /opt/homebrew/bin/terraform terraform
+# terraform ships its own completion helper; register it against wherever the
+# binary actually is rather than an Intel/Apple Silicon Homebrew path.
+if (( $+commands[terraform] )); then
+  complete -o nospace -C "${commands[terraform]}" terraform
+fi
 
 # fzf settings
 export FZF_CTRL_T_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
