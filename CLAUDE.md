@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## CI
 
 - **lint.yml** — checks `.zshrc` and each `.zsh/*.zsh` module with `zsh -n`, sources the whole config, then runs shellcheck, actionlint, gitleaks and the bats suites on Ubuntu
-- **make.yml** — runs `make` on macOS
+- **make.yml** — runs `bats test/makefile.bats` and then `make` itself, on macOS and Ubuntu (the Makefile hits GNU vs BSD differences that only show up per-OS)
 - PowerShell scripts are parsed and linted with PSScriptAnalyzer on Ubuntu (`pwsh` needs no Windows runner for that); nothing exercises them on Windows
 
 ## Architecture
@@ -24,7 +24,7 @@ This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mec
 
 ### Key files
 - `.zshrc` — loader only; sources `.zsh/*.zsh` in filename order
-- `.zsh/*.zsh` — the actual shell config, split by concern. The numeric prefix is load order and matters: `00` options/locale, `10` OS-specific (`uname` detection for Darwin/Linux/Msys), `20` history, `30` runtimes, `40` prompt, `50` PATH, `60` plugins, `70`–`75` aliases and widgets, `80`+ late setup. Concatenating them in order reproduces the single file they replaced
+- `.zsh/*.zsh` — the actual shell config, split by concern. The numeric prefix is load order and matters: `00` options/locale, `10` OS-specific (`uname` detection for Darwin/Linux/Msys), `20` history, `30` runtimes, `40` prompt, `50` PATH, `60` plugins, `70`–`75` aliases and widgets, `80`+ late setup. The split was byte-for-byte at the time it happened; the modules have since been edited on their own
 - `.config/nvim/` — Neovim config using LazyVim framework (`config/lazy.lua` bootstraps lazy.nvim, plugins in `lua/plugins/`)
 - `.config/fish/` — Fish shell config (experimental, best-effort). zsh is the source of truth for aliases and functions; fish carries only a subset. An alias defined in both shells must behave identically — add it to the matching `.zsh/*.zsh` module first
 - `configs/.vscode/` — VSCode settings, keybindings, and extension sync script
@@ -49,7 +49,19 @@ This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mec
 - `peco-history-selection` (keybind `Ctrl+Z`) — search shell history
 
 ### Testing
-Tests are in `test/`. Each subdirectory has a `package.json` for testing the `run-script` function:
+Tests are in `test/`, as bats-core suites (`brew install bats-core`, then `bats test/<name>.bats`). Every suite runs in CI, and each is described in `test/README.md` — add a section there for a new one, and a step in the workflow that runs it:
+- `scripts.bats` — the non-interactive behavior of the tools in `.scripts/`
+- `aliases.bats` — zsh/fish/PowerShell alias parity, and duplicate definitions
+- `prompt.bats` — `_prompt_path` from `.zsh/40-prompt.zsh`
+- `fish-config.bats` — the parts of `.config/fish/` that mirror `.zsh/`
+- `makefile.bats` — the symlink targets, against a throwaway `$HOME`
+- `startup.bats` — what a new shell prints, and `$DOTFILES`
+- `ssh-agent.bats` — one agent per machine rather than one per shell
+- `docs.bats` — the docs still match the repository, and every suite here is documented and run
+
+Sourcing `.zshrc` in a test starts background processes that can hold the runner's pipes open — stub them, or the job hangs long after the tests pass.
+
+Two directories are for trying `run-script` by hand, each with its own `package.json`:
 - `cd test/test-package-scripts && rs` — test basic script selection
 - `cd test/test-colon-scripts && rs` — test scripts with colons in names
 
