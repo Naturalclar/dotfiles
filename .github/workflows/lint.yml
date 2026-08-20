@@ -114,6 +114,9 @@ jobs:
       # .scripts on PATH and the UTF-8 locale both fail silently when missing.
       - name: Run fish config tests
         run: bats test/fish-config.bats
+      # A shell that prints on every start corrupts whatever reads its stdout.
+      - name: Run startup tests
+        run: bats test/startup.bats
 
   gitleaks:
     runs-on: ubuntu-latest

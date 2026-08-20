@@ -49,6 +49,15 @@ brew install bats-core
 bats test/makefile.bats
 ```
 
+### startup.bats
+
+Automated [bats-core](https://github.com/bats-core/bats-core) tests for what a new shell prints. A leftover profiling probe printed a bare millisecond count on every start, which corrupts anything reading that stdout, so the rule is asserted directly: a plain startup emits no number, no timing line and no profile table, while `ZSH_STARTUP_TIME=1` and `ZSH_PROFILE=1` each produce theirs. A last test keeps both markers in `.zshrc` rather than in a module — an end marker parked in one module stops covering whatever is added after it, which is how the old one came to miss three modules. Needs `zsh`; these run in CI on every push. Locally:
+
+```bash
+brew install bats-core
+bats test/startup.bats
+```
+
 ### test-package-scripts
 
 A test package to demonstrate the basic `run-script` function added to your .zshrc file. This test shows how to use the function to list and run npm scripts using fzf.
