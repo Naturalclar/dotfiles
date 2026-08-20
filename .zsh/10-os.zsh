@@ -44,7 +44,14 @@ case "${OS}" in
             # Nothing is listening, so the socket is a leftover from an agent
             # that died; ssh-agent -a refuses to bind over it.
             rm -f "$_ssh_agent_sock"
-            eval "$(ssh-agent -a "$_ssh_agent_sock" 2>/dev/null)" >/dev/null
+            # Deliberately not `eval "$(ssh-agent ...)"`: the daemon it forks
+            # inherits the command substitution's pipe and never closes it, so
+            # anything reading this shell's output waits for the agent to exit.
+            # That is what hung a CI job for 34 minutes. We named the socket, so
+            # the environment it would have printed is already known.
+            if ssh-agent -a "$_ssh_agent_sock" >/dev/null 2>&1 </dev/null; then
+                export SSH_AUTH_SOCK="$_ssh_agent_sock"
+            fi
         fi
         unset _ssh_agent_sock
         # set pbcopy to be similar to Darwin

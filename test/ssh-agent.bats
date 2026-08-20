@@ -62,7 +62,12 @@ STUB_ADD
 }
 
 teardown() {
+  # Belt and braces: an agent that outlived a test would hold the pipe bats
+  # reads from and hang the run rather than fail it. Only ones bound to this
+  # test's socket are matched.
+  [ -n "${RUNTIME:-}" ] && pkill -f "ssh-agent -a $RUNTIME" 2>/dev/null
   [ -n "${TMP:-}" ] && rm -rf "$TMP"
+  return 0
 }
 
 # Report SSH_AUTH_SOCK as the shell ends up with it.
@@ -121,15 +126,20 @@ s.listen(1)' "$forwarded"
 
 @test "no ssh-agent installed is not an error" {
   # Containers and CI images often have no openssh-client at all.
-  rm -f "$STUB/ssh-agent" "$STUB/ssh-add"
-  cat >"$STUB/ssh-add" <<'STUB_ADD'
-#!/bin/sh
-exit 2
-STUB_ADD
-  chmod +x "$STUB/ssh-add"
+  #
+  # PATH is the stub directory ALONE: dropping the stub while the rest of PATH
+  # is still there finds the runner's real /usr/bin/ssh-agent, which starts a
+  # daemon that inherits the pipe bats reads and hangs the job. Other commands
+  # go missing along with it, which is noisy but harmless -- the assertion only
+  # looks at whether ssh-agent was reached.
+  rm -f "$STUB/ssh-agent"
+  local zsh_bin
+  zsh_bin="$(command -v zsh)" # PATH will not be able to find it in a moment
 
-  run env PATH="$STUB:$PATH" XDG_RUNTIME_DIR="$RUNTIME" SSH_AUTH_SOCK= \
-    zsh -c "source '$REPO/.zshrc'" 2>&1 >/dev/null
+  run env PATH="$STUB" XDG_RUNTIME_DIR="$RUNTIME" SSH_AUTH_SOCK= \
+    "$zsh_bin" -c "source '$REPO/.zshrc'; print \"sock=\$SSH_AUTH_SOCK\"" 2>&1
 
   ! grep -q 'ssh-agent' <<<"$output"
+  grep -q '^sock=$' <<<"$output"
+  [ "$(agents_started)" -eq 0 ]
 }
