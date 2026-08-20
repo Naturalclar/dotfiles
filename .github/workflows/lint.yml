@@ -117,6 +117,10 @@ jobs:
       # A shell that prints on every start corrupts whatever reads its stdout.
       - name: Run startup tests
         run: bats test/startup.bats
+      # One ssh-agent per machine, not one per shell. Stubbed, so no agent is
+      # started on the runner.
+      - name: Run ssh-agent tests
+        run: bats test/ssh-agent.bats
 
   gitleaks:
     runs-on: ubuntu-latest

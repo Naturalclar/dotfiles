@@ -24,8 +24,36 @@ case "${OS}" in
         fi
     ;;
     Linux*)
-        # Allow using ssh-add command
-        eval "$(ssh-agent)"
+        # One agent per machine, not one per shell. `eval "$(ssh-agent)"` on
+        # every start left a stray agent behind for every terminal ever opened,
+        # and each shell got its own: a key added with ssh-add in one window
+        # was invisible in the next.
+        #
+        # So point every shell at the same socket -- reuse the agent answering
+        # there, and only start one when nothing does. macOS needs none of this
+        # because launchd already runs an agent; the Darwin branch above just
+        # finds its socket again.
+        _ssh_agent_sock="${XDG_RUNTIME_DIR:-/tmp}/ssh-agent-$UID.sock"
+        # ssh-add -l exits 1 for "agent is there, holding no keys" and 2 for
+        # "could not reach an agent" -- only the second one means we need one.
+        if [[ -n "$SSH_AUTH_SOCK" ]] && { ssh-add -l >/dev/null 2>&1 || [[ $? -ne 2 ]] }; then
+            : # an agent is already reachable (forwarded over SSH, systemd, ...)
+        elif [[ -S "$_ssh_agent_sock" ]] && { SSH_AUTH_SOCK="$_ssh_agent_sock" ssh-add -l >/dev/null 2>&1 || [[ $? -ne 2 ]] }; then
+            export SSH_AUTH_SOCK="$_ssh_agent_sock"
+        elif command -v ssh-agent >/dev/null 2>&1; then
+            # Nothing is listening, so the socket is a leftover from an agent
+            # that died; ssh-agent -a refuses to bind over it.
+            rm -f "$_ssh_agent_sock"
+            # Deliberately not `eval "$(ssh-agent ...)"`: the daemon it forks
+            # inherits the command substitution's pipe and never closes it, so
+            # anything reading this shell's output waits for the agent to exit.
+            # That is what hung a CI job for 34 minutes. We named the socket, so
+            # the environment it would have printed is already known.
+            if ssh-agent -a "$_ssh_agent_sock" >/dev/null 2>&1 </dev/null; then
+                export SSH_AUTH_SOCK="$_ssh_agent_sock"
+            fi
+        fi
+        unset _ssh_agent_sock
         # set pbcopy to be similar to Darwin
         alias pbcopy='xsel --clipboard --input'
         # Check if required commands are installed
