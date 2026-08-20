@@ -121,6 +121,10 @@ jobs:
       # started on the runner.
       - name: Run ssh-agent tests
         run: bats test/ssh-agent.bats
+      # Docs drift silently; this suite also fails if a new bats suite is not
+      # documented or not given a step here.
+      - name: Run docs tests
+        run: bats test/docs.bats
 
   gitleaks:
     runs-on: ubuntu-latest
