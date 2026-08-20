@@ -41,9 +41,14 @@ log "Initializing git submodules"
 git -C "$REPO_DIR" submodule update --init
 
 # --- symlinks -----------------------------------------------------------------
-log "Symlinking dotfiles and .config into \$HOME"
+log "Symlinking dotfiles, .config and Claude Code config into \$HOME"
 make -C "$REPO_DIR" dotfiles
 make -C "$REPO_DIR" config
+# Without this a new machine gets no ~/.claude/settings.json (so the hooks
+# never fire) and none of configs/claude/skills. Both are the sort of thing you
+# notice weeks later as "why doesn't that work here", so link them with the
+# rest. The target is idempotent and leaves skills from elsewhere alone.
+make -C "$REPO_DIR" claude
 
 # --- asdf and runtimes --------------------------------------------------------
 if [ ! -d "$HOME/.asdf" ]; then

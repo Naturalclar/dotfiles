@@ -22,7 +22,7 @@ One-command setup for a new machine:
 git clone https://github.com/Naturalclar/dotfiles.git && cd dotfiles && ./install.sh
 ```
 
-`install.sh` (also available as `make bootstrap`) is idempotent and safe to re-run. It installs Homebrew and the Brewfile packages (macOS), initializes the zsh-plugin submodules, symlinks all dotfiles, installs asdf plus the runtimes in `.tool-versions`, and applies the macOS key-repeat settings.
+`install.sh` (also available as `make bootstrap`) is idempotent and safe to re-run. It installs Homebrew and the Brewfile packages (macOS), initializes the zsh-plugin submodules, symlinks all dotfiles, `.config` entries and the Claude Code settings and skills, installs asdf plus the runtimes in `.tool-versions`, and applies the macOS key-repeat settings.
 
 For just the symlinks:
 
