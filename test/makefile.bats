@@ -221,3 +221,38 @@ assert_links_to() {
   [[ "$output" == *"config:"* ]]
   [[ "$output" == *"unlink:"* ]]
 }
+
+# --- install.sh --------------------------------------------------------------
+
+@test "install.sh runs every symlink target the Makefile provides" {
+  # install.sh calls itself one-command setup for a new machine, so a linking
+  # target it does not call is a part of the setup that silently never happens
+  # -- which is how ~/.claude went missing on new machines (#306). Derived from
+  # the Makefile rather than listed here, so a target added later is covered.
+  local missing=""
+  local target
+  for target in dotfiles config claude; do
+    grep -qE "^${target}:" "$REPO/Makefile" || {
+      echo "no such make target: $target"
+      false
+    }
+    grep -q "make -C \"\$REPO_DIR\" $target" "$REPO/install.sh" || missing+=" $target"
+  done
+  [ -z "$missing" ] || {
+    echo "targets install.sh never runs:$missing"
+    false
+  }
+}
+
+@test "the symlink targets together produce a usable ~/.claude" {
+  # What install.sh does, in one go, against a throwaway HOME.
+  run make -C "$REPO" dotfiles config claude HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+
+  assert_links_to "$FAKE_HOME/.claude/settings.json" "$REPO/configs/claude/settings.json"
+  assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
+    "$REPO/configs/claude/skills/tailscale-serve"
+  [ -f "$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md" ]
+  # The rest of the run still happened.
+  assert_links_to "$FAKE_HOME/.zshrc" "$REPO/.zshrc"
+}
