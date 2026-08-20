@@ -5,6 +5,10 @@ IGNORE	:= .DS_Store .git .gitmodules .gitignore .github .config .devcontainer .v
 TARGET	:= $(filter-out $(IGNORE), $(DOTFILES))
 VSCODE_SCRIPT_PATH := $(abspath configs/.vscode)
 CONFIG_PATH := $(wildcard .config/??*)
+# Linked one skill at a time rather than as a whole directory: ~/.claude/skills
+# is shared with skills that came from elsewhere, and replacing it with a link
+# to this repository would hide them.
+CLAUDE_SKILL_PATH := $(wildcard configs/claude/skills/??*)
 .DEFAULT_GOAL	:= dotfiles
 
 .PHONY: list dotfiles config claude unlink brew bootstrap vscodeExtensions help
@@ -38,11 +42,12 @@ config: # Create symlinks of .config at home directory
 	@$(foreach val, $(CONFIG_PATH), $(call link,$(abspath $(val)),$(HOME)/$(val)))
 	@echo '------------------------'
 
-claude: # Create symlink of Claude Code settings.json in ~/.claude
-	@echo 'claude - Setting symlink of Claude Code settings.json in ~/.claude'
+claude: # Create symlinks of Claude Code settings.json and skills in ~/.claude
+	@echo 'claude - Setting symlinks of Claude Code settings.json and skills in ~/.claude'
 	@echo '------------------------'
-	@mkdir -p $(HOME)/.claude
+	@mkdir -p $(HOME)/.claude/skills
 	@ln -sfnv $(abspath configs/claude/settings.json) $(HOME)/.claude/settings.json
+	@$(foreach val, $(CLAUDE_SKILL_PATH), $(call link,$(abspath $(val)),$(HOME)/.claude/skills/$(notdir $(val))))
 	@echo '------------------------'
 
 unlink: # Remove dotfile symlinks from home directory
