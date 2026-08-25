@@ -152,3 +152,19 @@ ci_globs_suites() {
     false
   }
 }
+
+@test "every skill is listed in the README skill table" {
+  # A skill nobody knows about is a skill nobody uses -- and unlike a shell
+  # function, there is nothing to stumble over in the config. The table is the
+  # only place they are advertised.
+  local missing=""
+  local skill name
+  for skill in "$REPO"/configs/claude/skills/*/; do
+    name="$(basename "$skill")"
+    grep -q "| \`$name\` |" "$REPO/README.md" || missing+=" $name"
+  done
+  [ -z "$missing" ] || {
+    echo "skills missing from the README table:$missing"
+    false
+  }
+}
