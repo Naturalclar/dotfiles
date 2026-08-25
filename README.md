@@ -259,6 +259,7 @@ than overwritten.
 | Skill | Description |
 | --- | --- |
 | `tailscale-serve` | Expose a dev server on the machine you are SSH'd into to the rest of the tailnet with `tailscale serve`, so a browser on the machine you are sitting at can reach it. Pairs with `tssh`. |
+| `repo-survey` | Read a repository for defects that can be reproduced, and file them as one-PR-sized GitHub issues. Repo-agnostic. |
 
 A skill is a `SKILL.md` with YAML frontmatter; the `name` has to match its
 directory and the `description` is what Claude Code matches against to decide
