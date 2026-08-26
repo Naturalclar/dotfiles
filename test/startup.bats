@@ -132,6 +132,33 @@ startup_stderr() {
   grep -q '^ok$' <<<"$output"
 }
 
+# --- per-OS paths ------------------------------------------------------------
+
+# ~/Library is macOS's own layout. Exporting ANDROID_HOME into it from a Linux
+# shell is worse than leaving it unset: Gradle and the React Native CLI take the
+# variable as the truth and stop looking (#323).
+@test "no macOS-only path is exported on Linux" {
+  [ "$(uname)" = "Linux" ] || skip "checks what the Linux branch exports"
+
+  run env zsh -c "source '$REPO/.zshrc'; env" 2>/dev/null
+  ! grep -q '/Library/' <<<"$output"
+}
+
+@test "the Android and pnpm variables are unset rather than wrong on Linux" {
+  [ "$(uname)" = "Linux" ] || skip "checks what the Linux branch exports"
+
+  run zsh -c "source '$REPO/.zshrc'; print \"\${ANDROID_HOME-unset}|\${EMULATOR-unset}|\${PNPM_HOME-unset}\"" 2>/dev/null
+  grep -q '^unset|unset|unset$' <<<"$output"
+}
+
+@test "the Darwin branch still sets them" {
+  # The module keys on $OS, so the macOS half can be exercised anywhere. This
+  # is what keeps "do not set it on Linux" from quietly becoming "do not set it
+  # at all".
+  run zsh -c "OS=Darwin; source '$REPO/.zsh/10-os.zsh'; print \"\$ANDROID_HOME|\$EMULATOR|\$PNPM_HOME\"" 2>/dev/null
+  grep -q "Library/Android/sdk|.*Library/Android/sdk/emulator/emulator|.*Library/pnpm" <<<"$output"
+}
+
 # --- structure ---------------------------------------------------------------
 
 @test "the timer lives in the loader, not in a module" {

@@ -2,10 +2,7 @@
 alias awakeon="sudo pmset -a disablesleep 1"
 alias awakeoff="sudo pmset -a disablesleep 0"
 
-# pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-# pnpm end
+# pnpm: PNPM_HOME is set per-OS in .zsh/10-os.zsh (~/Library/pnpm on macOS).
 
 # jq
 ## list scripts in package.json or tasks in deno.json

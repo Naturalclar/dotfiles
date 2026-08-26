@@ -15,6 +15,17 @@ case "${OS}" in
         # Add Brew Path
         export PATH="/opt/homebrew/bin:$PATH"
         export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
+        # ~/Library is macOS's own layout, so these belong to this branch
+        # rather than to the modules that used to export them for every OS.
+        export ANDROID_HOME=$HOME/Library/Android/sdk
+        export PATH=$PATH:$ANDROID_HOME/tools
+        export PATH=$PATH:$ANDROID_HOME/tools/bin
+        export PATH=$PATH:$ANDROID_HOME/platform-tools
+        export PATH=$PATH:$ANDROID_HOME/emulator
+        # read by listdroid / rundroid in .zsh/73-workspace.zsh
+        export EMULATOR="$ANDROID_HOME/emulator/emulator"
+        export PNPM_HOME="$HOME/Library/pnpm"
+        export PATH="$PNPM_HOME:$PATH"
         # Repair SSH_AUTH_SOCK when missing (e.g. inside tmux) by pointing
         # at the macOS launchd ssh-agent socket
         if [[ -z "$SSH_AUTH_SOCK" || ! -S "$SSH_AUTH_SOCK" ]]; then
@@ -24,6 +35,16 @@ case "${OS}" in
         fi
     ;;
     Linux*)
+        # Nothing here sets ANDROID_HOME, EMULATOR or PNPM_HOME: this machine
+        # has never needed them, and a variable pointing at a directory that
+        # does not exist is worse than an unset one -- Gradle and the React
+        # Native CLI take ANDROID_HOME as the truth and stop looking. When a
+        # Linux machine does need them, this is where they go:
+        #
+        #   export ANDROID_HOME=$HOME/Android/Sdk
+        #   export EMULATOR="$ANDROID_HOME/emulator/emulator"
+        #   export PNPM_HOME=$HOME/.local/share/pnpm
+
         # One agent per machine, not one per shell. `eval "$(ssh-agent)"` on
         # every start left a stray agent behind for every terminal ever opened,
         # and each shell got its own: a key added with ssh-add in one window
