@@ -11,10 +11,18 @@ lazy-lock.json
 yasb.log
 
 # Claude Code
-# The root .claude/ is Claude Code's own state (sessions, history, backups,
-# file-history, plugins, shell snapshots). Shared config lives in
-# configs/claude/ and is linked into ~/.claude by `make claude`.
-/.claude/
+# The root .claude/ is mostly Claude Code's own state (sessions, history,
+# backups, file-history, plugins, shell snapshots), so its contents are ignored
+# by default. .claude/skills/ is the exception: cloud sessions clone this
+# repository and read project skills from there, and they never see
+# ~/.claude/skills on any machine.
+#
+# It has to be written as `/.claude/*` rather than `/.claude/`: git does not
+# descend into an excluded directory, so a negation for something inside one is
+# silently ignored. Excluding the entries instead leaves the directory itself
+# readable, which is what makes the next line work.
+/.claude/*
+!/.claude/skills/
 **/.claude/settings.local.json
 **/.claude/history.jsonl
 **/.claude/sessions/

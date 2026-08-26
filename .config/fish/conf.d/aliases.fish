@@ -1,4 +1,4 @@
-# NOTE: .zshrc is the source of truth for these. See README.md -- when an alias
+# NOTE: .zshrc is the source of truth for these. See docs/shells.md -- when an alias
 # exists in both shells it must behave identically here.
 
 alias get_default_branch="git remote show origin | grep 'HEAD branch' | awk '{print \$3}'"

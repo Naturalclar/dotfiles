@@ -1,6 +1,6 @@
 # Functions behind the keybindings in keybindings.ps1. Same jobs as the zsh
 # widgets in .zsh/73-workspace.zsh, .zsh/74-peco-fzf.zsh and
-# .zsh/81-run-script.zsh -- see README.md, zsh is the source of truth.
+# .zsh/81-run-script.zsh -- see docs/shells.md, zsh is the source of truth.
 
 # Ctrl+A. zsh previews the README with find+bat, which are not here; fzf on
 # Windows runs its preview through cmd, so this picks without one. `ws`

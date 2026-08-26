@@ -91,7 +91,7 @@ $Env:KOMOREBI_CONFIG_HOME = "$Env:USERPROFILE\.config"
 # "pnpm build" -- which does not exist, and fails the moment you run it. Only
 # argument-less aliases (below) can use Set-Alias.
 #
-# Definitions follow .zsh/*.zsh, which is the source of truth. See README.md.
+# Definitions follow .zsh/*.zsh, which is the source of truth. See docs/shells.md.
 
 # pnpm
 Set-Alias -Name p -Value pnpm

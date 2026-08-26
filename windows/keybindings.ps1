@@ -1,5 +1,5 @@
 # NOTE: mirrors the bindkey lines in .zsh/ and fish_user_key_bindings in fish.
-# zsh is the source of truth -- see README.md.
+# zsh is the source of truth -- see docs/shells.md.
 #
 # Ctrl+F is the one that differs. On the Unix side it opens a tmux session for
 # the picked repository; there is no tmux here, so it switches to the repository
