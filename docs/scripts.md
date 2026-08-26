@@ -15,6 +15,7 @@
 | `tssh` | List Tailscale hosts and ssh into the selected one (fzf picker, `tailscale ssh` for Linux targets, plain ssh otherwise). See `tssh -h`. |
 | `switch-worktree` | Pick a git worktree via fzf and cd into it. Sourced via the `Ctrl+B` keybind in zsh. |
 | `git-worktree-pull` | Fix the fetch refspec of a bare/worktree clone so `git fetch origin` gets all remote branches. Aliased as `gwp`. |
+| `notify-sound` | Play a notification sound if this machine has a player and the file (`$NOTIFY_SOUND`, default `~/Music/daisuki.mp3`); silent no-op otherwise. Called from the Claude Code hooks. |
 | `killport` | Kill the processes listening on a given port (`killport 8080`). |
 | `duck` / `google` | Search DuckDuckGo / Google from the terminal via lynx. |
 | `urlencode` | URL-encode arguments or stdin; used by `duck` and `google`. |

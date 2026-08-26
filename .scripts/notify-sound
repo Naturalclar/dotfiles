@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# notify-sound - play a short notification sound, if this machine can.
+#
+# Usage:
+#   notify-sound              play $NOTIFY_SOUND (default: ~/Music/daisuki.mp3)
+#   notify-sound <file>       play <file> instead
+#   notify-sound -h           show this help
+#
+# Called from the Claude Code hooks in configs/claude/settings.json, which used
+# to run `afplay` directly. afplay is macOS-only and the sound file is not in
+# this repository, so on Linux -- and on any machine without that file -- every
+# Stop and Notification hook failed. Like tmux-pane-highlight, this is a silent
+# no-op when it cannot do its job: nothing to see, exit 0, hook stays happy.
+#
+# Playback is detached, so a two-second sound does not hold up whatever called
+# it.
+
+set -uo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: notify-sound [file]
+
+Plays a notification sound if a player and the file are both present, and does
+nothing at all otherwise.
+
+  file            sound to play (default: $NOTIFY_SOUND, else ~/Music/daisuki.mp3)
+
+Options:
+  -h, --help      show this help
+
+Players tried, in order: afplay (macOS), paplay, ffplay, mpg123, play, aplay.
+EOF
+}
+
+case "${1-}" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+esac
+
+sound="${1:-${NOTIFY_SOUND:-$HOME/Music/daisuki.mp3}}"
+[ -f "$sound" ] || exit 0
+
+# First player that exists wins. aplay is last because it only handles WAV.
+for candidate in afplay paplay ffplay mpg123 play aplay; do
+  if command -v "$candidate" >/dev/null 2>&1; then
+    player="$candidate"
+    break
+  fi
+done
+[ -n "${player-}" ] || exit 0
+
+case "$player" in
+  ffplay) set -- -nodisp -autoexit -loglevel quiet "$sound" ;;
+  mpg123) set -- -q "$sound" ;;
+  play) set -- -q "$sound" ;;
+  *) set -- "$sound" ;;
+esac
+
+# Detached and silent: a hook should not wait for the sound, and a player
+# complaining about a codec should not end up in the middle of a transcript.
+("$player" "$@" >/dev/null 2>&1 &)
+
+exit 0
