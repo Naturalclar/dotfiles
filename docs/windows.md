@@ -10,7 +10,6 @@ scoop install mingw
 
 ### Installing fzf on Windows
 
-````bash
 ```bash
 scoop install fzf
 ```
@@ -21,19 +20,17 @@ scoop install fzf
 wsl --install
 ```
 
-## Setting up Widnows Terminal to be tmux like with tabs
+## Setting up Windows Terminal to be tmux like with tabs
 
-Open `Settings` -> `Actions`
-Add new actions with the following settings:
-`Move focus left` : `Ctrl + H`
-`Move focus down` : `Ctrl + J`
-`Move focus up` : `Ctrl + K`
-`Move focus right` : `Ctrl + L`
-`Duplicate pane` : `Ctrl + 5`
-`Duplicate pane` : `Ctrl + t`
-`Duplicate pane` : `Ctrl + '`
+Open `Settings` -> `Actions` and add new actions with the following settings:
 
-````
+- `Move focus left` : `Ctrl + H`
+- `Move focus down` : `Ctrl + J`
+- `Move focus up` : `Ctrl + K`
+- `Move focus right` : `Ctrl + L`
+- `Duplicate pane` : `Ctrl + 5`
+- `Duplicate pane` : `Ctrl + t`
+- `Duplicate pane` : `Ctrl + '`
 
 ## Application List
 
