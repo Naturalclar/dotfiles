@@ -1,21 +1,18 @@
 # PATHS
 
-# Android Studio
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$ANDROID_HOME/emulator
+# Android Studio: ANDROID_HOME and the PATH entries built from it live in
+# .zsh/10-os.zsh, where the OS decides the layout.
 
 # NVM PATH
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# jEnv
-export JENV_ROOT="/usr/local/opt/jenv"
-if [ -d "${JENV_ROOT}" ]; then
-  export PATH="$JENV_ROOT/bin:$PATH"
+# jEnv. The old JENV_ROOT was /usr/local/opt/jenv -- Intel Homebrew's prefix,
+# so on Apple Silicon the -d guard was simply never true and jenv never
+# initialised. Ask where it is instead of guessing.
+if command -v jenv >/dev/null 2>&1; then
+  export JENV_ROOT="${JENV_ROOT:-${${:-$(command -v jenv)}:A:h:h}}"
   eval "$(jenv init -)"
 fi
 

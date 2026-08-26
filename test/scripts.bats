@@ -12,6 +12,30 @@ SCRIPTS="$BATS_TEST_DIRNAME/../.scripts"
 # the tests away from any real tmux session.
 TMUX_SOCKET="bats-tph-$$"
 
+# tmux handles option values through its own locale, so under LC_CTYPE=POSIX it
+# stores the status emoji as underscores and the comparison below fails while
+# nothing is actually broken (#325). Choose a UTF-8 locale the same way
+# .zsh/00-core.zsh does -- only one that is really generated, since setting a
+# locale the system does not have is its own kind of noise.
+setup() {
+  local candidate
+  for candidate in en_US.UTF-8 C.UTF-8; do
+    if locale -a 2>/dev/null | grep -qiE "^${candidate%.*}\\.(utf-?8)$"; then
+      export LC_ALL="$candidate" LANG="$candidate"
+      return 0
+    fi
+  done
+}
+
+# Skip only where no UTF-8 locale exists to switch to. Deliberately asks the
+# system rather than reading back what setup exported: keyed on $LC_ALL, losing
+# setup would turn this test into a silent skip instead of a failure, and the
+# emoji would stop being checked anywhere.
+require_utf8_locale() {
+  locale -a 2>/dev/null | grep -qiE '\.(utf-?8)$' && return 0
+  skip "no UTF-8 locale generated; tmux would store the emoji as underscores"
+}
+
 teardown() {
   tmux -L "$TMUX_SOCKET" kill-server 2>/dev/null || true
 }
@@ -120,6 +144,81 @@ scratch_opt() {
   [ -z "$output" ]
 }
 
+# --- notify-sound ------------------------------------------------------------
+#
+# Everything here runs with a stub player on PATH: a test that actually made
+# noise on the machine running it would be a poor citizen, and the point of the
+# script is which command it decides to run, not the audio.
+
+setup_notify_sound() {
+  NS_TMP="$(mktemp -d)"
+  NS_BIN="$NS_TMP/bin"
+  mkdir -p "$NS_BIN"
+  printf '#!/bin/sh\necho "$@" >>"%s/called"\n' "$NS_TMP" >"$NS_BIN/afplay"
+  chmod +x "$NS_BIN/afplay"
+  : >"$NS_TMP/sound.mp3"
+}
+
+# The player is detached, so the marker file lands a moment after the script
+# returns.
+ns_called() {
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
+    [ -s "$NS_TMP/called" ] && break
+    sleep 0.1
+  done
+  cat "$NS_TMP/called" 2>/dev/null
+}
+
+@test "notify-sound plays the file with the first player it finds" {
+  setup_notify_sound
+  run env PATH="$NS_BIN:$PATH" "$SCRIPTS/notify-sound" "$NS_TMP/sound.mp3"
+  [ "$status" -eq 0 ]
+  [ "$(ns_called)" = "$NS_TMP/sound.mp3" ]
+  rm -rf "$NS_TMP"
+}
+
+@test "notify-sound takes the file from NOTIFY_SOUND" {
+  setup_notify_sound
+  run env PATH="$NS_BIN:$PATH" NOTIFY_SOUND="$NS_TMP/sound.mp3" "$SCRIPTS/notify-sound"
+  [ "$status" -eq 0 ]
+  [ "$(ns_called)" = "$NS_TMP/sound.mp3" ]
+  rm -rf "$NS_TMP"
+}
+
+@test "notify-sound is a silent no-op with no player installed" {
+  # What a Linux machine looks like: the hook fires, nothing can play it (#321).
+  # PATH points at an empty directory, and bash is named by absolute path:
+  # `env` resolves the command it runs through the PATH it just set, so a bare
+  # `bash` here would fail to launch and prove nothing about the script.
+  setup_notify_sound
+  mkdir -p "$NS_TMP/empty"
+  local bash_bin
+  bash_bin="$(command -v bash)"
+
+  run env PATH="$NS_TMP/empty" "$bash_bin" "$SCRIPTS/notify-sound" "$NS_TMP/sound.mp3"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+  [ ! -s "$NS_TMP/called" ]
+  rm -rf "$NS_TMP"
+}
+
+@test "notify-sound is a silent no-op when the sound file is missing" {
+  # The mp3 is not in this repository, so this is the state on any machine
+  # that has not been given one.
+  setup_notify_sound
+  run env PATH="$NS_BIN:$PATH" "$SCRIPTS/notify-sound" "$NS_TMP/absent.mp3"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+  [ ! -s "$NS_TMP/called" ]
+  rm -rf "$NS_TMP"
+}
+
+@test "notify-sound --help prints usage" {
+  run "$SCRIPTS/notify-sound" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Usage: notify-sound"* ]]
+}
+
 @test "tmux-cleanup-windows fails outside tmux" {
   run env -u TMUX "$SCRIPTS/tmux-cleanup-windows.sh"
   [ "$status" -eq 1 ]
@@ -129,6 +228,7 @@ scratch_opt() {
 # --- tmux-pane-highlight inside a scratch tmux server -------------------------
 
 @test "tmux-pane-highlight sets color, icon, and @claude_at timestamp" {
+  require_utf8_locale
   start_scratch_tmux
   before=$(date +%s)
 

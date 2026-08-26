@@ -188,3 +188,51 @@ ci_globs_suites() {
     false
   }
 }
+
+@test "every script is listed in the scripts doc's table" {
+  # .scripts/ exists to be read from the table rather than from the source
+  # (#246); a tool missing from it may as well not exist. Matched by name
+  # rather than by counting rows, because `duck` and `google` share one.
+  local missing=""
+  local script
+  for script in "$REPO"/.scripts/*; do
+    grep -q "\`$(basename "$script")\`" "$REPO/docs/scripts.md" || missing+=" $(basename "$script")"
+  done
+  [ -z "$missing" ] || {
+    echo "scripts missing from the docs/scripts.md table:$missing"
+    false
+  }
+}
+
+@test "no heading is trapped inside a code fence" {
+  # A fence that never closes -- or one opened with more backticks than the
+  # line meant to close it -- swallows everything after it. The file still has
+  # an even number of fence lines, so counting them does not help; what gives
+  # it away is a `## heading` rendering as code (#319).
+  local missing=""
+  local doc
+  for doc in README.md CLAUDE.md AGENTS.md test/README.md docs/*.md; do
+    while IFS= read -r line_no; do
+      missing+=" $doc:$line_no"
+    done < <(awk '
+      {
+        t = $0
+        sub(/^[ \t]*/, "", t)
+        n = 0
+        while (substr(t, n + 1, 1) == "`") n++
+        # Three or more backticks is a fence; fewer is an inline code span.
+        if (n >= 3) {
+          rest = substr(t, n + 1)
+          if (open == 0) { open = n }
+          else if (n >= open && rest ~ /^[ \t]*$/) { open = 0 }
+          next
+        }
+      }
+      open && /^#{1,6} / { print NR }
+    ' "$REPO/$doc")
+  done
+  [ -z "$missing" ] || {
+    echo "headings rendered as code:$missing"
+    false
+  }
+}

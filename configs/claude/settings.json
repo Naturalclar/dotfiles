@@ -8,7 +8,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay ~/Music/daisuki.mp3"
+            "command": "notify-sound"
           },
           {
             "type": "command",
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay ~/Music/daisuki.mp3"
+            "command": "notify-sound"
           },
           {
             "type": "command",

@@ -132,6 +132,49 @@ startup_stderr() {
   grep -q '^ok$' <<<"$output"
 }
 
+# --- per-OS paths ------------------------------------------------------------
+
+# ~/Library is macOS's own layout. Exporting ANDROID_HOME into it from a Linux
+# shell is worse than leaving it unset: Gradle and the React Native CLI take the
+# variable as the truth and stop looking (#323).
+@test "no macOS-only path is exported on Linux" {
+  [ "$(uname)" = "Linux" ] || skip "checks what the Linux branch exports"
+
+  run env zsh -c "source '$REPO/.zshrc'; env" 2>/dev/null
+  ! grep -q '/Library/' <<<"$output"
+}
+
+@test "the Linux branch sets no Android or pnpm variable of its own" {
+  [ "$(uname)" = "Linux" ] || skip "checks what the Linux branch exports"
+
+  # Cleared first, so this measures what the config does rather than what the
+  # machine already had: GitHub's Ubuntu runners export ANDROID_HOME
+  # (/usr/local/lib/android/sdk) themselves, and an inherited value is none of
+  # this repository's business -- what matters is that sourcing does not
+  # invent one.
+  run env -u ANDROID_HOME -u EMULATOR -u PNPM_HOME \
+    zsh -c "source '$REPO/.zshrc'; print \"\${ANDROID_HOME-unset}|\${EMULATOR-unset}|\${PNPM_HOME-unset}\"" 2>/dev/null
+  grep -q '^unset|unset|unset$' <<<"$output"
+}
+
+@test "the Linux branch leaves an inherited ANDROID_HOME alone" {
+  [ "$(uname)" = "Linux" ] || skip "checks what the Linux branch exports"
+
+  # The flip side: a machine that really does have an SDK sets the variable
+  # before zsh starts, and the config has no business overwriting it.
+  run env ANDROID_HOME=/opt/android-sdk \
+    zsh -c "source '$REPO/.zshrc'; print \"android=\$ANDROID_HOME\"" 2>/dev/null
+  grep -q '^android=/opt/android-sdk$' <<<"$output"
+}
+
+@test "the Darwin branch still sets them" {
+  # The module keys on $OS, so the macOS half can be exercised anywhere. This
+  # is what keeps "do not set it on Linux" from quietly becoming "do not set it
+  # at all".
+  run zsh -c "OS=Darwin; source '$REPO/.zsh/10-os.zsh'; print \"\$ANDROID_HOME|\$EMULATOR|\$PNPM_HOME\"" 2>/dev/null
+  grep -q "Library/Android/sdk|.*Library/Android/sdk/emulator/emulator|.*Library/pnpm" <<<"$output"
+}
+
 # --- structure ---------------------------------------------------------------
 
 @test "the timer lives in the loader, not in a module" {

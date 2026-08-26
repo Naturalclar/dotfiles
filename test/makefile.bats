@@ -200,6 +200,33 @@ assert_links_to() {
   [ ! -e "$FAKE_HOME/.config/nvim" ]
 }
 
+@test "make unlink removes the Claude Code links too" {
+  # install.sh runs dotfiles, config and claude (#306), so unlink has to undo
+  # all three. Leaving the ~/.claude links behind turns them into dangling
+  # links the moment the clone moves (#320).
+  make -C "$REPO" dotfiles config claude HOME="$FAKE_HOME"
+  [ -L "$FAKE_HOME/.claude/settings.json" ]
+
+  run make -C "$REPO" unlink HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  [ ! -e "$FAKE_HOME/.claude/settings.json" ]
+  [ ! -e "$FAKE_HOME/.claude/skills/tailscale-serve" ]
+}
+
+@test "make unlink leaves skills it did not install alone" {
+  # ~/.claude/skills is shared. Only the links this repository made may go --
+  # anything else there belongs to someone else, link or not.
+  make -C "$REPO" claude HOME="$FAKE_HOME"
+  mkdir -p "$FAKE_HOME/.claude/skills/someone-elses"
+  touch "$FAKE_HOME/.claude/skills/someone-elses/SKILL.md"
+  ln -s /tmp "$FAKE_HOME/.claude/skills/foreign-link"
+
+  run make -C "$REPO" unlink HOME="$FAKE_HOME"
+  [ "$status" -eq 0 ]
+  [ -f "$FAKE_HOME/.claude/skills/someone-elses/SKILL.md" ]
+  [ -L "$FAKE_HOME/.claude/skills/foreign-link" ]
+}
+
 @test "make unlink leaves files it did not create alone" {
   echo "mine" >"$FAKE_HOME/.zshrc"
   run make -C "$REPO" unlink HOME="$FAKE_HOME"

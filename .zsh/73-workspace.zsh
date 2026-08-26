@@ -35,8 +35,7 @@ alias gbd='git branch -d $(git branch | pf)'
 # terraform
 alias tf="terraform"
 
-# alias to run android emulator
-export EMULATOR="$HOME/Library/Android/sdk/emulator/emulator"
+# alias to run android emulator ($EMULATOR is set per-OS in .zsh/10-os.zsh)
 alias listdroid='$EMULATOR -list-avds'
 alias rundroid='$EMULATOR -avd "$(listdroid | peco)"'
 # alias to copy file or folder to dotfiles repository
