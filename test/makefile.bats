@@ -44,7 +44,10 @@ assert_links_to() {
 @test "make dotfiles skips repository-only entries" {
   run make -C "$REPO" dotfiles HOME="$FAKE_HOME"
   [ "$status" -eq 0 ]
-  for entry in .git .github .gitignore .gitmodules .config; do
+  # .claude is this repository's own configuration -- its skills are linked
+  # individually by `make claude`, and ~/.claude is Claude Code's state
+  # directory, not somewhere to point at a clone.
+  for entry in .git .github .gitignore .gitmodules .config .claude; do
     [ ! -e "$FAKE_HOME/$entry" ]
   done
 }
@@ -126,7 +129,7 @@ assert_links_to() {
   run make -C "$REPO" claude HOME="$FAKE_HOME"
   [ "$status" -eq 0 ]
   assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
-    "$REPO/configs/claude/skills/tailscale-serve"
+    "$REPO/.claude/skills/tailscale-serve"
   [ -f "$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md" ]
 }
 
@@ -140,7 +143,7 @@ assert_links_to() {
   [ "$status" -eq 0 ]
   [ -f "$FAKE_HOME/.claude/skills/someone-elses/SKILL.md" ]
   assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
-    "$REPO/configs/claude/skills/tailscale-serve"
+    "$REPO/.claude/skills/tailscale-serve"
 }
 
 @test "make claude does not nest the link inside an existing real skill directory" {
@@ -158,7 +161,7 @@ assert_links_to() {
   run make -C "$REPO" claude HOME="$FAKE_HOME"
   [ "$status" -eq 0 ]
   assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
-    "$REPO/configs/claude/skills/tailscale-serve"
+    "$REPO/.claude/skills/tailscale-serve"
   [ ! -e "$FAKE_HOME/.claude/skills/tailscale-serve/tailscale-serve" ]
 }
 
@@ -169,7 +172,7 @@ assert_links_to() {
   # skill missing either field is installed but never triggers.
   shopt -s nullglob
   local found=0
-  for skill in "$REPO"/configs/claude/skills/*/; do
+  for skill in "$REPO"/.claude/skills/*/; do
     found=$((found + 1))
     [ -f "$skill/SKILL.md" ]
     run head -1 "$skill/SKILL.md"
@@ -251,7 +254,7 @@ assert_links_to() {
 
   assert_links_to "$FAKE_HOME/.claude/settings.json" "$REPO/configs/claude/settings.json"
   assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
-    "$REPO/configs/claude/skills/tailscale-serve"
+    "$REPO/.claude/skills/tailscale-serve"
   [ -f "$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md" ]
   # The rest of the run still happened.
   assert_links_to "$FAKE_HOME/.zshrc" "$REPO/.zshrc"

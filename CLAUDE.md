@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `make` or `make dotfiles` — symlink all dotfiles (`.??*` except `.git`, `.gitignore`, etc.) into `$HOME`
 - `make config` — symlink `.config/*` entries into `$HOME/.config/`
-- `make claude` — symlink `configs/claude/settings.json` to `~/.claude/settings.json` (Claude Code hooks etc.; machine-local state like `feedbackSurveyState` is intentionally not committed), and each `configs/claude/skills/*` directory into `~/.claude/skills/`. Skills are linked individually because `~/.claude/skills` is shared with skills installed from elsewhere
+- `make claude` — symlink `configs/claude/settings.json` to `~/.claude/settings.json` (Claude Code hooks etc.; machine-local state like `feedbackSurveyState` is intentionally not committed), and each `.claude/skills/*` directory into `~/.claude/skills/`. Skills are linked individually because `~/.claude/skills` is shared with skills installed from elsewhere
 - `make vscodeExtensions` — sync VSCode extensions via `configs/.vscode/vscodeSync.sh`
 - `make list` — show which dotfiles will be symlinked
 - `make help` — print all make targets
@@ -28,7 +28,7 @@ This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mec
 - `.config/nvim/` — Neovim config using LazyVim framework (`config/lazy.lua` bootstraps lazy.nvim, plugins in `lua/plugins/`)
 - `.config/fish/` — Fish shell config (experimental, best-effort). zsh is the source of truth for aliases and functions; fish carries only a subset. An alias defined in both shells must behave identically — add it to the matching `.zsh/*.zsh` module first
 - `configs/.vscode/` — VSCode settings, keybindings, and extension sync script
-- `configs/claude/skills/<name>/SKILL.md` — Claude Code skills shared across machines. The frontmatter `name` must equal the directory name, and `description` is the trigger text Claude Code matches on; `test/makefile.bats` enforces both
+- `.claude/skills/<name>/SKILL.md` — Claude Code skills. This is the project-skills location, so they load for anyone working in this repository and for cloud sessions, which never read `~/.claude`; `make claude` links them into `~/.claude/skills/` so they apply elsewhere too. `.gitignore` ignores the rest of `.claude/` — the re-include needs `/.claude/*` plus `!/.claude/skills/`, since git will not descend into an excluded directory. The frontmatter `name` must equal the directory name, and `description` is the trigger text Claude Code matches on; `test/makefile.bats` enforces both, and `test/docs.bats` requires a row in the README skill table
 - `.scripts/` — custom CLI tools added to PATH (`duck`, `google`, `pmux`, `git-worktree-pull`)
 - `powershell/` — komorebi start/stop scripts, and `DotfilesSetup.ps1` (the symlink helper the `setup-*.ps1` scripts share). Kept out of `windows/`, which `bootstrap.ps1` sources into every shell
 - `windows/*.ps1` — PowerShell profile parts, sourced in filename order by the `$PROFILE` loader `bootstrap.ps1` writes. `keybindings.ps1` mirrors the zsh keybinds via PSReadLine; `functions.ps1` holds what they call
