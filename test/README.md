@@ -38,7 +38,7 @@ Tests for `_prompt_path` in `.zsh/40-prompt.zsh`, which replaces the working dir
 
 ### aliases.bats
 
-Tests that keep `.zsh/*.zsh`, `.config/fish/` and `windows/*.ps1` from drifting apart. They enforce the rule documented in the root `README.md`: zsh is the source of truth, and an alias defined in **both** shells must expand to the same thing. Fish is not required to carry every zsh alias — only to agree on the ones it does carry. A second check catches an alias defined twice across the `.zsh/*.zsh` modules, where the later definition silently wins. These run in CI on every push.
+Tests that keep `.zsh/*.zsh`, `.config/fish/` and `windows/*.ps1` from drifting apart. They enforce the rule documented in `docs/shells.md`: zsh is the source of truth, and an alias defined in **both** shells must expand to the same thing. Fish is not required to carry every zsh alias — only to agree on the ones it does carry. A second check catches an alias defined twice across the `.zsh/*.zsh` modules, where the later definition silently wins. These run in CI on every push.
 
 ### makefile.bats
 

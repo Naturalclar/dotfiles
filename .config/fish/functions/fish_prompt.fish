@@ -1,5 +1,5 @@
 # NOTE: mirrors the PROMPT in .zshrc, which is the source of truth. Keep the
-# two in step -- see README.md.
+# two in step -- see docs/shells.md.
 #
 #   PROMPT="${SSH_INDICATOR}%F{green}╭─ ${_prompt_path_msg} %f${vcs_info_msg_0_}
 #   %F{green}╰─%B$%b %f"

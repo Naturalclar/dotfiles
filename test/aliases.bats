@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Guards the rule documented in README.md: .zshrc is the source of truth, and a
+# Guards the rule documented in docs/shells.md: .zshrc is the source of truth, and a
 # name that exists in both shells must behave identically. Nothing here asks
 # fish to carry every zsh alias -- only that the ones it does carry agree, so
 # `up` never means one thing in zsh and another in fish again.

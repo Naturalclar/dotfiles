@@ -153,18 +153,38 @@ ci_globs_suites() {
   }
 }
 
-@test "every skill is listed in the README skill table" {
+@test "every skill is listed in the Claude Code doc's skill table" {
   # A skill nobody knows about is a skill nobody uses -- and unlike a shell
-  # function, there is nothing to stumble over in the config. The table is the
-  # only place they are advertised.
+  # function, there is nothing to stumble over in the config. The table in
+  # docs/claude-code.md is the only place they are advertised.
   local missing=""
   local skill name
   for skill in "$REPO"/.claude/skills/*/; do
     name="$(basename "$skill")"
-    grep -q "| \`$name\` |" "$REPO/README.md" || missing+=" $name"
+    grep -q "| \`$name\` |" "$REPO/docs/claude-code.md" || missing+=" $name"
   done
   [ -z "$missing" ] || {
-    echo "skills missing from the README table:$missing"
+    echo "skills missing from the docs/claude-code.md table:$missing"
+    false
+  }
+}
+
+@test "block-drawing art in the docs is inside a code fence" {
+  # Markdown joins consecutive lines into one paragraph and collapses runs of
+  # spaces, so unfenced ASCII art renders as a single mangled line -- which is
+  # what GitHub was showing for the README banner. Fenced, it survives.
+  local missing=""
+  local doc
+  for doc in README.md docs/*.md test/README.md; do
+    while IFS='|' read -r line_no _; do
+      missing+=" $doc:$line_no"
+    done < <(awk '
+      /^[[:space:]]*```/ { fenced = !fenced; next }
+      !fenced && /█/     { print NR "|" }
+    ' "$REPO/$doc")
+  done
+  [ -z "$missing" ] || {
+    echo "art outside a code fence:$missing"
     false
   }
 }
