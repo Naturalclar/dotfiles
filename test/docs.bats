@@ -188,3 +188,18 @@ ci_globs_suites() {
     false
   }
 }
+
+@test "every script is listed in the scripts doc's table" {
+  # .scripts/ exists to be read from the table rather than from the source
+  # (#246); a tool missing from it may as well not exist. Matched by name
+  # rather than by counting rows, because `duck` and `google` share one.
+  local missing=""
+  local script
+  for script in "$REPO"/.scripts/*; do
+    grep -q "\`$(basename "$script")\`" "$REPO/docs/scripts.md" || missing+=" $(basename "$script")"
+  done
+  [ -z "$missing" ] || {
+    echo "scripts missing from the docs/scripts.md table:$missing"
+    false
+  }
+}

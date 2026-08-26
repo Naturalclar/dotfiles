@@ -27,6 +27,13 @@ define link
 if [ -d "$(2)" ] && [ ! -L "$(2)" ]; then echo "skip $(2): already a directory, remove or rename it to link"; else ln -sfnv "$(1)" "$(2)"; fi;
 endef
 
+# rmlink <destination>
+# The counterpart of link: only ever removes a symlink. A real file or
+# directory at the destination is something we did not create.
+define rmlink
+if [ -L "$(1)" ]; then rm -v "$(1)"; fi;
+endef
+
 list: # Show dotfiles in this repository
 	@echo 'list - Showing list of dotfiles in this repository'
 	@echo '------------------------'
@@ -58,7 +65,9 @@ claude: # Create symlinks of Claude Code settings.json and skills in ~/.claude
 unlink: # Remove dotfile symlinks from home directory
 	@echo 'unlink - Removing dotfile symlinks from HOME directory'
 	@echo '------------------------'
-	@$(foreach val, $(TARGET) $(CONFIG_PATH), if [ -L "$(HOME)/$(val)" ]; then rm -v "$(HOME)/$(val)"; fi;)
+	@$(foreach val, $(TARGET) $(CONFIG_PATH), $(call rmlink,$(HOME)/$(val)))
+	@$(call rmlink,$(HOME)/.claude/settings.json)
+	@$(foreach val, $(CLAUDE_SKILL_PATH), $(call rmlink,$(HOME)/.claude/skills/$(notdir $(val))))
 	@echo '------------------------'
 
 bootstrap: # Full new-machine setup (Homebrew, packages, symlinks, asdf runtimes)
