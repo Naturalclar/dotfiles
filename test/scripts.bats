@@ -12,6 +12,30 @@ SCRIPTS="$BATS_TEST_DIRNAME/../.scripts"
 # the tests away from any real tmux session.
 TMUX_SOCKET="bats-tph-$$"
 
+# tmux handles option values through its own locale, so under LC_CTYPE=POSIX it
+# stores the status emoji as underscores and the comparison below fails while
+# nothing is actually broken (#325). Choose a UTF-8 locale the same way
+# .zsh/00-core.zsh does -- only one that is really generated, since setting a
+# locale the system does not have is its own kind of noise.
+setup() {
+  local candidate
+  for candidate in en_US.UTF-8 C.UTF-8; do
+    if locale -a 2>/dev/null | grep -qiE "^${candidate%.*}\\.(utf-?8)$"; then
+      export LC_ALL="$candidate" LANG="$candidate"
+      return 0
+    fi
+  done
+}
+
+# Skip only where no UTF-8 locale exists to switch to. Deliberately asks the
+# system rather than reading back what setup exported: keyed on $LC_ALL, losing
+# setup would turn this test into a silent skip instead of a failure, and the
+# emoji would stop being checked anywhere.
+require_utf8_locale() {
+  locale -a 2>/dev/null | grep -qiE '\.(utf-?8)$' && return 0
+  skip "no UTF-8 locale generated; tmux would store the emoji as underscores"
+}
+
 teardown() {
   tmux -L "$TMUX_SOCKET" kill-server 2>/dev/null || true
 }
@@ -204,6 +228,7 @@ ns_called() {
 # --- tmux-pane-highlight inside a scratch tmux server -------------------------
 
 @test "tmux-pane-highlight sets color, icon, and @claude_at timestamp" {
+  require_utf8_locale
   start_scratch_tmux
   before=$(date +%s)
 
