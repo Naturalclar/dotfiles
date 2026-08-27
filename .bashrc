@@ -51,7 +51,9 @@ Linux*)
   . "$HOME/.asdf/asdf.sh"
   ;;
 esac
-. "$HOME/.cargo/env"
+if [ -f "$HOME/.cargo/env" ]; then
+  . "$HOME/.cargo/env"
+fi
 
 # Load Secrets API key from credentials file if present
 if [ -f "$HOME/.config/secrets/credentials.sh" ]; then
