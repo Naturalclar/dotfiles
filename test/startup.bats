@@ -90,6 +90,17 @@ startup_stderr() {
   ! grep -q 'no such file or directory' <<<"$output"
 }
 
+@test "bash starts cleanly without rustup" {
+  local home
+  home="$(mktemp -d)"
+
+  run env HOME="$home" bash --noprofile --norc -c "source '$REPO/.bashrc'"
+  rm -rf "$home"
+
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
 @test "asdf is still sourced when it is there" {
   local home
   home="$(mktemp -d)"
