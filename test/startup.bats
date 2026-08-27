@@ -181,7 +181,10 @@ startup_stderr() {
   # An end marker parked in one module stops covering whatever is added after
   # it -- the old one sat in 74 and missed 75, 80 and 81. Keeping both markers
   # in .zshrc is what makes the number mean "the whole load".
-  run grep -rn 'EPOCHREALTIME\|zprof\|strftime' "$REPO/.zsh"
+  # Search only this repository's numbered modules.  A recursive search also
+  # descends into the initialized zsh plugin submodules, whose own test suites
+  # legitimately use zprof and make this assertion fail only on local setups.
+  run grep -n 'EPOCHREALTIME\|zprof\|strftime' "$REPO"/.zsh/*.zsh
   [ "$status" -ne 0 ]
 
   grep -q 'ZSH_STARTUP_TIME' "$REPO/.zshrc"
