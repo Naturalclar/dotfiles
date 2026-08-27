@@ -17,7 +17,9 @@ setup() {
 }
 
 teardown() {
-  [ -n "${WORK:-}" ] && rm -rf "$WORK"
+  if [ -n "${WORK:-}" ]; then
+    rm -rf "$WORK"
+  fi
 }
 
 # Shells are always run with stdin closed and a deadline. A shell that blocks
