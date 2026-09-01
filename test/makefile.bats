@@ -196,7 +196,13 @@ assert_links_to() {
     printf '  %s\n' "${problems[@]}" >&2
     false
   fi
-  [ "$found" -gt 0 ]
+  # nullglob is what makes an empty or moved .claude/skills produce zero
+  # iterations rather than one literal `*/`, so this guard is the only thing
+  # standing between "every skill is fine" and "there were no skills to check".
+  [ "$found" -gt 0 ] || {
+    echo "no skill directories found under $REPO/.claude/skills" >&2
+    false
+  }
 }
 
 # --- make unlink -------------------------------------------------------------
