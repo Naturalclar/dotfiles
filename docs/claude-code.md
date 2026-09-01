@@ -30,6 +30,7 @@ or the skills settings on claude.ai.
 | `repo-survey` | Read a repository for defects that can be reproduced, and file them as one-PR-sized GitHub issues. Repo-agnostic. |
 | `file-split-survey` | Find oversized source files with mixed responsibilities, propose a concrete one-PR split, and optionally file the proposal as a GitHub issue. Repo-agnostic. |
 | `issue-triage` | List the open issues and put them in the order they should be worked on, with a reason for each position. The other half of `repo-survey`. Repo-agnostic. |
+| `break-check` | Prove a test fails when the behaviour it covers is broken, before claiming the regression is covered. Repo-agnostic. |
 | `pr-status` | List the open pull requests and report what each is waiting on — CI, conflicts, review — with the next action. Repo-agnostic. |
 
 A skill is a `SKILL.md` with YAML frontmatter; the `name` has to match its
