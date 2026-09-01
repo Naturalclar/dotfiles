@@ -70,7 +70,14 @@ If that list is not empty, stop and report it rather than resetting.
 - **`state: closed`** → do not start. Report it, and name the PR that closed it
   from `closed_by_pull_requests`.
 - **`closed_by_pull_requests` holds an open PR** → someone is already on it.
-  Report the PR instead of starting.
+  Report the PR instead of starting. The name says `closed_by`, but the field
+  lists any PR that would close the issue, open ones included — checked against
+  an open issue whose PR was still in review:
+
+  ```json
+  "closed_by_pull_requests": {"total_count": 1,
+    "references": [{"number": 345, "state": "OPEN", ...}]}
+  ```
 - **Re-read the body.** It describes the repository as it was when written. Check
   the files, functions and line numbers it names still exist. Where it has
   drifted, adjust the plan and say so in the final report rather than
