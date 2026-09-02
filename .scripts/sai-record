@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+# sai-record - hand a Claude Code hook event to sai's feed/record.py, if it is
+# checked out on this machine.
+#
+# Usage:
+#   sai-record              read the hook JSON on stdin and pass it to record.py
+#   sai-record -h           show this help
+#
+# The hooks in configs/claude/settings.json used to run
+# `python3 "$SAI_HOME/feed/record.py"` themselves. That needed an `env.SAI_HOME`
+# in settings.json spelling out one machine's home directory, and on any machine
+# without that checkout every hook printed a python traceback. Like notify-sound
+# and tmux-pane-highlight, this wrapper is a silent no-op whenever it cannot do
+# its job: nothing on stdout or stderr, exit 0, hook stays happy.
+#
+# SAI_HOME is the sai checkout. It is read from the environment (Claude Code
+# hands its own environment to hooks), so on a machine where the checkout is
+# not at the default below, export it from the shell -- for instance in
+# ~/.config/secrets/credentials.sh, which .zsh/80-late.zsh sources.
+#
+# record.py reads the event from stdin and observes only: it prints nothing on
+# stdout, because a hook's stdout can carry a permission decision. stdout is
+# dropped here as well so that stays true whatever record.py does.
+
+set -uo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: sai-record
+
+Reads a Claude Code hook event on stdin and passes it to $SAI_HOME/feed/record.py.
+Does nothing at all, silently, when SAI_HOME, record.py or python3 is missing.
+
+  SAI_HOME        sai checkout (default: ~/.ghq/github.com/Naturalclar/sai.git/main)
+
+Options:
+  -h, --help      show this help
+USAGE
+}
+
+case "${1-}" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+esac
+
+script="${SAI_HOME:-$HOME/.ghq/github.com/Naturalclar/sai.git/main}/feed/record.py"
+[ -f "$script" ] || exit 0
+command -v python3 >/dev/null 2>&1 || exit 0
+
+python3 "$script" "$@" >/dev/null 2>&1 || true
+
+exit 0
