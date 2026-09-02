@@ -16,6 +16,7 @@
 | `switch-worktree` | Pick a git worktree via fzf and cd into it. Sourced via the `Ctrl+B` keybind in zsh. |
 | `git-worktree-pull` | Fix the fetch refspec of a bare/worktree clone so `git fetch origin` gets all remote branches. Aliased as `gwp`. |
 | `notify-sound` | Play a notification sound if this machine has a player and the file (`$NOTIFY_SOUND`, default `~/Music/daisuki.mp3`); silent no-op otherwise. Called from the Claude Code hooks. |
+| `sai-record` | Hand a Claude Code hook event (stdin) to `$SAI_HOME/feed/record.py`, the turn recorder in the sai repository; silent no-op when `SAI_HOME` (default `~/.ghq/github.com/Naturalclar/sai.git/main`), the script or `python3` is missing. Called from the Claude Code hooks. |
 | `killport` | Kill the processes listening on a given port (`killport 8080`). |
 | `duck` / `google` | Search DuckDuckGo / Google from the terminal via lynx. |
 | `urlencode` | URL-encode arguments or stdin; used by `duck` and `google`. |

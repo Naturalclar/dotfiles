@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "model": "claude-fable-5[1m]",
+  "model": "fable[1m]",
   "hooks": {
     "Stop": [
       {
@@ -13,6 +13,10 @@
           {
             "type": "command",
             "command": "tmux-pane-highlight yellow"
+          },
+          {
+            "type": "command",
+            "command": "sai-record"
           }
         ]
       }
@@ -30,6 +34,15 @@
             "command": "tmux-pane-highlight red"
           }
         ]
+      },
+      {
+        "matcher": "idle_prompt|agent_needs_input|elicitation_dialog|elicitation_url_dialog|permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sai-record"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -39,6 +52,10 @@
           {
             "type": "command",
             "command": "tmux-pane-highlight green"
+          },
+          {
+            "type": "command",
+            "command": "sai-record"
           }
         ]
       }
@@ -53,11 +70,33 @@
           }
         ]
       }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sai-record"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion|ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sai-record"
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
     "swift-lsp@claude-plugins-official": true
   },
   "effortLevel": "high",
-  "skipAutoPermissionPrompt": true
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true
 }

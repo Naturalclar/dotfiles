@@ -133,6 +133,27 @@ assert_links_to() {
   [ -f "$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md" ]
 }
 
+@test "every hook command in settings.json is a tool in .scripts" {
+  # settings.json is the same file on every machine `make claude` runs on, so
+  # a hook that spells out an interpreter and an absolute path -- as the sai
+  # recorder once did, with one machine's home directory baked into an `env`
+  # block -- works on one machine and errors on every other. Anything a hook
+  # needs that differs per machine belongs in the environment, read by a
+  # wrapper in .scripts that copes with it being absent.
+  local bad=""
+  local cmd
+  while IFS= read -r cmd; do
+    [ -x "$REPO/.scripts/${cmd%% *}" ] || bad+=" '$cmd'"
+  done < <(grep -oE '"command": *"[^"]+"' "$REPO/configs/claude/settings.json" |
+    sed -E 's/^"command": *"//; s/"$//')
+
+  [ -z "$bad" ] || {
+    echo "hook commands that are not tools in .scripts:$bad"
+    false
+  }
+  ! grep -nE '/(Users|home)/' "$REPO/configs/claude/settings.json"
+}
+
 @test "make claude leaves skills it did not install alone" {
   # ~/.claude/skills is shared, so linking the directory as a whole would hide
   # whatever else is in it. Link the skills one at a time instead.

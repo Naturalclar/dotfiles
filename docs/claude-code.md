@@ -13,6 +13,16 @@ directory, so skills installed from anywhere else stay where they are. A skill
 directory that already exists in `~/.claude/skills` as a real directory is
 reported and skipped rather than overwritten.
 
+The hooks in `settings.json` only ever call tools from `.scripts/`
+(`notify-sound`, `tmux-pane-highlight`, `sai-record`), and each of those is a
+silent no-op on a machine that lacks what it needs, so the one settings file
+serves every machine. Anything that differs per machine is read from the
+environment: `sai-record` looks for the sai checkout in `SAI_HOME`, which you
+export from the shell (`~/.config/secrets/credentials.sh` is sourced for that)
+when it is not at the default under `~/.ghq`. `test/makefile.bats` checks that
+no hook command reaches outside `.scripts/` and that no home directory is
+spelled out in the file.
+
 Most of `.claude/` is Claude Code's own per-machine state, so `.gitignore`
 ignores its contents and re-includes only `skills/`. That takes two lines —
 `/.claude/*` then `!/.claude/skills/` — because git does not descend into an

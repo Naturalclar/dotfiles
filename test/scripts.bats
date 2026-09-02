@@ -219,6 +219,59 @@ ns_called() {
   [[ "$output" == *"Usage: notify-sound"* ]]
 }
 
+# --- sai-record --------------------------------------------------------------
+#
+# The Claude Code hooks call this on every turn, so it must never fail and
+# never print: a non-zero exit stops the agent, and stdout is where a hook's
+# permission decision would go. A stub record.py stands in for sai's.
+
+write_record_stub() {
+  mkdir -p "$1/feed"
+  cat > "$1/feed/record.py" <<'PY'
+import os, sys
+open(os.environ["RECORD_OUT"], "w").write(sys.stdin.read())
+print("a decision that must not reach the hook")
+sys.exit(int(os.environ.get("RECORD_EXIT", "0")))
+PY
+}
+
+@test "sai-record --help prints usage" {
+  run "$SCRIPTS/sai-record" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Usage: sai-record"* ]]
+}
+
+@test "sai-record is a silent no-op when SAI_HOME does not exist" {
+  run env SAI_HOME="$BATS_TEST_TMPDIR/nowhere" "$SCRIPTS/sai-record" <<< '{}'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "sai-record is a silent no-op when SAI_HOME has no record.py" {
+  run env SAI_HOME="$BATS_TEST_TMPDIR" "$SCRIPTS/sai-record" <<< '{}'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "sai-record hands the hook event on stdin to record.py and prints nothing" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  write_record_stub "$BATS_TEST_TMPDIR"
+  run env SAI_HOME="$BATS_TEST_TMPDIR" RECORD_OUT="$BATS_TEST_TMPDIR/out" \
+    "$SCRIPTS/sai-record" <<< '{"hook_event_name":"Stop"}'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+  [ "$(cat "$BATS_TEST_TMPDIR/out")" = '{"hook_event_name":"Stop"}' ]
+}
+
+@test "sai-record exits 0 even when record.py fails" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  write_record_stub "$BATS_TEST_TMPDIR"
+  run env SAI_HOME="$BATS_TEST_TMPDIR" RECORD_OUT="$BATS_TEST_TMPDIR/out" RECORD_EXIT=3 \
+    "$SCRIPTS/sai-record" <<< '{}'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
 @test "tmux-cleanup-windows fails outside tmux" {
   run env -u TMUX "$SCRIPTS/tmux-cleanup-windows.sh"
   [ "$status" -eq 1 ]
