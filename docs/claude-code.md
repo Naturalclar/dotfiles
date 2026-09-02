@@ -35,6 +35,7 @@ or the skills settings on claude.ai.
 | `break-check` | Prove a test fails when the behaviour it covers is broken, before claiming the regression is covered. Repo-agnostic. |
 | `pr-status` | List the open pull requests and report what each is waiting on — CI, conflicts, review — with the next action. Repo-agnostic. |
 | `docs-audit` | Treat the documentation as a test suite: run the commands it gives, resolve the links it names, and check its claims against the code. Repo-agnostic. |
+| `ci-audit` | Check that CI does what it says: every test runs, a hung job dies, a green tick is not two runs of which one was red. Repo-agnostic. |
 
 A skill is a `SKILL.md` with YAML frontmatter; the `name` has to match its
 directory and the `description` is what Claude Code matches against to decide
