@@ -157,12 +157,21 @@ ci_globs_suites() {
   # A skill nobody knows about is a skill nobody uses -- and unlike a shell
   # function, there is nothing to stumble over in the config. The table in
   # docs/claude-code.md is the only place they are advertised.
+  shopt -s nullglob
   local missing=""
-  local skill name
+  local skill name found=0
   for skill in "$REPO"/.claude/skills/*/; do
+    found=$((found + 1))
     name="$(basename "$skill")"
     grep -q "| \`$name\` |" "$REPO/docs/claude-code.md" || missing+=" $name"
   done
+  # Without nullglob the loop runs once on the literal `*/` when the directory
+  # is gone, and reports a skill named `*` as undocumented -- a real failure
+  # with a nonsense cause. Count instead, and say which of the two it is.
+  [ "$found" -gt 0 ] || {
+    echo "no skill directories found under $REPO/.claude/skills"
+    false
+  }
   [ -z "$missing" ] || {
     echo "skills missing from the docs/claude-code.md table:$missing"
     false

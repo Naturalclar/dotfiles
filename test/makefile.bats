@@ -171,18 +171,38 @@ assert_links_to() {
   # Claude Code reads the frontmatter to decide when to load a skill, so a
   # skill missing either field is installed but never triggers.
   shopt -s nullglob
-  local found=0
+  local found=0 problems=() name
   for skill in "$REPO"/.claude/skills/*/; do
     found=$((found + 1))
-    [ -f "$skill/SKILL.md" ]
-    run head -1 "$skill/SKILL.md"
-    [ "$output" = "---" ]
-    grep -q '^name: ' "$skill/SKILL.md"
-    grep -q '^description: ' "$skill/SKILL.md"
+    name="$(basename "$skill")"
+
+    # Name the skill in every message: the loop covers all of them, so a bare
+    # assertion failure leaves the reader grepping to find which one broke.
+    if [ ! -f "$skill/SKILL.md" ]; then
+      problems+=("$name: no SKILL.md")
+      continue
+    fi
+    [ "$(head -1 "$skill/SKILL.md")" = "---" ] ||
+      problems+=("$name: SKILL.md does not open with ---")
+    grep -q '^description: ' "$skill/SKILL.md" ||
+      problems+=("$name: no description in the frontmatter")
     # The directory name is the skill name; a mismatch is confusing at best.
-    grep -q "^name: $(basename "$skill")\$" "$skill/SKILL.md"
+    grep -q "^name: $name\$" "$skill/SKILL.md" ||
+      problems+=("$name: frontmatter name does not match the directory")
   done
-  [ "$found" -gt 0 ]
+
+  if [ "${#problems[@]}" -gt 0 ]; then
+    printf 'skill frontmatter problems:\n' >&2
+    printf '  %s\n' "${problems[@]}" >&2
+    false
+  fi
+  # nullglob is what makes an empty or moved .claude/skills produce zero
+  # iterations rather than one literal `*/`, so this guard is the only thing
+  # standing between "every skill is fine" and "there were no skills to check".
+  [ "$found" -gt 0 ] || {
+    echo "no skill directories found under $REPO/.claude/skills" >&2
+    false
+  }
 }
 
 # --- make unlink -------------------------------------------------------------
