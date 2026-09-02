@@ -17,6 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **lint.yml** (`Lint and test`) — checks `.zshrc` and each `.zsh/*.zsh` module with `zsh -n`, sources the whole config, then runs shellcheck, actionlint, gitleaks and every `test/*.bats` suite on Ubuntu. The bats job globs the suites rather than naming them, so a new one runs without touching the workflow
 - **make.yml** — runs `bats test/makefile.bats` and then `make` itself, on macOS and Ubuntu (the Makefile hits GNU vs BSD differences that only show up per-OS)
 - PowerShell scripts are parsed and linted with PSScriptAnalyzer on Ubuntu (`pwsh` needs no Windows runner for that); nothing exercises them on Windows
+- Both workflows trigger on `pull_request` and on `push` **restricted to `master`**. Triggering on an unrestricted push as well runs every job twice for each PR commit, and the two sets can disagree; `concurrency` does not prevent that, because its group keys on `github.ref` and the two events carry different refs (#349). `test/ci.bats` pins this
 
 ## Architecture
 
@@ -58,6 +59,7 @@ Tests are in `test/`, as bats-core suites (`brew install bats-core`, then `bats 
 - `startup.bats` — what a new shell prints, and `$DOTFILES`
 - `ssh-agent.bats` — one agent per machine rather than one per shell
 - `docs.bats` — the docs still match the repository, and every suite here is documented and run
+- `ci.bats` — the workflow triggers, so a PR commit does not run every job twice
 
 Sourcing `.zshrc` in a test starts background processes that can hold the runner's pipes open — stub them, or the job hangs long after the tests pass.
 

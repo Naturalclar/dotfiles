@@ -1,9 +1,16 @@
 name: Main workflow
 
-on: [push, pull_request]
+# Same as lint.yml: both events fire for a branch pushed here, so a PR commit
+# ran two identical sets of jobs (#349). Restricting push to the default branch
+# leaves pull_request covering the PR and push covering the merge.
+on:
+  push:
+    branches: [master]
+  pull_request:
 
-# push and pull_request both fire for a PR branch, so without this every commit
-# starts two identical sets of runs and a force-push leaves the old ones going.
+# Cancels the run still going when the next commit lands on the same ref. It
+# does not deduplicate push against pull_request -- github.ref differs between
+# the two events, so they never share a group.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
