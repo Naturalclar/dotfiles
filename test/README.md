@@ -56,6 +56,10 @@ Tests for the ssh-agent handling in `.zsh/10-os.zsh`. It used to run `eval "$(ss
 
 Tests that keep the documentation attached to the repository. `AGENTS.md` promised to mirror `CLAUDE.md`, then sat unchanged through the `.zshrc` split and ended up describing a file that no longer worked that way, so it is now a pointer rather than a copy — and these tests keep it one. The rest cover what rots in practice: a suite added without a section here, without a workflow step, or without a mention in `CLAUDE.md`, and a path named in the docs that no longer exists. These run in CI on every push.
 
+### ci.bats
+
+Tests for the workflow configuration itself, rather than for anything the workflows run. CI failures announce themselves; CI gaps do not, and the one pinned here is duplicate runs. `on: [push, pull_request]` fires both events for a branch pushed to this repository, so every commit on a pull request started two full sets of jobs — wasteful, but worse than that, the same job name could come back green in one set and red in the other (#324, #349). The `concurrency` block did not prevent it and carried a comment saying it did: the group keys on `github.ref`, which differs between the two events, so they never shared a group. So four things are asserted — a push trigger paired with `pull_request` has to be branch-restricted, the default branch still has to be covered after a merge, that comment must not come back, and there has to be at least one workflow to check at all. These assert the shape of the configuration; the run count itself is only visible on GitHub, so count the check runs on a pull request for the real thing. These run in CI on every push.
+
 ### test-package-scripts
 
 A test package to demonstrate the basic `run-script` function from `.zsh/81-run-script.zsh`. This test shows how to use the function to list and run npm scripts using fzf.

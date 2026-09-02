@@ -1,9 +1,20 @@
 name: Lint and test
 
-on: [push, pull_request]
+# `on: [push, pull_request]` fires both events for a branch pushed to this
+# repository, so every commit on a PR ran two full sets of jobs -- and they can
+# disagree, leaving the same job name green in one set and red in the other
+# (#324). Restricting push to the default branch is what actually stops it:
+# a PR is covered by pull_request, and master is covered after the merge.
+on:
+  push:
+    branches: [master]
+  pull_request:
 
-# push and pull_request both fire for a PR branch, so without this every commit
-# starts two identical sets of runs and a force-push leaves the old ones going.
+# This does NOT deduplicate the two events, and used to claim it did (#349):
+# the group keys on github.ref, which is refs/heads/<branch> for a push and
+# refs/pull/<n>/merge for a pull_request, so they land in different groups and
+# both survive. What it does do is cancel the run still going when the next
+# commit lands on the same ref -- which is the force-push case.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
