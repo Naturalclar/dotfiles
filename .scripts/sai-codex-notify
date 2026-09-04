@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# sai-codex-notify - fan a Codex CLI `notify` event out to every receiver.
+#
+# Usage:
+#   sai-codex-notify <event-json>   called by Codex; the event JSON is the last argument
+#   sai-codex-notify -h             show this help
+#
+# `notify` in ~/.codex/config.toml holds exactly one command (an argv array,
+# no shell), and Codex appends the event JSON as the last argument. Pointing it
+# at sai's feed/record.py would silence the Codex Computer Use client that was
+# there before, and vice versa. This wrapper hands "$@" to each receiver in
+# turn. Like sai-record, it is a silent no-op for any receiver it cannot find,
+# a failing receiver never stops the others, and it always exits 0 so the
+# agent itself is never disturbed.
+#
+# SAI_HOME is the sai checkout (same convention as sai-record).
+
+set -uo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: sai-codex-notify <event-json>
+
+Passes a Codex CLI notify event to every receiver below. Silent, always exit 0.
+
+  1. Codex Computer Use client (turn-ended), if the app is installed
+  2. $SAI_HOME/feed/record.py, if the checkout and python3 exist
+
+  SAI_HOME        sai checkout (default: ~/.ghq/github.com/Naturalclar/sai.git/main)
+
+Options:
+  -h, --help      show this help
+USAGE
+}
+
+case "${1-}" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+esac
+
+computer_use="$HOME/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+if [ -x "$computer_use" ]; then
+  "$computer_use" turn-ended "$@" >/dev/null 2>&1 || true
+fi
+
+script="${SAI_HOME:-$HOME/.ghq/github.com/Naturalclar/sai.git/main}/feed/record.py"
+if [ -f "$script" ] && command -v python3 >/dev/null 2>&1; then
+  python3 "$script" "$@" >/dev/null 2>&1 || true
+fi
+
+exit 0
