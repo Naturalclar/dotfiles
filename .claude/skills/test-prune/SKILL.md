@@ -24,7 +24,10 @@ coverage number, and neither is the test count.
 1. **Inventory first.** Count the test files and the cases in them, and note
    how long the suite takes and which tests are retried or marked flaky. Pull
    the numbers from CI or a local run rather than guessing. This is the cost
-   side of every judgement below.
+   side of every judgement below. For how often a test gets edited, count
+   commits per file (`git log --oneline -- <file> | wc -l`) and reach for
+   `git log -L` on a test's line range only for the candidates; `git log -S`
+   with the test's name finds the commit that added it and nothing else.
 
 2. **Read every test, not a sample.** Duplication is a relationship between
    files, and you cannot see it one file at a time. For each test, read the
@@ -48,6 +51,13 @@ coverage number, and neither is the test count.
 6. **Report.** Every candidate with its verdict and its answer, then the
    tests you considered and kept, so the reader can see the sweep was
    complete rather than a skim of the suspicious-looking names.
+
+One answer that counts, and is easy to miss: **"it keeps this file's other
+tests from passing vacuously."** A test that a glob matched something, or
+that an extractor found any entries at all, looks like a duplicate of every
+other test that iterates the same glob. It is not. Without it the file's own
+loops iterate zero times and go green. Keep it in the file whose loops it
+guards, even when another file has the same check.
 
 ## What to cut
 
@@ -127,6 +137,7 @@ survive:
   cheap to read when they fire.
 - A test that looks like a duplicate but exercises a different branch. Check
   the path, not the name.
+- The guard that stops a loop from passing on nothing, as above.
 
 ## Report
 
@@ -141,12 +152,23 @@ test/parser.bats:41  "parse handles a nested list"
 ```
 
 Sort by what is saved, not by how sure you are: the slow and flaky candidates
-first, then the ones edited most often, then the rest. Give the totals at the
-end: cases before and after, and the run time if you measured it.
+first, then the ones edited most often, then the rest. When nothing is slow
+or flaky, say so in one line at the top and order by edit frequency, so the
+reader does not wonder whether you looked. Give the totals at the end: cases
+before and after, and the run time if you measured it.
 
-Then the tests you weighed and kept, one line each with the defect that kept
-them. A reader should be able to disagree with a specific judgement, which
-means every judgement has to be on the page.
+Then the tests you weighed and kept, with the defect that kept them. Tests
+that share one answer share one line ("the four `killport` branches: no
+args, non-numeric, no listener, kill"); everything else gets its own. A
+reader should be able to disagree with a specific judgement, which means
+every judgement has to be on the page.
+
+Finish with **Observed while reading**: what you saw that is not a prune
+candidate but bears on the suite. Tests red on the maintainer's own OS, a
+fixture that leaks the parent shell's environment, a test currently failing
+for a real reason nobody has acted on. These are the "everyone ignores the
+suite" signals from step 4, and they belong on the page even though the
+answer to the question is not "cut".
 
 ## Do not
 
