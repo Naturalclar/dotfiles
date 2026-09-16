@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# sai-statusline - let sai's feed/statusline.py draw the Claude Code status line,
+# and record the usage percentages it carries, if sai is checked out here.
+#
+# Usage:
+#   sai-statusline          read the status line JSON on stdin, print one line
+#   sai-statusline -h       show this help
+#
+# Claude Code calls `statusLine` on every render and hands it a JSON payload that
+# includes `rate_limits` (the 5 hour and weekly percentages). statusline.py keeps
+# the latest one in <feed dir>/usage-claude*.json -- that file is the only place
+# the percentages are available locally -- and prints a short line.
+#
+# Unlike sai-record, stdout is NOT dropped: whatever statusline.py prints becomes
+# the status line. When sai, python3 or the checkout is missing this prints
+# nothing and exits 0, so the status line is merely empty instead of showing a
+# python traceback (same silent no-op rule as notify-sound and sai-record).
+#
+# SAI_HOME is the sai checkout, read from the environment, with the same default
+# as sai-record. If a machine keeps the checkout elsewhere, export it from the
+# shell (~/.config/secrets/credentials.sh, sourced by .zsh/80-late.zsh).
+#
+# Already have your own status line? Print it here too: this wrapper is the seam
+# for that, because `statusLine` itself can only hold one command.
+
+set -uo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: sai-statusline
+
+Reads the Claude Code status line JSON on stdin, passes it to
+$SAI_HOME/feed/statusline.py and prints that script's one-line output.
+Prints nothing at all, silently, when SAI_HOME, statusline.py or python3 is missing.
+
+  SAI_HOME        sai checkout (default: ~/.ghq/github.com/Naturalclar/sai.git/main)
+
+Options:
+  -h, --help      show this help
+USAGE
+}
+
+case "${1-}" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+esac
+
+script="${SAI_HOME:-$HOME/.ghq/github.com/Naturalclar/sai.git/main}/feed/statusline.py"
+[ -f "$script" ] || exit 0
+command -v python3 >/dev/null 2>&1 || exit 0
+
+python3 "$script" 2>/dev/null || true
+
+exit 0
