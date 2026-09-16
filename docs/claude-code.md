@@ -47,6 +47,7 @@ or the skills settings on claude.ai.
 | `docs-audit` | Treat the documentation as a test suite: run the commands it gives, resolve the links it names, and check its claims against the code. Repo-agnostic. |
 | `ci-audit` | Check that CI does what it says: every test runs, a hung job dies, a green tick is not two runs of which one was red. Repo-agnostic. |
 | `test-prune` | Read every test and list the ones to delete or merge — implementation copies, self-verifying mocks, duplicates, internals-welded tests, case explosions — each judged by what realistic defect ships if it is gone. Report only. Repo-agnostic. |
+| `ui-screenshot` | Compare the local branch and working tree with their base, then use `agent-browser` to capture the screens and states with user-visible changes. Repo-agnostic. |
 
 A skill is a `SKILL.md` with YAML frontmatter; the `name` has to match its
 directory and the `description` is what Claude Code matches against to decide
