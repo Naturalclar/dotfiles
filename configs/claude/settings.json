@@ -93,6 +93,10 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "sai-statusline"
+  },
   "enabledPlugins": {
     "swift-lsp@claude-plugins-official": true
   },

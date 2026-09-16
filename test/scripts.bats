@@ -272,6 +272,52 @@ PY
   [ -z "$output" ]
 }
 
+# --- sai-statusline ----------------------------------------------------------
+#
+# Unlike a hook, the status-line command must preserve the helper's stdout:
+# that one line is what Claude Code renders. It still must not make every
+# refresh noisy or fail when sai is absent.
+
+write_statusline_stub() {
+  mkdir -p "$1/feed"
+  cat >"$1/feed/statusline.py" <<'PY'
+import os, sys
+open(os.environ["STATUSLINE_OUT"], "w").write(sys.stdin.read())
+print(os.environ.get("STATUSLINE_TEXT", "status from sai"))
+sys.exit(int(os.environ.get("STATUSLINE_EXIT", "0")))
+PY
+}
+
+@test "sai-statusline --help prints usage" {
+  run "$SCRIPTS/sai-statusline" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Usage: sai-statusline"* ]]
+}
+
+@test "sai-statusline is a silent no-op when SAI_HOME does not exist" {
+  run env SAI_HOME="$BATS_TEST_TMPDIR/nowhere" "$SCRIPTS/sai-statusline" <<< '{}'
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "sai-statusline passes stdin to statusline.py and prints its output" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  write_statusline_stub "$BATS_TEST_TMPDIR"
+  run env SAI_HOME="$BATS_TEST_TMPDIR" STATUSLINE_OUT="$BATS_TEST_TMPDIR/out" \
+    STATUSLINE_TEXT="ctx 42%" "$SCRIPTS/sai-statusline" <<< '{"rate_limits":{}}'
+  [ "$status" -eq 0 ]
+  [ "$output" = "ctx 42%" ]
+  [ "$(cat "$BATS_TEST_TMPDIR/out")" = '{"rate_limits":{}}' ]
+}
+
+@test "sai-statusline exits 0 when statusline.py fails" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  write_statusline_stub "$BATS_TEST_TMPDIR"
+  run env SAI_HOME="$BATS_TEST_TMPDIR" STATUSLINE_OUT="$BATS_TEST_TMPDIR/out" \
+    STATUSLINE_EXIT=3 "$SCRIPTS/sai-statusline" <<< '{}'
+  [ "$status" -eq 0 ]
+}
+
 @test "tmux-cleanup-windows fails outside tmux" {
   run env -u TMUX "$SCRIPTS/tmux-cleanup-windows.sh"
   [ "$status" -eq 1 ]
