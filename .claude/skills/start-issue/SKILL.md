@@ -28,9 +28,14 @@ git remote get-url origin |
 default=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null |
             sed 's#^origin/##')
 [ -n "$default" ] || default=$(git ls-remote --symref origin HEAD |
-            sed -n 's#^ref: refs/heads/\([^\t]*\).*#\1#p')
+            sed -n 's#^ref: refs/heads/\([^[:space:]]*\).*#\1#p')
 # -> the default branch. symbolic-ref is unset in a fresh clone, so the
 #    ls-remote fallback is not optional.
+#
+#    [:space:], not \t: BSD sed (macOS) does not read \t inside brackets as a
+#    tab, so [^\t] let the tab and the trailing "HEAD" through and $default came
+#    out as "main<TAB>HEAD". GNU sed does read it, which is why Linux never
+#    showed the bug.
 #
 #    Test for emptiness rather than chaining with `||`: a pipeline exits with
 #    the status of its last command, so `symbolic-ref | sed || fallback` takes
@@ -44,24 +49,70 @@ user means, that has to be visible, not silent.
 ## 1. Sync, then rebuild the working branch
 
 ```sh
-git fetch origin "$default"
-git log --oneline -1 "origin/$default"    # what moved while you were away
-git status --short                         # nothing uncommitted
-git checkout -B "$branch" "origin/$default"
+# The branch you are about to (re)build. The check and the reset below both use
+# this one variable, so they cannot look at different refs.
+branch=<branch>
+
+# An explicit refspec, so origin/<default> exists even where remote.origin.fetch
+# is unset — a bare clone with worktrees, as ghq makes. There a plain
+# `git fetch origin main` updates FETCH_HEAD only, and every origin/<default>
+# below fails. Keep the braces: zsh reads "$default:r..." as a :r modifier.
+git fetch origin "+${default}:refs/remotes/origin/${default}"
+git log --oneline -1 "origin/${default}"    # what moved while you were away
+git status --short                           # nothing uncommitted
+
+if git rev-parse --verify --quiet "refs/heads/${branch}" >/dev/null; then
+  t=$(git merge-tree --write-tree "origin/${default}" "refs/heads/${branch}" | head -1)
+  if [ -n "$t" ] && [ "$t" = "$(git rev-parse "origin/${default}^{tree}")" ]; then
+    git checkout -B "${branch}" "origin/${default}"
+  else
+    echo "stop: ${branch} holds changes that are not in origin/${default}"
+  fi
+else
+  git checkout -B "${branch}" "origin/${default}"   # a new branch: nothing to lose
+fi
 ```
 
-Before resetting, check the branch carries nothing unmerged:
+If it prints `stop`, report it rather than resetting. The check and the reset
+share one `if`, so running the block as written cannot reset first.
+
+It gets three things right that `git log origin/<default>..HEAD` does not, and
+each one it got wrong lost or blocked real work:
+
+- **It looks at the branch being reset, not at HEAD.** `checkout -B <branch>`
+  resets `<branch>`. Checking HEAD while standing on another branch answers for
+  the wrong one, says "safe", and `<branch>`'s unmerged commits are gone.
+- **A branch that does not exist yet is safe.** Starting fresh is the common
+  case and loses nothing. `merge-tree` errors on a missing ref, which would read
+  as "stop" every time, so existence is tested first.
+- **It compares trees, not commit lists.** After a squash merge the branch's own
+  commits never reach the default branch, so `git log origin/<default>..<branch>`
+  lists them even when the work is fully merged — indistinguishable from work
+  that is not. `merge-tree --write-tree` asks whether merging the branch would
+  change the default branch at all: squash-merged, no change, safe (until the
+  default branch edits those lines again — see below); unmerged, a change, stop.
+  Merge-commit and rebase workflows come out right too.
+
+It falls on the stopping side — never the losing side — in two cases:
+
+- **The default branch has since changed the lines the branch touched**,
+  whether by reverting them or just editing them again. Merging the old branch
+  back would then conflict or undo that edit, so the tree changes and the check
+  says stop, even though the branch's work was merged once. This is not rare: a
+  branch left lying around after its squash merge starts stopping as soon as
+  anyone edits the same lines.
+- **git older than 2.38** has no `--write-tree`, so `t` comes back empty.
+
+To tell the first case apart, check that **the head of the branch's merged PR is
+the local tip**. If it is, everything on the branch reached the default branch
+through that PR, and resetting is safe. A merged PR alone is not enough: commits
+made locally after the merge move the tip, and those are what a reset would lose.
 
 ```sh
-git log --oneline "origin/$default..HEAD"   # empty -> safe to reset
+head=$(gh pr list --head "${branch}" --state merged --json headRefOid -q '.[0].headRefOid')
+[ -n "$head" ] && [ "$head" = "$(git rev-parse "refs/heads/${branch}")" ] &&
+  git checkout -B "${branch}" "origin/${default}"
 ```
-
-Compare against the **default branch**, not against the branch's own remote ref.
-After a squash merge the remote feature branch keeps the pre-merge commits, so a
-comparison against it reports differences for work that is fully merged — a false
-"stop, you have unmerged commits" every time.
-
-If that list is not empty, stop and report it rather than resetting.
 
 ## 2. Read the issue as it is now
 
