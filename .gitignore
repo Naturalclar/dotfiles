@@ -23,6 +23,8 @@ yasb.log
 # readable, which is what makes the next line work.
 /.claude/*
 !/.claude/skills/
+# ...but not skills synced from the claude.ai account, which land inside it.
+/.claude/skills/synced/
 **/.claude/settings.local.json
 **/.claude/history.jsonl
 **/.claude/sessions/
