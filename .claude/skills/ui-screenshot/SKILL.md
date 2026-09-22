@@ -56,10 +56,21 @@ ask for that one missing fact. Do not guess a plausible-looking screen.
   changed state. Do not perform destructive submissions. If authentication is
   unavoidable, use an existing approved browser profile or agent-browser auth
   state; never put credentials in a command line or screenshot.
-- Prefer the project's existing artifact directory when it has one. Otherwise
-  create a temporary output directory with `mktemp -d` outside the repository,
-  so screenshots do not silently become source changes. Use descriptive names
-  such as `settings-empty-state-desktop.png`.
+- Write the screenshots **inside the working directory**, into a path git
+  ignores. Inside, because a viewer that renders the report can only reach
+  files under the working directory (see "Show the screenshots"); ignored, so
+  they do not silently become source changes. Prefer the project's existing
+  artifact directory when it already has an ignored one. Otherwise create
+  `.screenshots/` at the repository root, and confirm it is ignored:
+
+  ```sh
+  git check-ignore -q .screenshots || echo '.screenshots/' >> .git/info/exclude
+  ```
+
+  Use `.git/info/exclude` rather than `.gitignore`: the choice is local, so it
+  does not change a tracked file. Use descriptive names such as
+  `settings-empty-state-desktop.png`. Do not use `mktemp -d` or anywhere else
+  outside the working directory — the image cannot be served from there.
 
 ## Capture with agent-browser
 
@@ -115,6 +126,40 @@ ask for that one missing fact. Do not guess a plausible-looking screen.
    failures that invalidate the shot. A saved PNG is not evidence if the app
    failed to render the change.
 
+## Show the screenshots in the reply
+
+A path on its own is only useful to someone sitting at this machine. Put each
+screenshot in the reply itself as a Markdown image, so a viewer reading the
+conversation in a browser renders the picture instead of a filename:
+
+```markdown
+![Settings, empty state, 1440x900](/abs/path/to/.screenshots/settings-empty-state-desktop.png)
+```
+
+Write it in the **final message of the turn**, the one that carries the report.
+Paths named in progress updates, tool output, or a question mid-turn are not
+picked up.
+
+For the image to render rather than degrade to a filename, all of these must
+hold — they are why the capture rules above are what they are:
+
+- the file is **under the working directory**, by real path. A symlink or `../`
+  that escapes it is refused, and so is anywhere outside it such as `/tmp`;
+- the bytes really are **PNG, JPEG, GIF, or WebP** — the extension is not
+  trusted, and SVG is never rendered;
+- the file is **20MB or smaller**;
+- the reference is a relative path from the working directory or an absolute
+  path, never a `file:`, `data:`, or `http(s)` URL. A remote URL is left as a
+  link rather than fetched.
+
+When a screenshot cannot meet these, still report its path and say plainly that
+it will not render inline. Do not move a file outside the working directory to
+"clean up" after writing the report — that is what breaks the rendering.
+
+The constraints above are the ones SAI's web UI applies when it serves an image
+named in a turn's reply; a viewer that does not render images loses nothing,
+since the alt text and the path are both still in the report.
+
 ## Finish
 
 Close only the named browser session. Stop only the development server you
@@ -123,7 +168,8 @@ started; leave pre-existing processes alone.
 Report:
 
 - the UI change found and the base used for comparison;
-- each screenshot's absolute path, route/state, and viewport;
+- each screenshot as a Markdown image, with its route/state and viewport;
+- each screenshot's absolute path, for anyone working from a terminal;
 - any visible change not captured and the concrete blocker;
 - whether the server was reused or started and then stopped.
 
