@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+"""jev - ask Jev, TypeSafe AI's decision-only model, typed questions about a state.
+
+Jev returns no prose: it takes a state (text) and named, typed questions, and
+answers each one in a fixed shape -- a noul (0..1, "is this statement true"),
+a choice, or a score, the latter two with calibrated confidence.
+
+This is the one place the request is built, so callers (the `jev` skill, and
+scripts such as kanban's jev_done_candidates.py) do not each carry their own
+copy. Standard library only, like those scripts.
+
+JEV_API_KEY is read from the environment and never printed. When it is missing
+this exits 2 and says so on stderr: a caller must report that Jev was not
+asked, rather than pass off its own judgement as Jev's.
+"""
+
+import argparse
+import json
+import os
+import sys
+import urllib.error
+import urllib.request
+
+ENDPOINT = "https://api.typesafe.ai/v1/systemone"
+MODEL = "jev-latest"
+
+# 0 = asked, answers on stdout. 1 = usage error. 2 = Jev was not asked, or the
+# call failed -- the caller falls back, and says it did.
+EXIT_USAGE = 1
+EXIT_NOT_ASKED = 2
+
+USAGE = """\
+Usage: jev [--state TEXT | --state-file PATH] --noul NAME=STATEMENT ... [options]
+
+Asks Jev the questions about the state and prints the `answers` object as JSON
+on stdout, one key per question name.
+
+  --state TEXT          the state to judge
+  --state-file PATH     read the state from PATH (`-` for stdin)
+  --noul NAME=STATEMENT ask how true STATEMENT is of the state (0..1); repeatable
+  --questions JSON      more questions as a JSON object, sent as given -- the way
+                        to ask choice and score questions
+  --model MODEL         model to use (default: jev-latest)
+  --timeout SECONDS     give up after this long (default: 60)
+  --dry-run             print the request body instead of sending it; needs no key
+  -h, --help            show this help
+
+Environment:
+  JEV_API_KEY           required to send. Missing -> exit 2, nothing sent
+  JEV_ENDPOINT          override the API URL (default: %s)
+
+Exit status: 0 answered, 1 usage error, 2 Jev was not asked or the call failed.
+""" % ENDPOINT
+
+
+def fail(code, message):
+    print(f"jev: {message}", file=sys.stderr)
+    return code
+
+
+def build(opts):
+    """Return the request body, or raise ValueError with a usage message."""
+    if opts.state is not None and opts.state_file is not None:
+        raise ValueError("give --state or --state-file, not both")
+    if opts.state_file is not None:
+        if opts.state_file == "-":
+            state = sys.stdin.read()
+        else:
+            with open(opts.state_file, encoding="utf-8") as f:
+                state = f.read()
+    else:
+        state = opts.state
+    if not state or not state.strip():
+        raise ValueError("the state is empty (give --state or --state-file)")
+
+    questions = {}
+    if opts.questions is not None:
+        try:
+            extra = json.loads(opts.questions)
+        except ValueError as e:
+            raise ValueError(f"--questions is not valid JSON: {e}")
+        if not isinstance(extra, dict):
+            raise ValueError("--questions must be a JSON object of name -> question")
+        questions.update(extra)
+    for item in opts.noul:
+        name, sep, statement = item.partition("=")
+        if not sep or not name or not statement.strip():
+            raise ValueError(f"--noul needs NAME=STATEMENT, got {item!r}")
+        if name in questions:
+            raise ValueError(f"question {name!r} is given twice")
+        questions[name] = {"type": "noul", "instructions": statement.strip()}
+    if not questions:
+        raise ValueError("no questions (give --noul or --questions)")
+
+    return {"state": state, "model": opts.model, "questions": questions}
+
+
+def send(body, key, timeout):
+    req = urllib.request.Request(
+        os.environ.get("JEV_ENDPOINT") or ENDPOINT,
+        data=json.dumps(body, ensure_ascii=False).encode(),
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as res:
+        return json.load(res)["answers"]
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(prog="jev", add_help=False)
+    parser.add_argument("-h", "--help", action="store_true")
+    parser.add_argument("--state")
+    parser.add_argument("--state-file")
+    parser.add_argument("--noul", action="append", default=[])
+    parser.add_argument("--questions")
+    parser.add_argument("--model", default=MODEL)
+    parser.add_argument("--timeout", type=float, default=60)
+    parser.add_argument("--dry-run", action="store_true")
+    try:
+        opts = parser.parse_args(argv)
+    except SystemExit:
+        return EXIT_USAGE
+    if opts.help:
+        sys.stdout.write(USAGE)
+        return 0
+
+    try:
+        body = build(opts)
+    except (ValueError, OSError) as e:
+        print(USAGE, file=sys.stderr)
+        return fail(EXIT_USAGE, str(e))
+
+    if opts.dry_run:
+        print(json.dumps(body, ensure_ascii=False, indent=2))
+        return 0
+
+    key = os.environ.get("JEV_API_KEY")
+    if not key:
+        return fail(EXIT_NOT_ASKED, "JEV_API_KEY is not set, so Jev was not asked")
+
+    try:
+        answers = send(body, key, opts.timeout)
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", "replace").strip()[:300]
+        return fail(EXIT_NOT_ASKED, f"Jev returned HTTP {e.code}: {detail}")
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        return fail(EXIT_NOT_ASKED, f"could not reach Jev: {e}")
+    except (KeyError, ValueError, TypeError) as e:
+        return fail(EXIT_NOT_ASKED, f"Jev's response had no answers: {e}")
+
+    print(json.dumps(answers, ensure_ascii=False))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

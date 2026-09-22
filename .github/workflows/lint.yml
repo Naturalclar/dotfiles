@@ -49,7 +49,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Run shellcheck on .scripts
-        run: shellcheck .scripts/* install.sh
+        # .scripts/ also holds Python tools (jev), which shellcheck rejects
+        # outright (SC1071). Leave out only those, by shebang, rather than
+        # picking the shell ones: an unexpected shebang then still gets checked
+        # instead of silently dropping out.
+        run: |
+          mapfile -t scripts < <(for f in .scripts/*; do
+            head -n 1 "$f" | grep -q python || printf '%s\n' "$f"
+          done)
+          shellcheck "${scripts[@]}" install.sh
 
   actionlint:
     runs-on: ubuntu-latest

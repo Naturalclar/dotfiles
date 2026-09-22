@@ -38,6 +38,7 @@ require_utf8_locale() {
 
 teardown() {
   tmux -L "$TMUX_SOCKET" kill-server 2>/dev/null || true
+  if [ -n "${JEV_STUB_PID-}" ]; then kill "$JEV_STUB_PID" 2>/dev/null || true; fi
 }
 
 start_scratch_tmux() {
@@ -386,6 +387,118 @@ PY
   run "$SCRIPTS/tmux-claude-elapsed" "$(( $(date +%s) - 7500 ))"
   [ "$status" -eq 0 ]
   [ "$output" = "2h05m" ]
+}
+
+# --- jev ---------------------------------------------------------------------
+#
+# Nothing here reaches the real API. A one-request stub stands in for it, so the
+# tests can see what jev actually sent -- above all, that without JEV_API_KEY it
+# sends nothing at all, and that the key goes only in the Authorization header.
+
+# Serve exactly one POST on a free port, record the body and the Authorization
+# header, answer with STUB_STATUS (default 200). Its fds are closed so a stub
+# that is never called cannot hold bats' pipes open; teardown kills it.
+start_jev_stub() {
+  command -v python3 >/dev/null || skip "python3 not available"
+  STUB_DIR="$BATS_TEST_TMPDIR/stub"
+  mkdir -p "$STUB_DIR"
+  python3 - "$STUB_DIR" "${STUB_STATUS:-200}" >/dev/null 2>&1 3>&- <<'PY' &
+import http.server, json, os, sys
+d, status = sys.argv[1], int(sys.argv[2])
+class H(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        body = self.rfile.read(int(self.headers["Content-Length"]))
+        open(os.path.join(d, "request.json"), "wb").write(body)
+        open(os.path.join(d, "auth"), "w").write(self.headers.get("Authorization", ""))
+        if status == 200:
+            out = {"answers": {"a": {"type": "noul", "noul": 0.9}}}
+        else:
+            out = {"error": "bad key"}
+        data = json.dumps(out).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+    def log_message(self, *args):
+        pass
+server = http.server.HTTPServer(("127.0.0.1", 0), H)
+open(os.path.join(d, "port.tmp"), "w").write(str(server.server_port))
+os.rename(os.path.join(d, "port.tmp"), os.path.join(d, "port"))
+server.timeout = 15
+server.handle_request()
+PY
+  JEV_STUB_PID=$!
+  local i
+  for i in $(seq 50); do
+    [ -f "$STUB_DIR/port" ] && break
+    sleep 0.1
+  done
+  [ -f "$STUB_DIR/port" ]
+  JEV_STUB_URL="http://127.0.0.1:$(cat "$STUB_DIR/port")/v1/systemone"
+}
+
+@test "jev --help prints usage" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  run "$SCRIPTS/jev" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Usage: jev"* ]]
+}
+
+@test "jev without JEV_API_KEY says so, exits 2, and sends nothing" {
+  start_jev_stub
+  run env -u JEV_API_KEY JEV_ENDPOINT="$JEV_STUB_URL" \
+    "$SCRIPTS/jev" --state "s" --noul a="b"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"JEV_API_KEY is not set, so Jev was not asked"* ]]
+  [ ! -e "$STUB_DIR/request.json" ]
+}
+
+@test "jev sends the key as a Bearer header and prints the answers" {
+  start_jev_stub
+  run env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL" \
+    "$SCRIPTS/jev" --state "今日は買い物をした" --noul a="買い物が済んだ"
+  [ "$status" -eq 0 ]
+  [ "$output" = '{"a": {"type": "noul", "noul": 0.9}}' ]
+  [ "$(cat "$STUB_DIR/auth")" = "Bearer k-secret" ]
+  run python3 -c 'import json,sys; b=json.load(open(sys.argv[1])); print(b["state"], b["model"], b["questions"]["a"]["type"], b["questions"]["a"]["instructions"])' "$STUB_DIR/request.json"
+  [ "$output" = "今日は買い物をした jev-latest noul 買い物が済んだ" ]
+}
+
+@test "jev reports an HTTP error with its status, exits 2, and does not echo the key" {
+  STUB_STATUS=401 start_jev_stub
+  run env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL" \
+    "$SCRIPTS/jev" --state "s" --noul a="b"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"HTTP 401"* ]]
+  [[ "$output" != *"k-secret"* ]]
+}
+
+@test "jev exits 2 when the API cannot be reached" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  run env JEV_API_KEY="k" JEV_ENDPOINT="http://127.0.0.1:9/" \
+    "$SCRIPTS/jev" --state "s" --noul a="b" --timeout 3
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"could not reach Jev"* ]]
+}
+
+@test "jev --dry-run needs no key and merges --noul with --questions" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  run env -u JEV_API_KEY "$SCRIPTS/jev" --state "s" --noul a="b" \
+    --questions '{"r": {"type": "choice", "instructions": "x"}}' --dry-run
+  [ "$status" -eq 0 ]
+  run python3 -c 'import json,sys; q=json.loads(sys.stdin.read())["questions"]; print(sorted(q), q["a"]["type"], q["r"]["type"])' <<< "$output"
+  [ "$output" = "['a', 'r'] noul choice" ]
+}
+
+@test "jev rejects a call with no questions or a malformed --noul" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  run "$SCRIPTS/jev" --state "s"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"no questions"* ]]
+  run "$SCRIPTS/jev" --state "s" --noul "no-equals-sign"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"NAME=STATEMENT"* ]]
 }
 
 # --- help/usage flags --------------------------------------------------------
