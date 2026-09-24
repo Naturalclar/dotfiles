@@ -49,6 +49,7 @@ or the skills settings on claude.ai.
 | `test-prune` | Read every test and list the ones to delete or merge — implementation copies, self-verifying mocks, duplicates, internals-welded tests, case explosions — each judged by what realistic defect ships if it is gone. Report only. Repo-agnostic. |
 | `ui-screenshot` | Compare the local branch and working tree with their base, then use `agent-browser` to capture the screens and states with user-visible changes. Writes them inside the working directory, git-ignored, and embeds them in the reply as Markdown images so a browser reading the conversation renders the picture. Repo-agnostic. |
 | `jev` | Ask Jev (TypeSafe AI's decision-only model) narrow noul / choice / score questions through `.scripts/jev`, and use its calibrated confidence as a threshold. Needs `JEV_API_KEY`; when it is missing, says so rather than answering in Jev's place. |
+| `parity-check` | Find concepts written down in more than one place — an alias in two shells, a value in code and in a README — check the copies still agree, and propose the test that keeps them agreeing. Reports how many definitions it actually reached, since a comparison that silently parses only some of them is what let the alias checks pass while names drifted. Repo-agnostic. |
 
 A skill is a `SKILL.md` with YAML frontmatter; the `name` has to match its
 directory and the `description` is what Claude Code matches against to decide
