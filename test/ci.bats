@@ -49,6 +49,51 @@ push_subsection() {
   '
 }
 
+# Every job name in a workflow, one per line. Jobs are the keys two spaces in
+# under `jobs:`, so the slice starts there and ends at the next key at column 0.
+job_names() {
+  awk '
+    /^jobs:/            { injobs = 1; next }
+    injobs && /^[^ ]/   { injobs = 0 }
+    injobs && /^  [A-Za-z0-9_-]+:[[:space:]]*$/ {
+      name = $1; sub(/:$/, "", name); print name
+    }
+  ' "$1"
+}
+
+# The body of one job: from its key to the next key at the same indentation.
+job_block() {
+  awk -v want="  $2:" '
+    $0 == want         { injob = 1; print; next }
+    injob && /^  [^ ]/ { injob = 0 }
+    injob              { print }
+  ' "$1"
+}
+
+@test "every job has a timeout-minutes" {
+  # GitHub's default is 360 minutes, so a job with no timeout does not "die
+  # eventually" -- it holds a runner for six hours. A job here starts an
+  # ssh-agent that outlives the shell that started it, which is how a 34-minute
+  # hang happened, and the fix at the time was applied only to the job that had
+  # been bitten. `lint` next door did the same thing and had nothing (#350).
+  #
+  # Asserted for every job rather than for that one, because the next job added
+  # is the one nobody will think about.
+  shopt -s nullglob
+  local missing="" workflow job
+  for workflow in "$REPO"/.github/workflows/*.yml; do
+    while IFS= read -r job; do
+      job_block "$workflow" "$job" | grep -qE '^    timeout-minutes:[[:space:]]*[0-9]+' ||
+        missing+=" $(basename "$workflow"):$job"
+    done < <(job_names "$workflow")
+  done
+
+  [ -z "$missing" ] || {
+    echo "jobs with no timeout-minutes:$missing"
+    false
+  }
+}
+
 @test "there is at least one workflow to check" {
   # The globs below iterate nothing if the directory moves, and a loop that
   # runs zero times passes every assertion in it.
