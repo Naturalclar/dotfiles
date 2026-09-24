@@ -29,6 +29,7 @@ brew "lazygit"
 # Used by CI (shellcheck is an actionlint dep, but relied on directly)
 brew "actionlint"
 brew "bats-core"
+brew "fish"
 brew "gitleaks"
 brew "shellcheck"
 
