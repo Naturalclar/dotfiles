@@ -566,6 +566,239 @@ PY
   [[ "$output" == *"NAME=STATEMENT"* ]]
 }
 
+# --- disk-audit --------------------------------------------------------------
+#
+# disk-audit scans a throwaway $HOME and asks Jev through .scripts/jev. A stub
+# that answers every POST stands in for the API, so the tests see how many
+# questions were sent and with what key -- and that none are sent without one.
+
+# Build a small tree under $1 with known units and one pair of identical files.
+make_disk_audit_home() {
+  local h="$1"
+  mkdir -p "$h/Library/Developer/Xcode/DerivedData/ProjA-abc/Build" \
+    "$h/Library/Caches/com.example" "$h/.gradle/caches/modules-2"
+  head -c 2200000 /dev/urandom >"$h/Library/Developer/Xcode/DerivedData/ProjA-abc/Build/out.bin"
+  head -c 1500000 /dev/urandom >"$h/.gradle/caches/modules-2/dep.jar"
+  cp "$h/.gradle/caches/modules-2/dep.jar" "$h/Library/Caches/com.example/dep-copy.jar"
+}
+
+# Answer every POST with the same answers, counting requests and recording the
+# Authorization headers. Runs until teardown kills it.
+start_disk_audit_stub() {
+  command -v python3 >/dev/null || skip "python3 not available"
+  STUB_DIR="$BATS_TEST_TMPDIR/stub"
+  mkdir -p "$STUB_DIR"
+  python3 - "$STUB_DIR" "${STUB_STATUS:-200}" >/dev/null 2>&1 3>&- <<'PY' &
+import http.server, json, os, sys
+d, status = sys.argv[1], int(sys.argv[2])
+class H(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+        with open(os.path.join(d, "requests"), "a") as f:
+            f.write(json.dumps({"auth": self.headers.get("Authorization", ""), "body": body}) + "\n")
+        if status >= 500:
+            # Multi-line, the way a real gateway answers. jev quotes part of
+            # this body back, so anything reading one line of its stderr
+            # cannot see the status.
+            data = (b"<html>\n<head><title>" + str(status).encode() +
+                    b"</title></head>\n<body>\nupstream unavailable\n</body>\n</html>\n")
+            self.send_response(status)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+        if status == 200:
+            out = {"answers": {
+                "deletable": {"type": "noul", "noul": 0.9},
+                "duplicate": {"type": "noul", "noul": 0.1},
+                "stale": {"type": "noul", "noul": 0.2},
+                "action": {"type": "choice", "choice": "delete", "confidence": 0.8},
+            }}
+        else:
+            out = {"error": "bad key"}
+        data = json.dumps(out).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+    def log_message(self, *args):
+        pass
+server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+open(os.path.join(d, "port.tmp"), "w").write(str(server.server_port))
+os.rename(os.path.join(d, "port.tmp"), os.path.join(d, "port"))
+server.serve_forever()
+PY
+  JEV_STUB_PID=$!
+  local i
+  for i in $(seq 50); do
+    [ -f "$STUB_DIR/port" ] && break
+    sleep 0.1
+  done
+  [ -f "$STUB_DIR/port" ]
+  JEV_STUB_URL="http://127.0.0.1:$(cat "$STUB_DIR/port")/v1/systemone"
+}
+
+# Run disk-audit over the throwaway $HOME. Arguments are `env` settings; extra
+# disk-audit flags go in DISK_AUDIT_FLAGS.
+run_disk_audit() {
+  # shellcheck disable=SC2086
+  run env HOME="$FAKE_HOME" "$@" "$SCRIPTS/disk-audit" \
+    --roots "$FAKE_HOME/Library" "$FAKE_HOME/.gradle" \
+    --threshold-mb 1 --dup-min-mb 1 --out "$BATS_TEST_TMPDIR/out" --jobs 2 \
+    ${DISK_AUDIT_FLAGS-}
+}
+
+@test "disk-audit --help prints usage" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  run "$SCRIPTS/disk-audit" --help
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"--dry-run"* ]]
+}
+
+@test "disk-audit without JEV_API_KEY says so, exits 2, and asks Jev nothing" {
+  start_disk_audit_stub
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  run_disk_audit env -u JEV_API_KEY JEV_ENDPOINT="$JEV_STUB_URL"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"JEV_API_KEY is not set, so Jev was not asked"* ]]
+  [ ! -e "$STUB_DIR/requests" ]
+}
+
+@test "disk-audit --dry-run reports whole units and identical files without Jev" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  DISK_AUDIT_FLAGS=--dry-run run_disk_audit env -u JEV_API_KEY
+  [ "$status" -eq 0 ]
+  local md="$BATS_TEST_TMPDIR/out/latest.md"
+  # The Xcode project is judged as one item, not broken down to its files.
+  grep -q '`~/Library/Developer/Xcode/DerivedData/ProjA-abc`' "$md"
+  ! grep -q 'out.bin' "$md"
+  grep -q '## Identical files' "$md"
+  grep -q 'dep-copy.jar' "$md"
+  grep -q 'Jev was not asked' "$md"
+}
+
+@test "disk-audit asks Jev once per item through jev and reports its verdict" {
+  start_disk_audit_stub
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  run_disk_audit env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL"
+  [ "$status" -eq 0 ]
+  local items
+  items=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["items"]))' "$BATS_TEST_TMPDIR/out/latest.json")
+  [ "$items" -gt 0 ]
+  [ "$(wc -l <"$STUB_DIR/requests")" -eq "$items" ]
+  run python3 -c '
+import json, sys
+reqs = [json.loads(l) for l in open(sys.argv[1])]
+print({r["auth"] for r in reqs}, {r["body"]["model"] for r in reqs},
+      sorted(reqs[0]["body"]["questions"]), json.loads(reqs[0]["body"]["state"])["kind"] != "")
+' "$STUB_DIR/requests"
+  [ "$output" = "{'Bearer k-secret'} {'jev-latest'} ['action', 'deletable', 'duplicate', 'stale'] True" ]
+  grep -q '^| delete |' "$BATS_TEST_TMPDIR/out/latest.md"
+}
+
+@test "disk-audit reports a unit folder sitting exactly on --max-depth" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # DerivedData is 3 below the root, so at --max-depth 3 the scanner adds up
+  # its bytes but records none of its children. It used to emit nothing at all
+  # from there: the folder left the table and the totals without a word.
+  DISK_AUDIT_FLAGS="--dry-run --max-depth 3" run_disk_audit env -u JEV_API_KEY
+  [ "$status" -eq 0 ]
+  grep -q 'DerivedData' "$BATS_TEST_TMPDIR/out/latest.md"
+}
+
+@test "disk-audit skips a root that is inside another root" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # Scanning both counted the same bytes twice and made each file its own
+  # duplicate -- "N MB redundant" with one path on both lines.
+  run env -u JEV_API_KEY HOME="$FAKE_HOME" "$SCRIPTS/disk-audit" \
+    --roots "$FAKE_HOME/Library" "$FAKE_HOME/Library/Caches" \
+    --threshold-mb 1 --dup-min-mb 1 --dry-run --out "$BATS_TEST_TMPDIR/out"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"already inside a scanned root"* ]]
+  run python3 -c '
+import json, sys
+r = json.load(open(sys.argv[1]))
+dup = [i for i in r["items"] if i["state_sent"].get("identical_copies_elsewhere") == []]
+print(len(r["roots"]), len(dup))
+' "$BATS_TEST_TMPDIR/out/latest.json"
+  [ "$output" = "1 0" ]
+}
+
+@test "disk-audit names the roots it cannot use and writes nothing when none are left" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  ln -s /etc "$BATS_TEST_TMPDIR/link"
+  # A typo'd path used to scan nothing, write an empty report claiming
+  # judged_by_jev, and exit 0 -- which reads as "nothing is using disk space".
+  run env -u JEV_API_KEY "$SCRIPTS/disk-audit" \
+    --roots "$BATS_TEST_TMPDIR/nope" "$BATS_TEST_TMPDIR/link" \
+    --dry-run --out "$BATS_TEST_TMPDIR/out"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"nope: not a directory"* ]]
+  [[ "$output" == *"link: a symlink"* ]]
+  [[ "$output" == *"no directory to scan"* ]]
+  [ ! -e "$BATS_TEST_TMPDIR/out/latest.json" ]
+}
+
+@test "disk-audit rejects out-of-range numbers before it scans anything" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # These used to raise from an empty max() and an empty thread pool, after
+  # the whole scan and the duplicate hashing had already been paid for.
+  local flag
+  for flag in "--threshold-mb 0" "--jobs 0" "--max-depth 0" "--timeout 0"; do
+    # shellcheck disable=SC2086
+    run env -u JEV_API_KEY HOME="$FAKE_HOME" "$SCRIPTS/disk-audit" \
+      --roots "$FAKE_HOME/Library" --dry-run --out "$BATS_TEST_TMPDIR/out" $flag
+    [ "$status" -eq 2 ] || { echo "$flag was accepted"; false; }
+    [[ "$output" == *"must be"* ]] || { echo "$flag: $output"; false; }
+  done
+  [ ! -e "$BATS_TEST_TMPDIR/out/latest.json" ]
+}
+
+@test "disk-audit retries a 5xx whose body spans several lines" {
+  STUB_STATUS=503 start_disk_audit_stub
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # jev puts up to 300 characters of the error body in its message, and a
+  # server's body is usually multi-line HTML. Reading one line of stderr put
+  # the status on a line the retry test never saw, so a 503 was given up on
+  # after one attempt and reported as `</html>`.
+  DISK_AUDIT_FLAGS="--jobs 1 --timeout 5" run_disk_audit \
+    env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL"
+  [ "$status" -eq 2 ]
+  local items requests
+  items=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["items"]))' "$BATS_TEST_TMPDIR/out/latest.json")
+  requests=$(wc -l <"$STUB_DIR/requests")
+  # Three attempts for every item, not one.
+  [ "$requests" -eq "$((items * 3))" ] || {
+    echo "$requests requests for $items items; expected $((items * 3))"
+    false
+  }
+  grep -q 'HTTP 503' "$BATS_TEST_TMPDIR/out/latest.md"
+}
+
+@test "disk-audit exits 2 and lists every item when Jev answers none of them" {
+  STUB_STATUS=401 start_disk_audit_stub
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  run_disk_audit env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"Jev was not asked about any item"* ]]
+  [[ "$output" != *"k-secret"* ]]
+  grep -q '## Not judged by Jev' "$BATS_TEST_TMPDIR/out/latest.md"
+}
+
 # --- help/usage flags --------------------------------------------------------
 
 @test "tmux-send-all --help prints usage" {

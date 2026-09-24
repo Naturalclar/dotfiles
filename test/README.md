@@ -26,7 +26,7 @@ needs a section here — `docs.bats` fails if one is missing.
 
 ### scripts.bats
 
-Tests for the non-interactive behaviors of the tools in `.scripts/` (`urlencode`, `killport`, help/usage flags, and the outside-tmux guards). These run in CI on every push.
+Tests for the non-interactive behaviors of the tools in `.scripts/` (`urlencode`, `killport`, `jev` and `disk-audit` against a stub API, help/usage flags, and the outside-tmux guards). These run in CI on every push.
 
 ### fish-config.bats
 
