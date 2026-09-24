@@ -54,7 +54,7 @@ Tests for the ssh-agent handling in `.zsh/10-os.zsh`. It used to run `eval "$(ss
 
 ### docs.bats
 
-Tests that keep the documentation attached to the repository. `AGENTS.md` promised to mirror `CLAUDE.md`, then sat unchanged through the `.zshrc` split and ended up describing a file that no longer worked that way, so it is now a pointer rather than a copy — and these tests keep it one. The rest cover what rots in practice: a suite added without a section here, without a workflow step, or without a mention in `CLAUDE.md`, and a path named in the docs that no longer exists. These run in CI on every push.
+Tests that keep the documentation attached to the repository. `AGENTS.md` promised to mirror `CLAUDE.md`, then sat unchanged through the `.zshrc` split and ended up describing a file that no longer worked that way, so it is now a pointer rather than a copy — and these tests keep it one. The rest cover what rots in practice: a suite added without a section here, without a workflow step, or without a mention in `CLAUDE.md`, and a path named in the docs that no longer exists. One more covers the toolchain rather than the prose — every package CI installs for itself, with either `brew install` or `apt-get install`, has to be in the `Brewfile`, so that `make brew` on a new mac produces a machine that can run what CI runs. `fish` was not, and `fish-config.bats` answered by skipping all 12 of its cases, which looks the same as passing (#351). The two tables of exceptions (a formula spelled differently from its apt package, and what macOS already ships) are themselves checked for entries CI no longer installs. These run in CI on every push.
 
 ### ci.bats
 

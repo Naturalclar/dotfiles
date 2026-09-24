@@ -100,20 +100,73 @@ ci_globs_suites() {
 
 # --- the tools the docs and CI assume are installed ---------------------------
 
+# Everything CI installs for itself, from either package manager, one per line.
+#
+# Reading only the `brew install` lines left this checking a single package:
+# CI runs on Ubuntu, so almost everything it installs comes from apt. fish was
+# in the apt line and not in the Brewfile, and nothing noticed -- on a fresh mac
+# the 12 cases in test/fish-config.bats skipped, which looks exactly like
+# passing (#351).
+ci_installed_packages() {
+  {
+    grep -rhoE 'brew install( [a-z0-9._-]+)+' "$REPO/.github/workflows" |
+      sed -E 's/^brew install//'
+    grep -rhoE 'apt-get install( -y)?( [a-z0-9._-]+)+' "$REPO/.github/workflows" |
+      sed -E 's/^apt-get install( -y)?//'
+  } | tr ' ' '\n' | grep -v '^$' | sort -u
+}
+
+# Packages whose Brewfile formula is spelled differently from the apt package.
+APT_TO_BREW="bats:bats-core"
+
+# Packages macOS ships, so `make brew` has nothing to install for them. Keep
+# this list short and justified: every entry is a hole in the check above.
+NO_BREW_NEEDED="zsh lsof"
+
+# The Brewfile formula for a package CI installs.
+brew_formula_for() {
+  local pair
+  for pair in $APT_TO_BREW; do
+    [ "${pair%%:*}" = "$1" ] && { echo "${pair#*:}"; return; }
+  done
+  echo "$1"
+}
+
 @test "every tool CI installs by hand is in the Brewfile" {
   # `make brew` is how a new machine gets the toolchain, so anything CI has to
-  # `brew install` for itself is something that machine would otherwise not
-  # have. bats-core was missing that way: every suite here told you to install
-  # it separately (#307).
+  # install for itself is something that machine would otherwise not have.
+  # bats-core was missing that way: every suite here told you to install it
+  # separately (#307).
   local missing=""
-  local formula
-  while IFS= read -r formula; do
+  local package formula
+  while IFS= read -r package; do
+    case " $NO_BREW_NEEDED " in *" $package "*) continue ;; esac
+    formula="$(brew_formula_for "$package")"
     grep -qE "^brew \"$formula\"" "$REPO/Brewfile" || missing+=" $formula"
-  done < <(grep -rhoE 'brew install [a-z0-9._-]+' "$REPO/.github/workflows" |
-    awk '{print $3}' | sort -u)
+  done < <(ci_installed_packages)
 
   [ -z "$missing" ] || {
     echo "formulae CI installs but the Brewfile does not list:$missing"
+    false
+  }
+}
+
+@test "the package tables above list nothing CI has stopped installing" {
+  # Both tables are exceptions to the check, so a stale entry silently widens
+  # it: drop a package from CI, and its exception stays behind to excuse the
+  # next package that happens to share the name.
+  local installed stale="" package pair
+  installed="$(ci_installed_packages)"
+  for pair in $APT_TO_BREW; do
+    package="${pair%%:*}"
+    grep -qxF "$package" <<< "$installed" || stale+=" $package"
+  done
+  for package in $NO_BREW_NEEDED; do
+    grep -qxF "$package" <<< "$installed" || stale+=" $package"
+  done
+
+  [ -z "$stale" ] || {
+    echo "listed in APT_TO_BREW/NO_BREW_NEEDED but not installed by CI:$stale"
     false
   }
 }
