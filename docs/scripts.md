@@ -19,6 +19,7 @@
 | `sai-record` | Hand a Claude Code hook event (stdin) to `$SAI_HOME/feed/record.py`, the turn recorder in the sai repository; silent no-op when `SAI_HOME` (default `~/.ghq/github.com/Naturalclar/sai.git/main`), the script or `python3` is missing. Called from the Claude Code hooks. |
 | `sai-statusline` | Hand Claude Code's status-line payload (stdin) to `$SAI_HOME/feed/statusline.py` and print its one-line output; silent no-op when the checkout, script, or `python3` is missing. |
 | `sai-codex-notify` | Fan a Codex CLI `notify` event out to the Codex Computer Use client and `$SAI_HOME/feed/record.py`; unavailable or failing receivers are ignored, and the script always exits successfully. Use it as the single `notify` command in `~/.codex/config.toml`. |
+| `jev` | Ask Jev, TypeSafe AI's decision-only model, typed questions about a state (`--noul NAME=STATEMENT`, or `--questions JSON` for choice/score) and print its `answers` as JSON. Needs `JEV_API_KEY`; without it nothing is sent and it exits 2 saying so. `--dry-run` shows the request body. Used by the `jev` Claude Code skill. |
 | `killport` | Kill the processes listening on a given port (`killport 8080`). |
 | `duck` / `google` | Search DuckDuckGo / Google from the terminal via lynx. |
 | `urlencode` | URL-encode arguments or stdin; used by `duck` and `google`. |
