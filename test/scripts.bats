@@ -465,6 +465,71 @@ PY
   [ "$output" = "今日は買い物をした jev-latest noul 買い物が済んだ" ]
 }
 
+# Answer the first POST with a 302, then stay up long enough to catch the
+# follow-up request a redirect-following client would make. Every hit is logged
+# with its method, path and Authorization header, so the test can see whether
+# the key went anywhere it should not have.
+start_jev_redirect_stub() {
+  command -v python3 >/dev/null || skip "python3 not available"
+  STUB_DIR="$BATS_TEST_TMPDIR/redirect"
+  mkdir -p "$STUB_DIR"
+  python3 - "$STUB_DIR" >/dev/null 2>&1 3>&- <<'PY' &
+import http.server, json, os, sys
+d = sys.argv[1]
+log = open(os.path.join(d, "hits.log"), "a", buffering=1)
+class H(http.server.BaseHTTPRequestHandler):
+    def _log_hit(self, method):
+        log.write(f"{method} {self.path} {self.headers.get('Authorization', '-')}\n")
+    def _answer(self):
+        data = json.dumps({"answers": {"a": {"type": "noul", "noul": 0.1}}}).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+    def do_POST(self):
+        self.rfile.read(int(self.headers.get("Content-Length") or 0))
+        self._log_hit("POST")
+        self.send_response(302)
+        self.send_header("Location", "/followed")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+    def do_GET(self):
+        self._log_hit("GET")
+        self._answer()
+    def log_message(self, *args):
+        pass
+server = http.server.HTTPServer(("127.0.0.1", 0), H)
+open(os.path.join(d, "port.tmp"), "w").write(str(server.server_port))
+os.rename(os.path.join(d, "port.tmp"), os.path.join(d, "port"))
+server.timeout = 15
+server.handle_request()   # the POST we answer with the 302
+server.timeout = 3
+server.handle_request()   # the follow-up, if jev wrongly makes one
+PY
+  JEV_STUB_PID=$!
+  local i
+  for i in $(seq 50); do
+    [ -f "$STUB_DIR/port" ] && break
+    sleep 0.1
+  done
+  [ -f "$STUB_DIR/port" ]
+  JEV_STUB_URL="http://127.0.0.1:$(cat "$STUB_DIR/port")/v1/systemone"
+}
+
+@test "jev refuses a redirect instead of carrying the key to the new location" {
+  start_jev_redirect_stub
+  run env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL" \
+    "$SCRIPTS/jev" --state "s" --noul a="b" --timeout 5
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"redirected"* ]]
+  [[ "$output" == *"/followed"* ]]
+  [[ "$output" != *"k-secret"* ]]
+  # Exactly one request, and it is the POST we sent on purpose.
+  [ "$(wc -l < "$STUB_DIR/hits.log" | tr -d ' ')" = "1" ]
+  [[ "$(cat "$STUB_DIR/hits.log")" == "POST /v1/systemone Bearer k-secret"* ]]
+}
+
 @test "jev reports an HTTP error with its status, exits 2, and does not echo the key" {
   STUB_STATUS=401 start_jev_stub
   run env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL" \

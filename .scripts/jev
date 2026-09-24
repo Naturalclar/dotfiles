@@ -95,13 +95,27 @@ def build(opts):
     return {"state": state, "model": opts.model, "questions": questions}
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Refuse to follow a redirect, rather than urllib's default of following it.
+
+    Two things go wrong if we do follow. urllib turns a 301/302/303 into a GET,
+    so the state and questions are dropped -- and whatever the new host answers
+    would be printed as Jev's answers, with exit 0. Worse, it carries the
+    `Authorization` header to that host, handing the key to whoever the redirect
+    names. Returning None makes urllib raise the 3xx as an HTTPError instead.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def send(body, key, timeout):
     req = urllib.request.Request(
         os.environ.get("JEV_ENDPOINT") or ENDPOINT,
         data=json.dumps(body, ensure_ascii=False).encode(),
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(req, timeout=timeout) as res:
+    with urllib.request.build_opener(NoRedirect).open(req, timeout=timeout) as res:
         return json.load(res)["answers"]
 
 
@@ -140,6 +154,13 @@ def main(argv):
     try:
         answers = send(body, key, opts.timeout)
     except urllib.error.HTTPError as e:
+        if 300 <= e.code < 400:
+            where = e.headers.get("Location", "somewhere else")
+            return fail(
+                EXIT_NOT_ASKED,
+                f"Jev's endpoint redirected (HTTP {e.code}) to {where}; "
+                "not following it with the key attached",
+            )
         detail = e.read().decode("utf-8", "replace").strip()[:300]
         return fail(EXIT_NOT_ASKED, f"Jev returned HTTP {e.code}: {detail}")
     except (urllib.error.URLError, TimeoutError, OSError) as e:
