@@ -596,6 +596,18 @@ class H(http.server.BaseHTTPRequestHandler):
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
         with open(os.path.join(d, "requests"), "a") as f:
             f.write(json.dumps({"auth": self.headers.get("Authorization", ""), "body": body}) + "\n")
+        if status >= 500:
+            # Multi-line, the way a real gateway answers. jev quotes part of
+            # this body back, so anything reading one line of its stderr
+            # cannot see the status.
+            data = (b"<html>\n<head><title>" + str(status).encode() +
+                    b"</title></head>\n<body>\nupstream unavailable\n</body>\n</html>\n")
+            self.send_response(status)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         if status == 200:
             out = {"answers": {
                 "deletable": {"type": "noul", "noul": 0.9},
@@ -688,6 +700,92 @@ print({r["auth"] for r in reqs}, {r["body"]["model"] for r in reqs},
 ' "$STUB_DIR/requests"
   [ "$output" = "{'Bearer k-secret'} {'jev-latest'} ['action', 'deletable', 'duplicate', 'stale'] True" ]
   grep -q '^| delete |' "$BATS_TEST_TMPDIR/out/latest.md"
+}
+
+@test "disk-audit reports a unit folder sitting exactly on --max-depth" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # DerivedData is 3 below the root, so at --max-depth 3 the scanner adds up
+  # its bytes but records none of its children. It used to emit nothing at all
+  # from there: the folder left the table and the totals without a word.
+  DISK_AUDIT_FLAGS="--dry-run --max-depth 3" run_disk_audit env -u JEV_API_KEY
+  [ "$status" -eq 0 ]
+  grep -q 'DerivedData' "$BATS_TEST_TMPDIR/out/latest.md"
+}
+
+@test "disk-audit skips a root that is inside another root" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # Scanning both counted the same bytes twice and made each file its own
+  # duplicate -- "N MB redundant" with one path on both lines.
+  run env -u JEV_API_KEY HOME="$FAKE_HOME" "$SCRIPTS/disk-audit" \
+    --roots "$FAKE_HOME/Library" "$FAKE_HOME/Library/Caches" \
+    --threshold-mb 1 --dup-min-mb 1 --dry-run --out "$BATS_TEST_TMPDIR/out"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"already inside a scanned root"* ]]
+  run python3 -c '
+import json, sys
+r = json.load(open(sys.argv[1]))
+dup = [i for i in r["items"] if i["state_sent"].get("identical_copies_elsewhere") == []]
+print(len(r["roots"]), len(dup))
+' "$BATS_TEST_TMPDIR/out/latest.json"
+  [ "$output" = "1 0" ]
+}
+
+@test "disk-audit names the roots it cannot use and writes nothing when none are left" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  ln -s /etc "$BATS_TEST_TMPDIR/link"
+  # A typo'd path used to scan nothing, write an empty report claiming
+  # judged_by_jev, and exit 0 -- which reads as "nothing is using disk space".
+  run env -u JEV_API_KEY "$SCRIPTS/disk-audit" \
+    --roots "$BATS_TEST_TMPDIR/nope" "$BATS_TEST_TMPDIR/link" \
+    --dry-run --out "$BATS_TEST_TMPDIR/out"
+  [ "$status" -eq 2 ]
+  [[ "$output" == *"nope: not a directory"* ]]
+  [[ "$output" == *"link: a symlink"* ]]
+  [[ "$output" == *"no directory to scan"* ]]
+  [ ! -e "$BATS_TEST_TMPDIR/out/latest.json" ]
+}
+
+@test "disk-audit rejects out-of-range numbers before it scans anything" {
+  command -v python3 >/dev/null || skip "python3 not available"
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # These used to raise from an empty max() and an empty thread pool, after
+  # the whole scan and the duplicate hashing had already been paid for.
+  local flag
+  for flag in "--threshold-mb 0" "--jobs 0" "--max-depth 0" "--timeout 0"; do
+    # shellcheck disable=SC2086
+    run env -u JEV_API_KEY HOME="$FAKE_HOME" "$SCRIPTS/disk-audit" \
+      --roots "$FAKE_HOME/Library" --dry-run --out "$BATS_TEST_TMPDIR/out" $flag
+    [ "$status" -eq 2 ] || { echo "$flag was accepted"; false; }
+    [[ "$output" == *"must be"* ]] || { echo "$flag: $output"; false; }
+  done
+  [ ! -e "$BATS_TEST_TMPDIR/out/latest.json" ]
+}
+
+@test "disk-audit retries a 5xx whose body spans several lines" {
+  STUB_STATUS=503 start_disk_audit_stub
+  FAKE_HOME="$BATS_TEST_TMPDIR/home"
+  make_disk_audit_home "$FAKE_HOME"
+  # jev puts up to 300 characters of the error body in its message, and a
+  # server's body is usually multi-line HTML. Reading one line of stderr put
+  # the status on a line the retry test never saw, so a 503 was given up on
+  # after one attempt and reported as `</html>`.
+  DISK_AUDIT_FLAGS="--jobs 1 --timeout 5" run_disk_audit \
+    env JEV_API_KEY="k-secret" JEV_ENDPOINT="$JEV_STUB_URL"
+  [ "$status" -eq 2 ]
+  local items requests
+  items=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["items"]))' "$BATS_TEST_TMPDIR/out/latest.json")
+  requests=$(wc -l <"$STUB_DIR/requests")
+  # Three attempts for every item, not one.
+  [ "$requests" -eq "$((items * 3))" ] || {
+    echo "$requests requests for $items items; expected $((items * 3))"
+    false
+  }
+  grep -q 'HTTP 503' "$BATS_TEST_TMPDIR/out/latest.md"
 }
 
 @test "disk-audit exits 2 and lists every item when Jev answers none of them" {

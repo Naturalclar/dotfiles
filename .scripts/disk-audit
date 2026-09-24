@@ -202,7 +202,13 @@ class Scanner:
 def find_duplicates(big_files):
     """Group identical large files: by size, then head+tail hash, then full hash."""
     by_size = {}
+    seen = set()
     for size, p in big_files:
+        # One path, one entry. Listed twice it becomes its own duplicate, and
+        # the report claims that much space is redundant when none of it is.
+        if p in seen:
+            continue
+        seen.add(p)
         by_size.setdefault(size, []).append(p)
 
     def quick(p):
@@ -264,7 +270,7 @@ def pick_candidates(root, threshold):
 
     def rest(node, small):
         size = sum(c.size for c in small)
-        if size >= threshold:
+        if small and size >= threshold:
             r = Node(node.path, True)
             r.size, r.files = size, sum(c.files for c in small)
             r.mtime = max(c.mtime for c in small)
@@ -279,6 +285,15 @@ def pick_candidates(root, threshold):
             return
         big = [c for c in node.children if c.size >= threshold]
         if any(p.endswith(u) for u in UNIT_CHILDREN):
+            # The scanner stops recording children at --max-depth but keeps
+            # adding up their bytes, so a folder sitting exactly on the limit
+            # arrives here with a real size and nothing to break it into.
+            # Report the folder itself; returning empty-handed dropped it from
+            # the table and from the totals, without a word either way.
+            if not node.children:
+                if node is not root and node.size >= threshold:
+                    out.append((node, parent))
+                return
             for c in big:
                 out.append((c, node))
             rest(node, [c for c in node.children if c.size < threshold])
@@ -324,8 +339,12 @@ def ollama_models(root_dir):
                     pass
             rel = os.path.relpath(dirpath, man_root).split(os.sep)
             name = "/".join(rel[1:]) + ":" + fn if len(rel) > 1 else fn
+            try:
+                mtime = os.stat(mp).st_mtime
+            except OSError:
+                continue  # `ollama rm`/`pull` can take the manifest mid-scan
             n = Node(mp, False)
-            n.size, n.mtime, n.atime, n.files = size, os.stat(mp).st_mtime, atime, len(digests)
+            n.size, n.mtime, n.atime, n.files = size, mtime, atime, len(digests)
             models.append((name.replace("library/", ""), n))
     return models
 
@@ -339,9 +358,15 @@ def call_jev(state, timeout, retries=3):
                            capture_output=True, text=True)
         if r.returncode == 0:
             return json.loads(r.stdout)
-        err = r.stderr.strip().splitlines()[-1] if r.stderr.strip() else f"jev exited {r.returncode}"
+        # Match against the whole of stderr, not one line of it: jev puts up to
+        # 300 characters of the HTTP error body in its message, and a server's
+        # body is usually multi-line HTML, so the status ended up on a line the
+        # substring test never saw. A 503 then retried once instead of three
+        # times, and the report showed the error as `</html>`.
+        err_text = r.stderr.strip()
+        err = err_text.splitlines()[0] if err_text else f"jev exited {r.returncode}"
         # Rate limits and server errors are worth another try; the rest are not.
-        if attempt < retries - 1 and any(f"HTTP {c}" in err for c in (429, 500, 502, 503, 504)):
+        if attempt < retries - 1 and any(f"HTTP {c}" in err_text for c in (429, 500, 502, 503, 504)):
             time.sleep(2 ** attempt)
             continue
         raise RuntimeError(err)
@@ -360,6 +385,18 @@ def main():
     args = ap.parse_args()
     sys.setrecursionlimit(10000)
 
+    # Check the numbers before scanning anything. `--threshold-mb 0` used to
+    # reach an empty max() and `--jobs 0` an empty thread pool, both of them
+    # only after the full scan and the duplicate hashing had been paid for.
+    for name, value, least in (("--threshold-mb", args.threshold_mb, 1),
+                               ("--dup-min-mb", args.dup_min_mb, 0),
+                               ("--max-depth", args.max_depth, 1),
+                               ("--jobs", args.jobs, 1)):
+        if value < least:
+            ap.error(f"{name} must be at least {least} (got {value})")
+    if args.timeout <= 0:
+        ap.error(f"--timeout must be greater than 0 (got {args.timeout})")
+
     if not args.dry_run and not os.environ.get("JEV_API_KEY"):
         print("disk-audit: JEV_API_KEY is not set, so Jev was not asked "
               "(use --dry-run to scan without it)", file=sys.stderr)
@@ -367,7 +404,38 @@ def main():
 
     roots = [os.path.abspath(os.path.expanduser(r)) for r in args.roots] if args.roots \
         else [os.path.join(HOME, r) for r in DEFAULT_ROOTS]
-    roots = [r for r in roots if os.path.isdir(r) and not os.path.islink(r)]
+
+    # Say which roots are not being scanned and why. Dropping them quietly
+    # produced an empty report and exit 0 for a typo'd path, which reads as
+    # "nothing is using disk space" rather than "nothing was looked at".
+    # Explicit --roots are worth a word each; the built-in defaults are not
+    # expected to all exist on every machine.
+    kept = []
+    for r in roots:
+        if os.path.islink(r):
+            why = "a symlink"
+        elif not os.path.isdir(r):
+            why = "not a directory"
+        else:
+            kept.append(r)
+            continue
+        if args.roots:
+            print(f"disk-audit: skipping {tilde(r)}: {why}", file=sys.stderr)
+
+    # Overlapping roots scanned the same bytes twice: sizes were counted twice
+    # and a file became its own duplicate, reported as "N MB redundant" with
+    # the same path on both lines.
+    roots = []
+    for r in sorted(set(kept), key=len):
+        if any(r == k or r.startswith(k + os.sep) for k in roots):
+            print(f"disk-audit: skipping {tilde(r)}: already inside a scanned root",
+                  file=sys.stderr)
+            continue
+        roots.append(r)
+
+    if not roots:
+        print("disk-audit: no directory to scan; nothing was examined", file=sys.stderr)
+        return EXIT_NOT_ASKED
     threshold = args.threshold_mb << 20
     now = time.time()
     today = dt.date.today().isoformat()
@@ -432,7 +500,8 @@ def main():
 
     items.sort(key=lambda i: -i["size"])
 
-    if not args.dry_run and items:
+    asked_jev = bool(not args.dry_run and items)
+    if asked_jev:
         print(f"asking Jev about {len(items)} items", file=sys.stderr)
         with ThreadPoolExecutor(args.jobs) as pool:
             futs = {pool.submit(call_jev, it["state"], args.timeout): it for it in items}
@@ -463,7 +532,10 @@ def main():
         })
     report = {
         "generated": dt.datetime.now().isoformat(timespec="seconds"),
-        "judged_by_jev": not args.dry_run,
+        # Whether Jev was actually asked, not merely whether it was allowed to
+        # be: a scan that turned up no items calls nothing, and claiming
+        # otherwise is the one thing the jev skill says never to do.
+        "judged_by_jev": asked_jev,
         "threshold_mb": args.threshold_mb,
         "roots": [{"path": p, "bytes": s, "size": human(s)} for p, s in sorted(root_sizes, key=lambda x: -x[1])],
         "free_space": human(shutil.disk_usage(HOME).free),
