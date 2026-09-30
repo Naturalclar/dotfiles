@@ -556,6 +556,23 @@ PY
   [ "$output" = "['a', 'r'] noul choice" ]
 }
 
+@test "the jev call in the issue-triage skill builds a request with its six questions" {
+  # The skill spells out the exact command and asks that the statements stay
+  # as written, because the calibration table under it was earned with them.
+  # A flag jev renames, or a statement edited without re-measuring, would
+  # otherwise only show up the next time someone triages.
+  command -v python3 >/dev/null || skip "python3 not available"
+  local skill="$BATS_TEST_DIRNAME/../.claude/skills/issue-triage/SKILL.md"
+  local block
+  block=$(awk '/^ *```sh/{f=1; next} /^ *```/{f=0} f && /jev --state-file/{p=1} f && p' "$skill")
+  [ -n "$block" ] || { echo "no jev --state-file block in $skill"; false; }
+  printf '# title\n\nbody\n' > "$BATS_TEST_TMPDIR/issue.md"
+  run env -u JEV_API_KEY PATH="$SCRIPTS:$PATH" bash -c "issue=$BATS_TEST_TMPDIR/issue.md; $block --dry-run"
+  [ "$status" -eq 0 ] || { echo "$output"; false; }
+  run python3 -c 'import json,sys; b=json.loads(sys.stdin.read()); print(" ".join(sorted(b["questions"])), b["state"].startswith("# title"))' <<< "$output"
+  [ "$output" = "blocking bug fewlines hot needsdesign unnoticed True" ]
+}
+
 @test "jev rejects a call with no questions or a malformed --noul" {
   command -v python3 >/dev/null || skip "python3 not available"
   run "$SCRIPTS/jev" --state "s"
