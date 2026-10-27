@@ -24,6 +24,10 @@ needs a section here — `docs.bats` fails if one is missing.
 
 ## Contents
 
+### brief-pr.bats
+
+Exercises the brief-pr Python renderer using only fictional inputs: hostile markup stays text, active or malformed links are rejected, navigation and evidence labels remain accessible, missing sections fail, and output is private and outside Git repositories. Runs standard-library unittest cases through bats; requires Python 3.
+
 ### scripts.bats
 
 Tests for the non-interactive behaviors of the tools in `.scripts/` (`urlencode`, `killport`, `jev` and `disk-audit` against a stub API, help/usage flags, and the outside-tmux guards). These run in CI on every push.
