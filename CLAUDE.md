@@ -51,6 +51,7 @@ This is a cross-platform dotfiles repo (macOS, Linux/WSL, Windows). The core mec
 
 ### Testing
 Tests are in `test/`, as bats-core suites (`brew install bats-core`, then `bats test/<name>.bats`). Every suite runs in CI, and each is described in `test/README.md` — add a section there for a new one, and a step in the workflow that runs it:
+- `brief-pr.bats` — standalone HTML rendering, escaping, source URLs, and private output for brief-pr
 - `scripts.bats` — the non-interactive behavior of the tools in `.scripts/`
 - `aliases.bats` — zsh/fish/PowerShell alias parity, and duplicate definitions
 - `prompt.bats` — `_prompt_path` from `.zsh/40-prompt.zsh`

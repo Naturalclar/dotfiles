@@ -128,9 +128,14 @@ assert_links_to() {
 @test "make claude symlinks each skill into ~/.claude/skills" {
   run make -C "$REPO" claude HOME="$FAKE_HOME"
   [ "$status" -eq 0 ]
-  assert_links_to "$FAKE_HOME/.claude/skills/tailscale-serve" \
-    "$REPO/.claude/skills/tailscale-serve"
-  [ -f "$FAKE_HOME/.claude/skills/tailscale-serve/SKILL.md" ]
+  local skill name count=0
+  for skill in "$REPO"/.claude/skills/*/; do
+    name="$(basename "$skill")"
+    assert_links_to "$FAKE_HOME/.claude/skills/$name" "${skill%/}"
+    [ -f "$FAKE_HOME/.claude/skills/$name/SKILL.md" ]
+    count=$((count + 1))
+  done
+  [ "$count" -gt 0 ]
 }
 
 @test "every hook command in settings.json is a tool in .scripts" {

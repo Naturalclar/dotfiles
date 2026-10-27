@@ -44,12 +44,30 @@ or the skills settings on claude.ai.
 | `verify-on-machine` | Write the checks a person must run where the agent cannot reach — Windows, GUI, hardware — each with its expected output. Repo-agnostic. |
 | `break-check` | Prove a test fails when the behaviour it covers is broken, before claiming the regression is covered. Repo-agnostic. |
 | `pr-status` | List the open pull requests and report what each is waiting on — CI, conflicts, review — with the next action. Repo-agnostic. |
+| `brief-pr` | Explain one PR from its URL: purpose, assumptions, change map, processing flow, reading order, risks, and test evidence. Pins code references to SHAs and distinguishes the author's account from verified behavior. Manual invocation only; generates a private, standalone HTML brief. Repo-agnostic. |
 | `docs-audit` | Treat the documentation as a test suite: run the commands it gives, resolve the links it names, and check its claims against the code. Repo-agnostic. |
 | `ci-audit` | Check that CI does what it says: every test runs, a hung job dies, a green tick is not two runs of which one was red. Repo-agnostic. |
 | `test-prune` | Read every test and list the ones to delete or merge — implementation copies, self-verifying mocks, duplicates, internals-welded tests, case explosions — each judged by what realistic defect ships if it is gone. Report only. Repo-agnostic. |
 | `ui-screenshot` | Compare the local branch and working tree with their base, then use `agent-browser` to capture the screens and states with user-visible changes. Writes them inside the working directory, git-ignored, and embeds them in the reply as Markdown images so a browser reading the conversation renders the picture. Repo-agnostic. |
 | `jev` | Ask Jev (TypeSafe AI's decision-only model) narrow noul / choice / score questions through `.scripts/jev`, and use its calibrated confidence as a threshold. Needs `JEV_API_KEY`; when it is missing, says so rather than answering in Jev's place. |
 | `parity-check` | Find concepts written down in more than one place — an alias in two shells, a value in code and in a README — check the copies still agree, and propose the test that keeps them agreeing. Reports how many definitions it actually reached, since a comparison that silently parses only some of them is what let the alias checks pass while names drifted. Repo-agnostic. |
+
+For example, `/brief-pr https://github.com/OWNER/REPO/pull/123` produces a
+self-contained HTML code-reading guide; `/pr-status` answers what is blocking open PRs. `brief-pr`
+uses GitHub read tools or `gh`, does not execute the target's code or tests,
+and never posts reviews or merges. Its standard-library Python renderer
+escapes all content, loads no external assets, and saves `brief.html` in a
+mode-0700 `brief-pr-*` directory under the OS temporary directory (file mode
+0600), outside Git repositories. The response links the local file and gives
+browser-opening instructions. Temporary files may be cleaned up by the OS.
+No generated real-PR brief belongs in dotfiles or the reviewed repository.
+`disable-model-invocation` keeps the skill manual-only.
+
+The idea was informed by [dim0627's brief-pr](https://github.com/dim0627/dotfiles/tree/4b97ca986d336acbf20a24fab08ca2aaca1ed03a/claude/skills/brief-pr).
+At that revision, no license grant was found in the repository, README, or
+skill files. This implementation is independently written: no source prose,
+HTML template, or CSS is copied; the HTML renderer and styling are original. It keeps the focus on understanding a PR and
+tracing evidence, without requiring Artifact, a stylesheet, ghq, or monitoring.
 
 A skill is a `SKILL.md` with YAML frontmatter; the `name` has to match its
 directory and the `description` is what Claude Code matches against to decide
