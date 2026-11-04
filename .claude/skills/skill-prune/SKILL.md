@@ -52,9 +52,9 @@ contradiction the skill actually follows, and propose deleting the other.
    where the repository says they may (the agent's name, the tool names).
    Skip this step when there is no mirror.
 6. **Check.** Run a skill that can be run safely once and see it behaves the
-   same. Do not run a skill that merges, pushes, creates branches, or writes
-   outside the repository; for those, limit the change to removing
-   contradictions.
+   same. Do not run a skill that merges, pushes, creates branches, writes
+   outside the repository, touches another worktree, or restarts a process;
+   for those, limit the change to removing contradictions.
 
 ## Do not delete
 
