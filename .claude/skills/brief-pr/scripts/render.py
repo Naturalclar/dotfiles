@@ -153,7 +153,13 @@ def main(argv):
     output = save(render(load(args.input)))
     if args.remove_input:
         # Only after the brief exists: a failed render keeps the input to fix.
-        Path(args.input).unlink()
+        # The brief is written either way, so a failed removal must not hide
+        # its path behind an error exit; warn, without naming the input.
+        try:
+            Path(args.input).unlink()
+        except OSError as error:
+            print(f'Brief written, but the input file was not removed ({type(error).__name__}); delete it by hand.',
+                  file=sys.stderr)
     return output
 
 

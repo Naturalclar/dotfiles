@@ -138,6 +138,23 @@ class RenderTests(unittest.TestCase):
             self.assertNotEqual(failed.returncode, 0)
             self.assertTrue(source.exists())
 
+    def test_cli_still_reports_the_brief_when_the_input_cannot_be_removed(self):
+        with tempfile.TemporaryDirectory() as root, tempfile.TemporaryDirectory() as locked:
+            env = dict(os.environ, TMPDIR=root)
+            source = Path(locked) / 'input.json'
+            source.write_text(json.dumps(fixture()))
+            os.chmod(locked, 0o500)  # the file stays readable, but cannot be unlinked
+            try:
+                result = subprocess.run([sys.executable, str(renderer), '--remove-input', str(source)],
+                                        stdin=subprocess.DEVNULL, text=True, capture_output=True, env=env)
+            finally:
+                os.chmod(locked, 0o700)
+            if not source.exists():
+                self.skipTest('running as a user that ignores directory permissions')
+            self.assertEqual(result.returncode, 0)
+            self.assertTrue(Path(result.stdout.strip()).is_file())
+            self.assertIn('not removed', result.stderr)
+
     def test_cli_refuses_a_non_regular_input_and_a_removal_without_one(self):
         with tempfile.TemporaryDirectory() as root:
             env = dict(os.environ, TMPDIR=root)
