@@ -115,6 +115,41 @@ class RenderTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     m.save('not written')
 
+    def test_cli_reads_a_path_and_removes_it_only_after_success(self):
+        with tempfile.TemporaryDirectory() as root:
+            env = dict(os.environ, TMPDIR=root)
+            source = Path(root) / 'input.json'
+            source.write_text(json.dumps(fixture()))
+            # No stdin at all: the path alone has to carry the brief.
+            result = subprocess.run([sys.executable, str(renderer), str(source)],
+                                    stdin=subprocess.DEVNULL, text=True,
+                                    capture_output=True, env=env, check=True)
+            self.assertIn('Example: preserve draft notes', Path(result.stdout.strip()).read_text())
+            self.assertTrue(source.exists())
+            subprocess.run([sys.executable, str(renderer), '--remove-input', str(source)],
+                           stdin=subprocess.DEVNULL, text=True, capture_output=True,
+                           env=env, check=True)
+            self.assertFalse(source.exists())
+            broken = fixture()
+            broken['purpose'] = []
+            source.write_text(json.dumps(broken))
+            failed = subprocess.run([sys.executable, str(renderer), '--remove-input', str(source)],
+                                    stdin=subprocess.DEVNULL, text=True, capture_output=True, env=env)
+            self.assertNotEqual(failed.returncode, 0)
+            self.assertTrue(source.exists())
+
+    def test_cli_refuses_a_non_regular_input_and_a_removal_without_one(self):
+        with tempfile.TemporaryDirectory() as root:
+            env = dict(os.environ, TMPDIR=root)
+            failed = subprocess.run([sys.executable, str(renderer), root],
+                                    stdin=subprocess.DEVNULL, text=True, capture_output=True, env=env)
+            self.assertNotEqual(failed.returncode, 0)
+            self.assertEqual(failed.stdout, '')
+            failed = subprocess.run([sys.executable, str(renderer), '--remove-input'],
+                                    input=json.dumps(fixture()), text=True, capture_output=True, env=env)
+            self.assertNotEqual(failed.returncode, 0)
+            self.assertEqual(list(Path(root).glob('brief-pr-*')), [])
+
 unittest.main()
 PY
 }
