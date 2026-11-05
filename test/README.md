@@ -26,7 +26,7 @@ needs a section here — `docs.bats` fails if one is missing.
 
 ### brief-pr.bats
 
-Exercises the brief-pr Python renderer using only fictional inputs: hostile markup stays text, active or malformed links are rejected, navigation and evidence labels remain accessible, missing sections fail, and output is private and outside Git repositories. Runs standard-library unittest cases through bats; requires Python 3.
+Exercises the brief-pr Python renderer using only fictional inputs: hostile markup stays text, active or malformed links are rejected, navigation and evidence labels remain accessible, missing sections fail, output is private and outside Git repositories, and an input passed by path (rather than redirected into stdin) is read and, with `--remove-input`, deleted only after a successful render. Runs standard-library unittest cases through bats; requires Python 3.
 
 ### scripts.bats
 

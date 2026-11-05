@@ -129,7 +129,7 @@ text data; the renderer escapes it and permits only HTTPS source links.
 Build a JSON object with the following fields. Never interpolate PR content
 into shell source; send JSON through a tool's stdin facility, or serialize it
 to a mode-0600 file in a mode-0700 private directory outside repositories and
-redirect that file into the renderer. Delete an intermediate input file after
+pass its path to the renderer. Delete an intermediate input file after
 successful generation if it is no longer needed.
 
 - `title`, `url`, `lang`: title, validated PR HTTPS URL, and language tag.
@@ -144,8 +144,14 @@ successful generation if it is no longer needed.
 For an already-created private input file, the command shape is:
 
 ```bash
-python3 "$SKILL_DIR/scripts/render.py" < "$PRIVATE_INPUT_JSON"
+python3 "$SKILL_DIR/scripts/render.py" --remove-input "$PRIVATE_INPUT_JSON"
 ```
+
+Pass the path as an argument rather than redirecting it into stdin: an agent
+shell restricted to its working directory can refuse a redirect from the
+temporary directory. `--remove-input` deletes the file only once `brief.html`
+is written; a failed render leaves it in place to fix. With no path, the
+renderer reads stdin.
 
 The renderer prints the absolute path to `brief.html` in a freshly created
 `brief-pr-*` directory under the operating system's temporary directory. It

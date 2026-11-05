@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Render a plain-data PR brief from stdin into a private, standalone HTML file."""
+"""Render a plain-data PR brief from a JSON file or stdin into a private, standalone HTML file."""
+import argparse
 import html
 import json
 import os
 from pathlib import Path
 import re
+import sys
 import tempfile
 from urllib.parse import urlsplit
 
@@ -124,10 +126,46 @@ def save(document):
     return output
 
 
+def load(path):
+    """Read the brief data from a JSON file, or from stdin when no path is given.
+
+    The path exists for agents whose shell may not redirect a file outside the
+    working directory into stdin. It must name a regular file, not a FIFO or
+    device that could block or stream something other than the brief.
+    """
+    if path is None:
+        return json.load(sys.stdin)
+    source = Path(path)
+    if not source.is_file():
+        raise ValueError('Input must be a regular file')
+    with source.open(encoding='utf-8') as stream:
+        return json.load(stream)
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('input', nargs='?', help='brief JSON file; stdin when omitted')
+    parser.add_argument('--remove-input', action='store_true',
+                        help='delete the input file once the brief is written')
+    args = parser.parse_args(argv)
+    if args.remove_input and args.input is None:
+        parser.error('--remove-input needs an input file')
+    output = save(render(load(args.input)))
+    if args.remove_input:
+        # Only after the brief exists: a failed render keeps the input to fix.
+        # The brief is written either way, so a failed removal must not hide
+        # its path behind an error exit; warn, without naming the input.
+        try:
+            Path(args.input).unlink()
+        except OSError as error:
+            print(f'Brief written, but the input file was not removed ({type(error).__name__}); delete it by hand.',
+                  file=sys.stderr)
+    return output
+
+
 if __name__ == '__main__':
-    import sys
     try:
-        print(save(render(json.load(sys.stdin))))
+        print(main(sys.argv[1:]))
     except (ValueError, KeyError, TypeError, OSError) as error:
         # Do not echo possibly private input values in diagnostics.
         print(f'Cannot render brief ({type(error).__name__}); check schema and private temp directory.', file=sys.stderr)
