@@ -1,0 +1,39 @@
+#!/bin/sh
+# Open the supported macOS UI for re-enabling OBS Virtual Camera.
+set -eu
+case "${1:-}" in
+    -h|--help)
+        echo 'Usage: obs-camera-reset [--dry-run]'
+        echo 'Opens macOS Login Items & Extensions. Does not reset anything automatically.'
+        exit 0 ;;
+    ''|--dry-run) ;;
+    *) echo 'Usage: obs-camera-reset [--dry-run]' >&2; exit 2 ;;
+esac
+if [ "$#" -gt 1 ]; then
+    echo 'Usage: obs-camera-reset [--dry-run]' >&2
+    exit 2
+fi
+if [ "$(uname -s)" != Darwin ]; then
+    echo 'obs-camera-reset requires macOS.' >&2
+    exit 1
+fi
+cat <<'HELP'
+1. Quit OBS and camera-consuming apps.
+2. In Login Items & Extensions, open Camera Extensions.
+3. Turn OBS Virtual Camera OFF.
+4. While it is OFF, open OBS once, then quit OBS again.
+5. Turn OBS Virtual Camera ON.
+6. Reopen OBS and start Virtual Camera, then reopen the consuming app.
+
+The open/quit cycle while the extension is OFF is essential to this reported workaround.
+Source: https://romanzipp.com/blog/fix-obs-could-not-find-the-virtual-camera-system-process-on-macos
+This opens settings only; the toggle must be changed manually.
+Does not delete scenes or permissions, or disable System Integrity Protection.
+If this does not help, logging out/in or restarting may still be required.
+HELP
+url='x-apple.systempreferences:com.apple.LoginItems-Settings.extension'
+if [ "${1:-}" = --dry-run ]; then
+    printf 'open %s\n' "$url"
+else
+    open "$url"
+fi
